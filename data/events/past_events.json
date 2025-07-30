@@ -1,0 +1,99 @@
+{
+  "events": [
+    {
+      "name": "Spring Awakening",
+      "description": "A celebration of spring with nature-themed challenges and rewards.",
+      "type": "Seasonal",
+      "difficulty": "Easy",
+      "start_date": "2024-03-01",
+      "end_date": "2024-03-31",
+      "duration": "31 days",
+      "requirements": [
+        "Level 5 or higher",
+        "Complete basic tutorial"
+      ],
+      "rewards": [
+        "Spring Awakening skin",
+        "2500 gold coins",
+        "Common crafting materials",
+        "Spring Champion title"
+      ],
+      "mechanics": [
+        "Daily spring quests",
+        "Nature-themed challenges",
+        "Spring currency system"
+      ],
+      "tips": [
+        "Complete daily quests regularly",
+        "Focus on nature-themed activities",
+        "Save currency for rare items"
+      ]
+    },
+    {
+      "name": "Winter Tournament",
+      "description": "A fierce competition in the frozen lands with ice-themed challenges.",
+      "type": "Competitive",
+      "difficulty": "Hard",
+      "start_date": "2024-01-15",
+      "end_date": "2024-01-30",
+      "duration": "16 days",
+      "requirements": [
+        "Level 25 or higher",
+        "Master ice-based characters",
+        "Complete qualification rounds"
+      ],
+      "rewards": [
+        "Winter Champion title",
+        "15000 gold coins",
+        "Legendary ice weapon",
+        "Exclusive winter avatar",
+        "Tournament champion badge"
+      ],
+      "mechanics": [
+        "Double elimination bracket",
+        "Ice-themed arenas",
+        "Special winter rules",
+        "Spectator mode available"
+      ],
+      "tips": [
+        "Master ice character abilities",
+        "Study opponent patterns",
+        "Use ice terrain advantages",
+        "Practice in winter arenas"
+      ]
+    },
+    {
+      "name": "Guild Wars",
+      "description": "Epic battles between guilds for territory control and prestige.",
+      "type": "Guild",
+      "difficulty": "Very Hard",
+      "start_date": "2024-02-01",
+      "end_date": "2024-02-14",
+      "duration": "14 days",
+      "requirements": [
+        "Guild membership",
+        "Level 30 or higher",
+        "Guild leader approval"
+      ],
+      "rewards": [
+        "Guild War Champion title",
+        "Guild territory bonuses",
+        "Rare guild equipment",
+        "Guild prestige points",
+        "Exclusive guild banner"
+      ],
+      "mechanics": [
+        "Territory control system",
+        "Guild vs guild battles",
+        "Alliance system",
+        "War declaration system"
+      ],
+      "tips": [
+        "Coordinate with guild members",
+        "Plan territory strategies",
+        "Form alliances with other guilds",
+        "Use guild-specific abilities"
+      ]
+    }
+  ]
+} 

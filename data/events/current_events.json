@@ -1,0 +1,103 @@
+{
+  "events": [
+    {
+      "name": "Summer Festival",
+      "description": "A grand celebration of the summer season with special rewards and challenges.",
+      "type": "Seasonal",
+      "difficulty": "Medium",
+      "start_date": "2024-07-01",
+      "end_date": "2024-07-31",
+      "duration": "31 days",
+      "requirements": [
+        "Level 10 or higher",
+        "Complete tutorial quests",
+        "Join a guild"
+      ],
+      "rewards": [
+        "Exclusive Summer Festival skin",
+        "5000 gold coins",
+        "Rare crafting materials",
+        "Special title: 'Summer Champion'",
+        "Unique pet companion"
+      ],
+      "mechanics": [
+        "Daily festival quests",
+        "Special festival currency",
+        "Temporary festival buffs",
+        "Festival-exclusive dungeons"
+      ],
+      "tips": [
+        "Complete daily quests for maximum rewards",
+        "Save festival currency for rare items",
+        "Team up with other players for dungeon runs",
+        "Use festival buffs strategically"
+      ]
+    },
+    {
+      "name": "Elemental Tournament",
+      "description": "A competitive tournament where players battle using elemental magic. Prove your mastery of the elements!",
+      "type": "Competitive",
+      "difficulty": "Hard",
+      "start_date": "2024-07-15",
+      "end_date": "2024-07-22",
+      "duration": "8 days",
+      "requirements": [
+        "Level 20 or higher",
+        "Master at least one elemental character",
+        "Complete qualification matches"
+      ],
+      "rewards": [
+        "Tournament Champion title",
+        "10000 gold coins",
+        "Legendary weapon",
+        "Exclusive tournament avatar",
+        "Special tournament badge"
+      ],
+      "mechanics": [
+        "Single elimination bracket",
+        "Element-based matchups",
+        "Tournament-specific rules",
+        "Live spectator mode"
+      ],
+      "tips": [
+        "Practice with your main character extensively",
+        "Study opponent strategies",
+        "Use elemental advantages wisely",
+        "Stay calm under pressure"
+      ]
+    },
+    {
+      "name": "Dungeon Crawl Challenge",
+      "description": "Explore mysterious dungeons and defeat powerful bosses for rare loot and experience.",
+      "type": "PvE",
+      "difficulty": "Medium",
+      "start_date": "2024-07-10",
+      "end_date": "2024-07-25",
+      "duration": "16 days",
+      "requirements": [
+        "Level 15 or higher",
+        "Form a party of 3-5 players",
+        "Complete basic dungeon tutorial"
+      ],
+      "rewards": [
+        "Rare dungeon equipment",
+        "3000 gold coins",
+        "Experience boost potions",
+        "Dungeon Master achievement",
+        "Special dungeon currency"
+      ],
+      "mechanics": [
+        "Procedurally generated dungeons",
+        "Boss encounters",
+        "Loot drops",
+        "Party coordination required"
+      ],
+      "tips": [
+        "Form a balanced party composition",
+        "Communicate with your team",
+        "Save powerful abilities for bosses",
+        "Explore thoroughly for hidden loot"
+      ]
+    }
+  ]
+} 

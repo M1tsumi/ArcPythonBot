@@ -1,0 +1,238 @@
+{
+  "characters": [
+    {
+      "id": 1,
+      "name": "Fire Mage",
+      "description": "A powerful mage who wields the destructive power of fire magic.",
+      "category": "Mage",
+      "element": "Fire",
+      "weapon_type": "Staff",
+      "rarity": "Rare"
+    },
+    {
+      "id": 2,
+      "name": "Ice Warrior",
+      "description": "A resilient warrior who uses ice magic to protect and attack.",
+      "category": "Warrior",
+      "element": "Ice",
+      "weapon_type": "Sword",
+      "rarity": "Common"
+    },
+    {
+      "id": 3,
+      "name": "Lightning Archer",
+      "description": "A swift archer who channels lightning through their arrows.",
+      "category": "Archer",
+      "element": "Lightning",
+      "weapon_type": "Bow",
+      "rarity": "Epic"
+    },
+    {
+      "id": 4,
+      "name": "Earth Guardian",
+      "description": "A defensive specialist who uses earth magic to protect allies.",
+      "category": "Guardian",
+      "element": "Earth",
+      "weapon_type": "Shield",
+      "rarity": "Rare"
+    },
+    {
+      "id": 5,
+      "name": "Wind Assassin",
+      "description": "A stealthy assassin who moves like the wind.",
+      "category": "Assassin",
+      "element": "Wind",
+      "weapon_type": "Dagger",
+      "rarity": "Epic"
+    },
+    {
+      "id": 6,
+      "name": "Water Healer",
+      "description": "A compassionate healer who uses water magic to restore health.",
+      "category": "Healer",
+      "element": "Water",
+      "weapon_type": "Wand",
+      "rarity": "Common"
+    },
+    {
+      "id": 7,
+      "name": "Shadow Rogue",
+      "description": "A mysterious rogue who manipulates shadows for stealth and deception.",
+      "category": "Rogue",
+      "element": "Shadow",
+      "weapon_type": "Dual Daggers",
+      "rarity": "Rare"
+    },
+    {
+      "id": 8,
+      "name": "Light Paladin",
+      "description": "A holy warrior who wields the power of light to smite evil.",
+      "category": "Paladin",
+      "element": "Light",
+      "weapon_type": "Mace",
+      "rarity": "Epic"
+    },
+    {
+      "id": 9,
+      "name": "Dark Necromancer",
+      "description": "A sinister mage who commands the undead and dark magic.",
+      "category": "Necromancer",
+      "element": "Dark",
+      "weapon_type": "Scythe",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 10,
+      "name": "Nature Druid",
+      "description": "A wise druid who harnesses the power of nature and transformation.",
+      "category": "Druid",
+      "element": "Nature",
+      "weapon_type": "Staff",
+      "rarity": "Rare"
+    },
+    {
+      "id": 11,
+      "name": "Metal Berserker",
+      "description": "A fierce warrior who channels metal magic for devastating attacks.",
+      "category": "Berserker",
+      "element": "Metal",
+      "weapon_type": "Axe",
+      "rarity": "Epic"
+    },
+    {
+      "id": 12,
+      "name": "Crystal Sorcerer",
+      "description": "A mystical sorcerer who wields the power of crystals and gems.",
+      "category": "Sorcerer",
+      "element": "Crystal",
+      "weapon_type": "Orb",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 13,
+      "name": "Thunder Monk",
+      "description": "A disciplined monk who channels thunder through martial arts.",
+      "category": "Monk",
+      "element": "Thunder",
+      "weapon_type": "Fists",
+      "rarity": "Rare"
+    },
+    {
+      "id": 14,
+      "name": "Frost Ranger",
+      "description": "A skilled ranger who uses frost magic to control the battlefield.",
+      "category": "Ranger",
+      "element": "Frost",
+      "weapon_type": "Crossbow",
+      "rarity": "Common"
+    },
+    {
+      "id": 15,
+      "name": "Inferno Warlock",
+      "description": "A powerful warlock who commands infernal flames and demons.",
+      "category": "Warlock",
+      "element": "Inferno",
+      "weapon_type": "Tome",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 16,
+      "name": "Storm Knight",
+      "description": "A noble knight who wields storm magic and heavy armor.",
+      "category": "Knight",
+      "element": "Storm",
+      "weapon_type": "Greatsword",
+      "rarity": "Epic"
+    },
+    {
+      "id": 17,
+      "name": "Void Assassin",
+      "description": "A deadly assassin who manipulates the void for teleportation and stealth.",
+      "category": "Assassin",
+      "element": "Void",
+      "weapon_type": "Blade",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 18,
+      "name": "Holy Priest",
+      "description": "A divine priest who channels holy magic for healing and protection.",
+      "category": "Priest",
+      "element": "Holy",
+      "weapon_type": "Staff",
+      "rarity": "Common"
+    },
+    {
+      "id": 19,
+      "name": "Chaos Mage",
+      "description": "An unpredictable mage who wields chaotic and unstable magic.",
+      "category": "Mage",
+      "element": "Chaos",
+      "weapon_type": "Wand",
+      "rarity": "Epic"
+    },
+    {
+      "id": 20,
+      "name": "Iron Defender",
+      "description": "A stalwart defender who uses iron magic for unbreakable defense.",
+      "category": "Defender",
+      "element": "Iron",
+      "weapon_type": "Tower Shield",
+      "rarity": "Rare"
+    },
+    {
+      "id": 21,
+      "name": "Arcane Scholar",
+      "description": "A learned scholar who studies and wields ancient arcane magic.",
+      "category": "Scholar",
+      "element": "Arcane",
+      "weapon_type": "Book",
+      "rarity": "Epic"
+    },
+    {
+      "id": 22,
+      "name": "Blood Berserker",
+      "description": "A savage berserker who draws power from blood and rage.",
+      "category": "Berserker",
+      "element": "Blood",
+      "weapon_type": "Battle Axe",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 23,
+      "name": "Time Mage",
+      "description": "A mysterious mage who manipulates time and temporal magic.",
+      "category": "Mage",
+      "element": "Time",
+      "weapon_type": "Hourglass",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 24,
+      "name": "Spirit Shaman",
+      "description": "A spiritual shaman who communicates with spirits and ancestors.",
+      "category": "Shaman",
+      "element": "Spirit",
+      "weapon_type": "Totem",
+      "rarity": "Rare"
+    },
+    {
+      "id": 25,
+      "name": "Cosmic Wanderer",
+      "description": "A mysterious wanderer who wields the power of the cosmos.",
+      "category": "Wanderer",
+      "element": "Cosmic",
+      "weapon_type": "Star Blade",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 26,
+      "name": "Elemental Master",
+      "description": "A master of all elements who can combine their powers.",
+      "category": "Master",
+      "element": "All",
+      "weapon_type": "Elemental Staff",
+      "rarity": "Mythic"
+    }
+  ]
+} 

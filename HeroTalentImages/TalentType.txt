@@ -1,0 +1,68 @@
+vatar Realms Collide: Talent Tree Overview and Hero Types
+This document summarizes the general principles of talent trees in Avatar Realms Collide and lists the talent tree type for each hero provided.
+
+General Talent Tree Information
+Dual Purpose: Talent trees can have dual purposes, meaning they don't always focus solely on a hero's primary specialty. This design aims to make heroes strong in various scenarios rather than only excelling in one specific situation (e.g., a garrison specialist might have a PvP-focused tree).
+
+Total Points: A maxed hero should utilize a total of 89 talent points.
+
+"Drawn-on" Talents: Please consider any talents marked with gold and blue as unlocked/activated, even if they appear drawn on.
+
+"Crossed-out" Talents: Talents or talent lines marked with a red "X" and box should be ignored, as they represent mistakes in placement.
+
+Future Changes: Talent trees are subject to change as more heroes are released, allowing for the development of heroes specialized for specific tasks like siege or garrison when enough diverse heroes are available.
+
+Hero Talent Tree Types
+Below is a list of each hero and their associated talent tree type:
+
+Kyoshi: Normal PvP Based Tree
+
+Bumi: Normal PvP Based Tree
+
+Korra: Normal PvP Based Tree
+
+Toph: Normal PvP Based Tree
+
+Azula: Normal PvP Based Tree
+
+Iroh: Normal PvP Based Tree
+
+Asami: Normal PvP Based Tree
+
+Sokka: Normal PvP Based Tree
+
+Suki: Normal PvP Based Tree
+
+Zuko: Normal PvP Based Tree
+
+Katara: Normal PvP Based Tree
+
+Tenzin: Garrison Based Tree
+
+Teo: Siege Based Tree
+
+Borte: Shattered Skulls Based Tree
+
+Aang: Normal PvP Based Tree
+
+Kuei: Gathering Based Tree
+
+Meelo: Gathering Based Tree
+
+Piandao: Gathering Based Tree
+
+Yue: Gathering Based Tree
+
+Amon: Normal PvP Based Tree
+
+King Bumi: Normal PvP Based Tree
+
+Yangchen: Normal PvP Based Tree
+
+Katara (Painted Lady): Normal PvP Based Tree
+
+Unalaq: Normal PvP Based Tree
+
+Roku: Normal PvP Based Tree
+
+Lin Beifong: Normal PvP Based Tree
