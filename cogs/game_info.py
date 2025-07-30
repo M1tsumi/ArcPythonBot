@@ -118,14 +118,8 @@ class GameInfo(commands.Cog):
     @commands.command(name="character_talent")
     async def character_talent(self, ctx, *, character_name: str):
         """Show talent tree for a specific character."""
-        talents = self.data_parser.get_character_talents(character_name)
-        
-        if not talents:
-            embed = EmbedGenerator.create_error_embed(
-                f"No talent tree found for character '{character_name}'."
-            )
-            await ctx.send(embed=embed)
-            return
+        # Get character information
+        character = self.data_parser.get_character(character_name)
         
         # Get talent type information
         talent_type_info = self.data_parser.get_talent_type_info(character_name)
@@ -133,21 +127,73 @@ class GameInfo(commands.Cog):
         # Get talent tree images
         talent_images = self.data_parser.get_talent_tree_images(character_name)
         
-        # Create talent embed with additional information
-        embed = EmbedGenerator.create_talent_embed(character_name, talents, talent_type_info, talent_images)
+        if not talent_images:
+            embed = EmbedGenerator.create_error_embed(
+                f"No talent tree images found for character '{character_name}'."
+            )
+            await ctx.send(embed=embed)
+            return
         
-        # Send embed with images if available
-        if talent_images:
-            files = []
-            if talent_images.get('talent_tree_1'):
-                files.append(discord.File(talent_images['talent_tree_1'], filename=Path(talent_images['talent_tree_1']).name))
-            elif talent_images.get('talent_tree_2'):
-                files.append(discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name))
+        # Create comprehensive embed with character information
+        embed = discord.Embed(
+            title=f"{character_name} - Talent Trees",
+            description=f"Complete talent tree information for {character_name}",
+            color=discord.Color.purple()
+        )
+        
+        # Add character information if available
+        if character:
+            if 'description' in character:
+                embed.add_field(name="Character Description", value=character['description'], inline=False)
             
-            if files:
-                await ctx.send(embed=embed, files=files)
-            else:
-                await ctx.send(embed=embed)
+            if 'rarity' in character:
+                embed.add_field(name="Rarity", value=character['rarity'], inline=True)
+            
+            if 'element' in character:
+                embed.add_field(name="Element", value=character['element'], inline=True)
+            
+            if 'weapon_type' in character:
+                embed.add_field(name="Weapon Type", value=character['weapon_type'], inline=True)
+        
+        # Add talent type information
+        if talent_type_info and talent_type_info.get('talent_type'):
+            embed.add_field(
+                name="Talent Tree Type",
+                value=talent_type_info['talent_type'],
+                inline=True
+            )
+        
+        # Add talent tree information
+        embed.add_field(
+            name="Talent Tree Info",
+            value="• **Total Points**: 89 points for maxed hero\n"
+                  "• **Dual Purpose**: Trees may have multiple focuses\n"
+                  "• **Gold/Blue**: Activated talents\n"
+                  "• **Red X**: Ignore crossed-out talents",
+            inline=False
+        )
+        
+        # Add image information
+        image_info = ""
+        if talent_images.get('talent_tree_1'):
+            image_info += f"• **Talent Tree 1**: {Path(talent_images['talent_tree_1']).name}\n"
+        if talent_images.get('talent_tree_2'):
+            image_info += f"• **Talent Tree 2**: {Path(talent_images['talent_tree_2']).name}\n"
+        
+        if image_info:
+            embed.add_field(name="Available Talent Trees", value=image_info, inline=False)
+        
+        embed.set_footer(text="Use !character <name> for more character information")
+        
+        # Send embed with both images if available
+        files = []
+        if talent_images.get('talent_tree_1'):
+            files.append(discord.File(talent_images['talent_tree_1'], filename=Path(talent_images['talent_tree_1']).name))
+        if talent_images.get('talent_tree_2'):
+            files.append(discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name))
+        
+        if files:
+            await ctx.send(embed=embed, files=files)
         else:
             await ctx.send(embed=embed)
     
