@@ -215,16 +215,47 @@ class DataParser:
             if not talent_images_dir.exists():
                 return None
             
-            # Normalize character name for file matching
-            char_name_lower = character_name.lower().replace(' ', '').replace('(', '').replace(')', '')
+            # Create a mapping of display names to file names
+            name_mapping = {
+                "kyoshi": "kyoshi",
+                "bumi": "bumi",
+                "korra": "korra",
+                "toph": "toph",
+                "azula": "azula",
+                "iroh": "iroh",
+                "asami": "asami",
+                "sokka": "sokka",
+                "suki": "suki",
+                "zuko": "zuko",
+                "katara": "katara",
+                "tenzin": "tenzin",
+                "teo": "teo",
+                "borte": "borte",
+                "aang": "aang",
+                "kuei": "kuei",
+                "meelo": "meelo",
+                "piandao": "piandao",
+                "yue": "yue",
+                "amon": "amon",
+                "king bumi": "kingbumi",
+                "kingbumi": "kingbumi",
+                "yangchen": "yangchen",
+                "katara (painted lady)": "katarapaintedlady",
+                "painted lady": "katarapaintedlady",
+                "katara painted lady": "katarapaintedlady",
+                "unalaq": "unalaq",
+                "roku": "roku",
+                "lin beifong": "linbeifong",
+                "linbeifong": "linbeifong"
+            }
             
-            # Handle special cases for file matching
-            if "paintedlady" in char_name_lower or "painted lady" in character_name.lower():
-                char_name_lower = "katarapaintedlady"
-            elif "kingbumi" in char_name_lower or "king bumi" in character_name.lower():
-                char_name_lower = "kingbumi"
-            elif "linbeifong" in char_name_lower or "lin beifong" in character_name.lower():
-                char_name_lower = "linbeifong"
+            # Normalize the character name
+            char_name_lower = character_name.lower().strip()
+            
+            # Get the file name from the mapping
+            file_name = name_mapping.get(char_name_lower)
+            if not file_name:
+                return None
             
             # Look for both -1 and -2 versions of the talent tree
             image_1 = None
@@ -232,9 +263,9 @@ class DataParser:
             
             for file_path in talent_images_dir.glob("*.webp"):
                 filename = file_path.stem.lower()
-                if filename.startswith(char_name_lower) and filename.endswith('-1'):
+                if filename == f"{file_name}-1":
                     image_1 = str(file_path)
-                elif filename.startswith(char_name_lower) and filename.endswith('-2'):
+                elif filename == f"{file_name}-2":
                     image_2 = str(file_path)
             
             if image_1 or image_2:
@@ -248,6 +279,42 @@ class DataParser:
         except Exception as e:
             print(f"Error getting talent tree images: {e}")
             return None
+
+    def get_all_character_names(self) -> List[str]:
+        """
+        Get all available character names for dropdown.
+        
+        Returns:
+            List of character names
+        """
+        return [
+            "Kyoshi",
+            "Bumi",
+            "Korra", 
+            "Toph",
+            "Azula",
+            "Iroh",
+            "Asami",
+            "Sokka",
+            "Suki",
+            "Zuko",
+            "Katara",
+            "Tenzin",
+            "Teo",
+            "Borte",
+            "Aang",
+            "Kuei",
+            "Meelo",
+            "Piandao",
+            "Yue",
+            "Amon",
+            "King Bumi",
+            "Yangchen",
+            "Katara (Painted Lady)",
+            "Unalaq",
+            "Roku",
+            "Lin Beifong"
+        ]
     
     def get_events(self, event_type: str = "current") -> List[Dict[str, Any]]:
         """

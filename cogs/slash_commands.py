@@ -22,6 +22,34 @@ class SlashCommands(commands.Cog):
     
     @app_commands.command(name="character", description="Get information about a specific character")
     @app_commands.describe(character_name="The name of the character")
+    @app_commands.choices(character_name=[
+        app_commands.Choice(name="Kyoshi", value="Kyoshi"),
+        app_commands.Choice(name="Bumi", value="Bumi"),
+        app_commands.Choice(name="Korra", value="Korra"),
+        app_commands.Choice(name="Toph", value="Toph"),
+        app_commands.Choice(name="Azula", value="Azula"),
+        app_commands.Choice(name="Iroh", value="Iroh"),
+        app_commands.Choice(name="Asami", value="Asami"),
+        app_commands.Choice(name="Sokka", value="Sokka"),
+        app_commands.Choice(name="Suki", value="Suki"),
+        app_commands.Choice(name="Zuko", value="Zuko"),
+        app_commands.Choice(name="Katara", value="Katara"),
+        app_commands.Choice(name="Tenzin", value="Tenzin"),
+        app_commands.Choice(name="Teo", value="Teo"),
+        app_commands.Choice(name="Borte", value="Borte"),
+        app_commands.Choice(name="Aang", value="Aang"),
+        app_commands.Choice(name="Kuei", value="Kuei"),
+        app_commands.Choice(name="Meelo", value="Meelo"),
+        app_commands.Choice(name="Piandao", value="Piandao"),
+        app_commands.Choice(name="Yue", value="Yue"),
+        app_commands.Choice(name="Amon", value="Amon"),
+        app_commands.Choice(name="King Bumi", value="King Bumi"),
+        app_commands.Choice(name="Yangchen", value="Yangchen"),
+        app_commands.Choice(name="Katara (Painted Lady)", value="Katara (Painted Lady)"),
+        app_commands.Choice(name="Unalaq", value="Unalaq"),
+        app_commands.Choice(name="Roku", value="Roku"),
+        app_commands.Choice(name="Lin Beifong", value="Lin Beifong")
+    ])
     async def character_info(self, interaction: discord.Interaction, character_name: str):
         """Get detailed information about a specific character."""
         await interaction.response.defer()
@@ -107,18 +135,37 @@ class SlashCommands(commands.Cog):
     
     @app_commands.command(name="character_talent", description="Show talent tree for a specific character")
     @app_commands.describe(character_name="The name of the character")
+    @app_commands.choices(character_name=[
+        app_commands.Choice(name="Kyoshi", value="Kyoshi"),
+        app_commands.Choice(name="Bumi", value="Bumi"),
+        app_commands.Choice(name="Korra", value="Korra"),
+        app_commands.Choice(name="Toph", value="Toph"),
+        app_commands.Choice(name="Azula", value="Azula"),
+        app_commands.Choice(name="Iroh", value="Iroh"),
+        app_commands.Choice(name="Asami", value="Asami"),
+        app_commands.Choice(name="Sokka", value="Sokka"),
+        app_commands.Choice(name="Suki", value="Suki"),
+        app_commands.Choice(name="Zuko", value="Zuko"),
+        app_commands.Choice(name="Katara", value="Katara"),
+        app_commands.Choice(name="Tenzin", value="Tenzin"),
+        app_commands.Choice(name="Teo", value="Teo"),
+        app_commands.Choice(name="Borte", value="Borte"),
+        app_commands.Choice(name="Aang", value="Aang"),
+        app_commands.Choice(name="Kuei", value="Kuei"),
+        app_commands.Choice(name="Meelo", value="Meelo"),
+        app_commands.Choice(name="Piandao", value="Piandao"),
+        app_commands.Choice(name="Yue", value="Yue"),
+        app_commands.Choice(name="Amon", value="Amon"),
+        app_commands.Choice(name="King Bumi", value="King Bumi"),
+        app_commands.Choice(name="Yangchen", value="Yangchen"),
+        app_commands.Choice(name="Katara (Painted Lady)", value="Katara (Painted Lady)"),
+        app_commands.Choice(name="Unalaq", value="Unalaq"),
+        app_commands.Choice(name="Roku", value="Roku"),
+        app_commands.Choice(name="Lin Beifong", value="Lin Beifong")
+    ])
     async def character_talent(self, interaction: discord.Interaction, character_name: str):
         """Show talent tree for a specific character."""
         await interaction.response.defer()
-        
-        talents = self.data_parser.get_character_talents(character_name)
-        
-        if not talents:
-            embed = EmbedGenerator.create_error_embed(
-                f"No talent tree found for character '{character_name}'."
-            )
-            await interaction.followup.send(embed=embed)
-            return
         
         # Get talent type information
         talent_type_info = self.data_parser.get_talent_type_info(character_name)
@@ -126,8 +173,15 @@ class SlashCommands(commands.Cog):
         # Get talent tree images
         talent_images = self.data_parser.get_talent_tree_images(character_name)
         
+        if not talent_images:
+            embed = EmbedGenerator.create_error_embed(
+                f"No talent tree images found for character '{character_name}'."
+            )
+            await interaction.followup.send(embed=embed)
+            return
+        
         # Create talent embed with additional information
-        embed = EmbedGenerator.create_talent_embed(character_name, talents, talent_type_info, talent_images)
+        embed = EmbedGenerator.create_talent_embed(character_name, {}, talent_type_info, talent_images)
         
         # Send embed with images if available
         if talent_images:
