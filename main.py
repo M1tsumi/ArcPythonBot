@@ -11,6 +11,35 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from pathlib import Path
+
+def create_env_template():
+    """Create a .env file template if it doesn't exist."""
+    env_file = Path('.env')
+    
+    if not env_file.exists():
+        template_content = """# Discord Bot Configuration
+# Replace 'your_discord_bot_token_here' with your actual Discord bot token
+# You can get your bot token from: https://discord.com/developers/applications
+
+DISCORD_TOKEN=your_discord_bot_token_here
+
+# Optional: Additional configuration
+# LOG_LEVEL=INFO
+# COMMAND_PREFIX=!
+"""
+        
+        try:
+            with open(env_file, 'w') as f:
+                f.write(template_content)
+            print("✅ Created .env file template!")
+            print("📝 Please edit the .env file and add your Discord bot token.")
+            print("🔗 Get your bot token from: https://discord.com/developers/applications")
+            return True
+        except Exception as e:
+            print(f"❌ Error creating .env file: {e}")
+            return False
+    return False
 
 # Load environment variables
 load_dotenv()
@@ -119,12 +148,33 @@ class AvatarRealmsBot(commands.Bot):
 
 def main():
     """Main function to run the bot."""
+    print("🚀 Starting Avatar Realms Collide Discord Bot...")
+    print("=" * 50)
+    
+    # Check for .env file and create template if needed
+    env_created = create_env_template()
+    if env_created:
+        print("\n⚠️  Please configure your .env file before running the bot again.")
+        print("📝 Edit the .env file and replace 'your_discord_bot_token_here' with your actual token.")
+        return
+    
     # Check for required environment variables
     token = os.getenv('DISCORD_TOKEN')
-    if not token:
-        logger.error("DISCORD_TOKEN not found in environment variables!")
-        logger.error("Please create a .env file with your Discord bot token.")
+    if not token or token == 'your_discord_bot_token_here':
+        print("❌ DISCORD_TOKEN not found or not configured!")
+        print("📝 Please edit the .env file and add your Discord bot token.")
+        print("🔗 Get your bot token from: https://discord.com/developers/applications")
+        print("\n💡 Quick setup:")
+        print("1. Go to https://discord.com/developers/applications")
+        print("2. Create a new application or select existing one")
+        print("3. Go to 'Bot' section and copy the token")
+        print("4. Edit .env file and replace 'your_discord_bot_token_here' with your token")
+        print("5. Run the bot again")
         return
+    
+    print("✅ Discord token found!")
+    print("🤖 Starting bot...")
+    print("=" * 50)
     
     # Create and run the bot
     bot = AvatarRealmsBot()
@@ -132,9 +182,10 @@ def main():
     try:
         bot.run(token, log_handler=None)
     except discord.LoginFailure:
-        logger.error("Failed to login: Invalid token provided.")
+        print("❌ Failed to login: Invalid token provided.")
+        print("📝 Please check your Discord bot token in the .env file.")
     except Exception as e:
-        logger.error(f"Failed to start bot: {e}")
+        print(f"❌ Failed to start bot: {e}")
 
 if __name__ == "__main__":
     main() 
