@@ -180,11 +180,13 @@ class DataParser:
             # Get the talent type for the specific character
             char_name_lower = character_name.lower()
             
-            # Handle special cases
-            if char_name_lower == "katara (painted lady)" or char_name_lower == "painted lady":
+            # Handle special cases and variations
+            if char_name_lower in ["katara (painted lady)", "painted lady", "katara painted lady"]:
                 char_name_lower = "katara (painted lady)"
-            elif char_name_lower == "king bumi":
+            elif char_name_lower in ["king bumi", "kingbumi"]:
                 char_name_lower = "king bumi"
+            elif char_name_lower == "lin beifong":
+                char_name_lower = "lin beifong"
             
             if char_name_lower in talent_types:
                 return {
@@ -216,11 +218,13 @@ class DataParser:
             # Normalize character name for file matching
             char_name_lower = character_name.lower().replace(' ', '').replace('(', '').replace(')', '')
             
-            # Handle special cases
+            # Handle special cases for file matching
             if "paintedlady" in char_name_lower or "painted lady" in character_name.lower():
                 char_name_lower = "katarapaintedlady"
             elif "kingbumi" in char_name_lower or "king bumi" in character_name.lower():
                 char_name_lower = "kingbumi"
+            elif "linbeifong" in char_name_lower or "lin beifong" in character_name.lower():
+                char_name_lower = "linbeifong"
             
             # Look for both -1 and -2 versions of the talent tree
             image_1 = None

@@ -83,7 +83,8 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.game_info', 
             'cogs.player_tools',
             'cogs.events',
-            'cogs.moderation'
+            'cogs.moderation',
+            'cogs.slash_commands'
         ]
         
         for cog in cog_files:
@@ -98,6 +99,13 @@ class AvatarRealmsBot(commands.Bot):
         self.logger.info(f"Bot is ready! Logged in as {self.user}")
         self.logger.info(f"Bot ID: {self.user.id}")
         self.logger.info(f"Connected to {len(self.guilds)} guilds")
+        
+        # Sync slash commands
+        try:
+            synced = await self.tree.sync()
+            self.logger.info(f"Synced {len(synced)} command(s)")
+        except Exception as e:
+            self.logger.error(f"Failed to sync commands: {e}")
         
         # Set bot status
         activity = discord.Activity(
