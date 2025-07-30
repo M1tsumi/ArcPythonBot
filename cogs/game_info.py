@@ -300,66 +300,6 @@ class GameInfo(commands.Cog):
             embed.add_field(name="Effects", value=effects_text, inline=False)
         
         await ctx.send(embed=embed)
-    
-    @commands.command(name="talent")
-    async def talent_info(self, ctx, character_name: str, *, talent_name: str):
-        """Get detailed information about a specific talent."""
-        talents = self.data_parser.get_character_talents(character_name)
-        
-        if not talents:
-            embed = EmbedGenerator.create_error_embed(
-                f"No talent tree found for character '{character_name}'."
-            )
-            await ctx.send(embed=embed)
-            return
-        
-        # Find the specific talent
-        target_talent = None
-        talent_tier = None
-        
-        for tier, tier_talents in talents.get('talents', {}).items():
-            for talent in tier_talents:
-                if talent.get('name', '').lower() == talent_name.lower():
-                    target_talent = talent
-                    talent_tier = tier
-                    break
-            if target_talent:
-                break
-        
-        if not target_talent:
-            embed = EmbedGenerator.create_error_embed(
-                f"Talent '{talent_name}' not found for character '{character_name}'."
-            )
-            await ctx.send(embed=embed)
-            return
-        
-        # Create detailed talent embed
-        embed = EmbedGenerator.create_embed(
-            title=f"{character_name} - {target_talent['name']}",
-            description=target_talent.get('description', 'No description available'),
-            color=discord.Color.purple()
-        )
-        
-        # Add talent details
-        if talent_tier:
-            embed.add_field(name="Tier", value=talent_tier, inline=True)
-        
-        if 'cost' in target_talent:
-            embed.add_field(name="Cost", value=target_talent['cost'], inline=True)
-        
-        if 'prerequisites' in target_talent:
-            prereq_text = ""
-            for prereq in target_talent['prerequisites']:
-                prereq_text += f"• {prereq}\n"
-            embed.add_field(name="Prerequisites", value=prereq_text, inline=False)
-        
-        if 'effects' in target_talent:
-            effects_text = ""
-            for effect in target_talent['effects']:
-                effects_text += f"• {effect}\n"
-            embed.add_field(name="Effects", value=effects_text, inline=False)
-        
-        await ctx.send(embed=embed)
 
     @commands.command(name="talent_trees")
     async def list_talent_trees(self, ctx):

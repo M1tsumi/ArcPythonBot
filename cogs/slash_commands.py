@@ -134,7 +134,6 @@ class SlashCommands(commands.Cog):
         await interaction.followup.send(embed=embed)
     
     @app_commands.command(name="character_talent", description="Show talent tree for a specific character")
-    @app_commands.describe(character_name="The name of the character")
     @app_commands.choices(character_name=[
         app_commands.Choice(name="Kyoshi", value="Kyoshi"),
         app_commands.Choice(name="Bumi", value="Bumi"),
@@ -241,10 +240,8 @@ class SlashCommands(commands.Cog):
         if talent_images.get('talent_tree_2'):
             files.append(discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name))
         
-        if files:
-            await interaction.followup.send(embed=embed, files=files)
-        else:
-            await interaction.followup.send(embed=embed)
+        # Send the embed with all files
+        await interaction.followup.send(embed=embed, files=files)
     
     @app_commands.command(name="talent_trees", description="List all available talent trees by type")
     async def list_talent_trees(self, interaction: discord.Interaction):
