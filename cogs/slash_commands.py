@@ -55,9 +55,13 @@ class ElementSelectDropdown(discord.ui.Select):
             color=self.get_element_color(element)
         )
         
+        # Sort characters by rarity (Legendary first, then Epic, then Rare)
+        rarity_order = {"Legendary": 1, "Epic": 2, "Rare": 3, "Mythic": 0}
+        sorted_characters = sorted(element_characters, key=lambda x: rarity_order.get(x.get('rarity', 'Rare'), 3))
+        
         # Add character list with clean formatting
         char_list = ""
-        for char in element_characters:
+        for char in sorted_characters:
             rarity_emoji = self.get_rarity_emoji(char.get('rarity', 'Unknown'))
             char_list += f"{rarity_emoji} **{char['name']}**\n"
         
@@ -86,13 +90,12 @@ class ElementSelectDropdown(discord.ui.Select):
     def get_rarity_emoji(self, rarity: str) -> str:
         """Get emoji for character rarity."""
         rarity_emojis = {
-            "Common": "⚪",
             "Rare": "🔵",
             "Epic": "🟣",
             "Legendary": "🟡",
             "Mythic": "🟠"
         }
-        return rarity_emojis.get(rarity, "⚪")
+        return rarity_emojis.get(rarity, "🔵")
 
 class CharacterSelectView(discord.ui.View):
     """View for selecting characters with buttons."""
@@ -222,13 +225,12 @@ class CharacterSelectView(discord.ui.View):
     def get_rarity_emoji(self, rarity: str) -> str:
         """Get emoji for character rarity."""
         rarity_emojis = {
-            "Common": "⚪",
             "Rare": "🔵",
             "Epic": "🟣",
             "Legendary": "🟡",
             "Mythic": "🟠"
         }
-        return rarity_emojis.get(rarity, "⚪")
+        return rarity_emojis.get(rarity, "🔵")
     
     @discord.ui.button(label="⬅️ Back to Elements", style=discord.ButtonStyle.secondary, emoji="⬅️")
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -247,7 +249,7 @@ class CharacterSelectView(discord.ui.View):
         
         embed.add_field(
             name="📊 Character Rarities",
-            value="**⚪ Common** • **🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
+            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
             inline=False
         )
         
@@ -442,7 +444,7 @@ class SlashCommands(commands.Cog):
         
         embed.add_field(
             name="📊 Character Rarities",
-            value="**⚪ Common** • **🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
+            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
             inline=False
         )
         
