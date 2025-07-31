@@ -9,6 +9,10 @@ BOT_NAME = "Avatar Realms Collide Bot"
 BOT_VERSION = "1.0.0"
 BOT_DESCRIPTION = "Unofficial community bot for Avatar Realms Collide"
 
+# Discord Links
+DISCORD_SERVER_LINK = "https://discord.gg/a3tGyAwVRc"
+BOT_INVITE_LINK = "https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=8&scope=bot%20applications.commands"
+
 # Command Configuration
 COMMAND_PREFIX = "!"
 DEFAULT_COOLDOWN = 3.0  # seconds

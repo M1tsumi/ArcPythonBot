@@ -156,6 +156,14 @@ class DataParser:
                 "skills": ["Blacksmith", "Calligrapher", "Flaming Swords", "Lotus Tile"],
                 "notes": None
             },
+            "Roku": {
+                "skills": ["Destiny", "Lavabending", "Final Warning", "Calm Mind"],
+                "notes": "[Calm Mind] and [Final Warning] can be swapped if desired."
+            },
+            "Yangchen": {
+                "skills": ["Air Sphere", "Cyclone Strike", "Gale", "Hurricane"],
+                "notes": "[Gale] and [Hurricane] can be swapped if desired."
+            },
             "Meelo": {
                 "skills": ["Kid Scooter", "Consensus", "Paint Balloon", "Wind Ball"],
                 "notes": None

@@ -21,7 +21,7 @@ class PlayerTools(commands.Cog):
         
         # Create data directory for user profiles
         self.profiles_dir = Path("data/profiles")
-        self.profiles_dir.mkdir(exist_ok=True)
+        self.profiles_dir.mkdir(parents=True, exist_ok=True)
     
     def _load_user_profile(self, user_id: int) -> Dict[str, Any]:
         """Load user profile from file."""

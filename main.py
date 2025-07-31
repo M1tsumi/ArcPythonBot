@@ -104,6 +104,14 @@ class AvatarRealmsBot(commands.Bot):
         try:
             synced = await self.tree.sync()
             self.logger.info(f"Synced {len(synced)} command(s)")
+            
+            # Log all available commands
+            all_commands = []
+            for cmd in self.tree.get_commands():
+                all_commands.append(cmd.name)
+            
+            self.logger.info(f"Available slash commands: {', '.join(all_commands)}")
+            
         except Exception as e:
             self.logger.error(f"Failed to sync commands: {e}")
         
