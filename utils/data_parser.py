@@ -56,6 +56,112 @@ class DataParser:
             logger.error(f"Error loading {file_path}: {e}")
             return None
     
+    def get_skill_priorities(self) -> Dict[str, Dict[str, Any]]:
+        """
+        Get skill priorities for all characters.
+        
+        Returns:
+            Dictionary with character names as keys and skill priority data as values
+        """
+        return {
+            "Kyoshi": {
+                "skills": ["Justice & Punishment", "Meaning of Tears", "Kyoshi War Fans", "Tallest"],
+                "notes": "If you're building an all-Earthbender march during the same time as you're building out your Kyoshi, I'd suggest maxing her [Tallest] skill earlier on."
+            },
+            "Korra": {
+                "skills": ["Friendship", "Lost Connection", "Troublemaker", "Raava"],
+                "notes": "[Troublemaker] and [Raava] can be swapped if desired."
+            },
+            "Kuvira": {
+                "skills": ["Broken Beliefs", "Great Uniter", "Metal Bending", "Spirit Energy"],
+                "notes": "Kuvira's [Metal Bending] skill would be ranked 2nd if you already have a hero with a leader skill in effect. This means you would max [Great Uniter] 3rd or 4th."
+            },
+            "Iroh": {
+                "skills": ["Dragon of the West", "Remorse", "White Lotus Leader", "Taste for the Arts"],
+                "notes": None
+            },
+            "Azula": {
+                "skills": ["Blue Flames", "Unhinged", "Composure", "Kemurikage"],
+                "notes": "Azula's [Kemurikage] skill would be ranked 2nd to unlock if you have a full march for her right after obtaining her. This means [Unhinged] would be maxed 3rd, and [Composure] 4th."
+            },
+            "Mako": {
+                "skills": ["Father's Momento", "Cool Under Fire", "Motorcycle Cop", "Pro-Bender"],
+                "notes": None
+            },
+            "Bumi": {
+                "skills": ["New Power", "Punch", "Bum-Ju!", "Oddball Commander"],
+                "notes": None
+            },
+            "King Bumi": {
+                "skills": ["Wave of Earth", "Genomite Ring", "Power of Earth", "King of Omashu"],
+                "notes": "[Genomite Ring] and [Power of Earth] can be swapped if desired."
+            },
+            "Aang": {
+                "skills": ["Air Ball", "Intuition", "Glider", "Air Scooter"],
+                "notes": "[Glider] and [Air Scooter] can be swapped depending on whether you are already using another hero with a leader skill in your march (Kyoshi, Korra, Kuvira)."
+            },
+            "Unalaq": {
+                "skills": ["Soul Destruction", "Tree of Time", "Ice Drill", "Energy Conversion"],
+                "notes": "[Energy Conversion] can be prioritized earlier on if you're building a healing march."
+            },
+            "Lin Beifong": {
+                "skills": ["Grappling Hook", "Justice", "Seismic Sense", "Wrist Blade"],
+                "notes": "[Seismic Sense] and [Wrist Blade] can be swapped if desired."
+            },
+            "Toph": {
+                "skills": ["Blind Bandit", "The Fuzzy", "Badgermoles", "Distinguished Family"],
+                "notes": None
+            },
+            "Asami": {
+                "skills": ["Best Driver", "Apple of my Eye", "Electric Gloves", "Business Acumen"],
+                "notes": None
+            },
+            "Suki": {
+                "skills": ["War Fans", "Kyoshi Warrior", "The Group's Sworn", "Tenkan"],
+                "notes": None
+            },
+            "Teo": {
+                "skills": ["Operation Eclipse", "Father's Inventions", "Air Walker", "Force of Will"],
+                "notes": None
+            },
+            "Sokka": {
+                "skills": ["Hawky", "Yeah boomerang", "Master Tactician", "Inventor"],
+                "notes": "Both [Inventor] and [Master Tactician] are similar in strength, so ideally I would suggest [Master Tactician] be done before [Inventor], but it could be either way."
+            },
+            "Zuko": {
+                "skills": ["virtue and vice", "dancing dragon", "inferiority complex", "blue spirit mask"],
+                "notes": None
+            },
+            "Borte": {
+                "skills": ["Fanatic Leader", "High Priest", "Spotting Weakness", "Survival Instinct"],
+                "notes": None
+            },
+            "Tenzin": {
+                "skills": ["Awareness", "Oogi", "Tornado", "Thoughtful Defense"],
+                "notes": "[Thoughtful Defense] and [Tornado] can be swapped if desired."
+            },
+            "Katara": {
+                "skills": ["Frost Shield", "Blizzard", "Healing Water", "The Painted Lady"],
+                "notes": "Putting priority on [The Painted Lady] if you already have enough benders to fill her is acceptable."
+            },
+            "Kuei": {
+                "skills": ["Bosco!", "Peasant Life", "Scarecrow King", "Promise & Trust"],
+                "notes": None
+            },
+            "Yue": {
+                "skills": ["Child of the Moon", "Sacrifice", "Spirit Oasis", "Moon Spirit"],
+                "notes": None
+            },
+            "Piandao": {
+                "skills": ["Blacksmith", "Calligrapher", "Flaming Swords", "Lotus Tile"],
+                "notes": None
+            },
+            "Meelo": {
+                "skills": ["Kid Scooter", "Consensus", "Paint Balloon", "Wind Ball"],
+                "notes": None
+            }
+        }
+    
     def get_character_list(self) -> List[Dict[str, Any]]:
         """
         Get the list of all available characters.

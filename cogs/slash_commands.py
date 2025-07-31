@@ -271,6 +271,104 @@ class CharacterSelectView(discord.ui.View):
         view.add_item(ElementSelectDropdown(self.data_parser))
         await interaction.response.edit_message(embed=embed, view=view)
 
+class SkillPriorityView(discord.ui.View):
+    """View for skill priority selection."""
+    
+    def __init__(self, data_parser: DataParser):
+        super().__init__(timeout=60)
+        self.data_parser = data_parser
+        
+        # Add hero selection buttons (max 25 buttons per Discord limit)
+        skill_priorities = self.data_parser.get_skill_priorities()
+        heroes_with_skills = sorted(skill_priorities.keys())
+        
+        for hero_name in heroes_with_skills[:25]:  # Limit to 25 buttons
+            button = discord.ui.Button(
+                label=hero_name,
+                style=discord.ButtonStyle.primary,
+                custom_id=f"skill_{hero_name.lower().replace(' ', '_')}"
+            )
+            button.callback = self.create_hero_callback(hero_name)
+            self.add_item(button)
+    
+    def create_hero_callback(self, hero_name: str):
+        """Create a callback function for a hero button."""
+        async def callback(interaction: discord.Interaction):
+            await self.show_skill_priorities(interaction, hero_name)
+        return callback
+    
+    async def show_skill_priorities(self, interaction: discord.Interaction, hero_name: str):
+        """Show skill priorities for the selected hero."""
+        skill_priorities = self.data_parser.get_skill_priorities()
+        hero_data = skill_priorities.get(hero_name)
+        
+        if not hero_data:
+            embed = discord.Embed(
+                title="❌ Skill Priorities Not Found",
+                description=f"Sorry! Skill priorities for {hero_name} are not available yet.",
+                color=discord.Color.dark_red()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+            return
+        
+        # Get character info for additional details
+        character = self.data_parser.get_character(hero_name)
+        
+        # Create comprehensive embed
+        embed = discord.Embed(
+            title=f"🎯 {hero_name} - Skill Priorities",
+            description=f"**Optimal skill upgrade order** for maximum effectiveness in battle.",
+            color=self.get_element_color(character.get('element', 'Unknown') if character else 'Unknown')
+        )
+        
+        # Add character info if available
+        if character:
+            embed.add_field(
+                name="📊 Hero Information",
+                value=f"**Element:** {character.get('element', 'Unknown')}\n**Rarity:** {character.get('rarity', 'Unknown')}\n**Role:** {character.get('category', 'Unknown')}",
+                inline=True
+            )
+        
+        # Add skill priorities
+        skills = hero_data['skills']
+        skills_text = ""
+        for i, skill in enumerate(skills, 1):
+            skills_text += f"**{i}.** {skill}\n"
+        
+        embed.add_field(
+            name="⚔️ Skill Priority Order",
+            value=skills_text,
+            inline=False
+        )
+        
+        # Add notes if available
+        if hero_data.get('notes'):
+            embed.add_field(
+                name="💡 Strategic Notes",
+                value=f"*{hero_data['notes']}*",
+                inline=False
+            )
+        
+        embed.add_field(
+            name="🎮 Usage Tips",
+            value="Follow this skill priority order to maximize your hero's effectiveness. Consider the strategic notes for optimal team composition and battle scenarios.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Skill priorities for optimal progression")
+        
+        await interaction.response.edit_message(embed=embed, view=None)
+    
+    def get_element_color(self, element: str) -> discord.Color:
+        """Get the appropriate color for each element."""
+        colors = {
+            "Fire": discord.Color.red(),
+            "Water": discord.Color.blue(),
+            "Earth": discord.Color.dark_green(),
+            "Air": discord.Color.light_grey()
+        }
+        return colors.get(element, discord.Color.purple())
+
 class LeaderboardView(discord.ui.View):
     """View for leaderboard selection."""
     
@@ -424,6 +522,56 @@ class SlashCommands(commands.Cog):
         embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose a leaderboard to view")
         
         view = LeaderboardView()
+        await interaction.response.send_message(embed=embed, view=view)
+    
+    @app_commands.command(name="skill_priorities", description="View skill priorities for heroes")
+    async def skill_priorities(self, interaction: discord.Interaction):
+        """Interactive command to view skill priorities for all heroes."""
+        skill_priorities = self.data_parser.get_skill_priorities()
+        all_characters = self.data_parser.get_character_list()
+        
+        # Find characters with and without skill priorities
+        characters_with_skills = set(skill_priorities.keys())
+        all_character_names = {char['name'] for char in all_characters}
+        characters_without_skills = all_character_names - characters_with_skills
+        
+        # Create main embed
+        embed = discord.Embed(
+            title="🎯 Hero Skill Priorities",
+            description="**Master the art of skill progression!** View the optimal skill upgrade order for each hero to maximize their effectiveness in battle.",
+            color=discord.Color.purple()
+        )
+        
+        # Add statistics
+        total_characters = len(all_character_names)
+        characters_with_skills_count = len(characters_with_skills)
+        characters_without_skills_count = len(characters_without_skills)
+        
+        embed.add_field(
+            name="📊 Skill Priority Statistics",
+            value=f"**Total Heroes:** {total_characters}\n**With Skill Priorities:** {characters_with_skills_count}\n**Missing Skill Priorities:** {characters_without_skills_count}",
+            inline=False
+        )
+        
+        # Add characters without skill priorities
+        if characters_without_skills:
+            missing_list = ", ".join(sorted(characters_without_skills))
+            embed.add_field(
+                name="⚠️ Heroes Missing Skill Priorities",
+                value=f"**{characters_without_skills_count} heroes** still need skill priority data:\n{missing_list}",
+                inline=False
+            )
+        
+        embed.add_field(
+            name="🎮 How to Use",
+            value="Select a hero below to view their optimal skill upgrade order and strategic notes for maximum effectiveness in battle.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Select a hero to view their skill priorities")
+        
+        # Create view with hero selection buttons
+        view = SkillPriorityView(self.data_parser)
         await interaction.response.send_message(embed=embed, view=view)
 
 async def setup(bot):
