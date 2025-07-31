@@ -1,93 +1,248 @@
-# Contributing to Avatar Realms Collide Bot
+# Contributing to Avatar Realms Collide Discord Bot
 
-Thank you for your interest in contributing to the Avatar Realms Collide Discord Bot! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to the Avatar Realms Collide Discord Bot! This document provides guidelines and information for contributors.
 
-## Getting Started
+## 🤝 How to Contribute
 
-1. **Fork the repository** on GitHub
-2. **Clone your fork** locally
-3. **Create a feature branch** for your changes
-4. **Make your changes** following the guidelines below
-5. **Test your changes** thoroughly
-6. **Submit a pull request**
+### Types of Contributions
 
-## Development Setup
+We welcome contributions in the following areas:
 
-1. Install Python 3.9+ and pip
-2. Clone the repository: `git clone https://github.com/yourusername/ArcPythonBot.git`
-3. Install dependencies: `pip install -r requirements.txt`
-4. Create a `.env` file with your Discord bot token
-5. Run the bot: `python main.py`
+- **Bug Reports**: Report bugs or issues you encounter
+- **Feature Requests**: Suggest new features or improvements
+- **Code Contributions**: Submit pull requests with code changes
+- **Documentation**: Improve or add documentation
+- **Character Data**: Add or update character information
+- **UI/UX Improvements**: Enhance the user interface and experience
 
-## Code Style Guidelines
+### Getting Started
 
-- Follow PEP 8 style guidelines
-- Use meaningful variable and function names
-- Add docstrings to all functions and classes
-- Keep functions focused and concise
-- Use type hints where appropriate
+1. **Fork the Repository**
+   ```bash
+   git clone https://github.com/yourusername/ArcPythonBot.git
+   cd ArcPythonBot
+   ```
 
-## Adding New Features
+2. **Create a Feature Branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-### Adding New Commands
+3. **Make Your Changes**
+   - Follow the coding standards below
+   - Test your changes thoroughly
+   - Update documentation if needed
 
-1. Create or modify a cog in the `cogs/` directory
-2. Add the command with proper error handling
-3. Update the help system in `cogs/utility.py`
-4. Add tests if applicable
+4. **Commit Your Changes**
+   ```bash
+   git commit -m "feat: add your feature description"
+   ```
 
-### Adding New Data
+5. **Push and Create Pull Request**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
-1. Update JSON files in the `data/` directory
-2. Follow the existing data structure
-3. Update the data parser if needed
-4. Test with existing commands
+## 📋 Coding Standards
 
-### Adding New Images
+### Python Code Style
 
-1. Place images in the appropriate `images/` subdirectory
-2. Use WebP format for optimal size and quality
-3. Update any references to the images in the code
+- **PEP 8**: Follow Python PEP 8 style guidelines
+- **Black**: Use Black for code formatting
+- **Type Hints**: Include type hints for function parameters and return values
+- **Docstrings**: Add docstrings to all functions and classes
+
+### Example Code Style
+
+```python
+from typing import Optional, Dict, List
+import discord
+from discord.ext import commands
+
+
+class ExampleCog(commands.Cog):
+    """Example cog demonstrating coding standards."""
+    
+    def __init__(self, bot: commands.Bot) -> None:
+        """Initialize the cog.
+        
+        Args:
+            bot: The Discord bot instance
+        """
+        self.bot = bot
+    
+    @commands.command(name="example")
+    async def example_command(self, ctx: commands.Context) -> None:
+        """Example command demonstrating proper structure.
+        
+        Args:
+            ctx: The command context
+        """
+        await ctx.send("This is an example command!")
+```
+
+### File Organization
+
+- **Cogs**: Place in `cogs/` directory
+- **Utilities**: Place in `utils/` directory
+- **Configuration**: Place in `config/` directory
+- **Data**: Place in `data/` directory
+
+## 🧪 Testing
+
+### Running Tests
+
+```bash
+# Install test dependencies
+pip install pytest pytest-cov
+
+# Run tests
+pytest
+
+# Run tests with coverage
+pytest --cov=./ --cov-report=html
+```
+
+### Writing Tests
+
+- Create test files in `tests/` directory
+- Name test files as `test_*.py`
+- Test both success and error cases
+- Mock external dependencies when possible
+
+## 📝 Documentation
+
+### Code Documentation
+
+- Use clear, descriptive docstrings
+- Include parameter types and descriptions
+- Document return values and exceptions
+- Add examples for complex functions
+
+### User Documentation
+
+- Update README.md for new features
+- Add command examples
+- Include screenshots for UI changes
+- Update CHANGELOG.md for releases
+
+## 🎯 Character Data Contributions
+
+### Adding New Characters
+
+1. **Update Character List**: Add to `utils/data_parser.py`
+2. **Add Images**: Place talent tree images in `HeroTalentImages/`
+3. **Update Documentation**: Add character to README.md
+
+### Character Data Format
+
+```python
+{
+    "name": "Character Name",
+    "element": "Fire|Water|Earth|Air",
+    "category": "Character Type",
+    "rarity": "Common|Rare|Epic|Legendary|Mythic",
+    "description": "Character description"
+}
+```
+
+## 🚀 Pull Request Guidelines
+
+### Before Submitting
+
+- [ ] Code follows style guidelines
+- [ ] Tests pass successfully
+- [ ] Documentation is updated
+- [ ] No sensitive data is included
+- [ ] Changes are focused and atomic
+
+### Pull Request Template
+
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Documentation update
+- [ ] Code refactoring
 
 ## Testing
+- [ ] Tests pass
+- [ ] Manual testing completed
+- [ ] No breaking changes
 
-- Test all new commands thoroughly
-- Test error cases and edge cases
-- Ensure the bot handles invalid input gracefully
-- Test with different Discord permissions
+## Checklist
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Documentation updated
+- [ ] Changelog updated
+```
 
-## Pull Request Guidelines
+## 🐛 Bug Reports
 
-1. **Clear description** of what the PR does
-2. **Screenshots** if UI changes are involved
-3. **Test coverage** for new functionality
-4. **Documentation updates** if needed
-5. **Follow the existing code style**
+### Bug Report Template
 
-## Reporting Issues
+```markdown
+**Bug Description**
+Clear description of the bug
 
-When reporting issues, please include:
+**Steps to Reproduce**
+1. Step 1
+2. Step 2
+3. Step 3
 
-1. **Clear description** of the problem
-2. **Steps to reproduce** the issue
-3. **Expected vs actual behavior**
-4. **Environment details** (OS, Python version, etc.)
-5. **Screenshots** if applicable
+**Expected Behavior**
+What should happen
 
-## Discord Community
+**Actual Behavior**
+What actually happens
 
-Join our Discord server for support and discussions:
-[Discord Server](https://discord.gg/a3tGyAwVRc)
+**Environment**
+- Python version:
+- Discord.py version:
+- Operating system:
 
-## Code of Conduct
+**Additional Information**
+Screenshots, logs, etc.
+```
 
-- Be respectful and inclusive
-- Help others learn and grow
-- Provide constructive feedback
-- Follow Discord's Terms of Service
+## 💡 Feature Requests
 
-## License
+### Feature Request Template
 
-By contributing to this project, you agree that your contributions will be licensed under the MIT License.
+```markdown
+**Feature Description**
+Clear description of the requested feature
 
-Thank you for contributing to the Avatar Realms Collide Bot community! 
+**Use Case**
+Why this feature would be useful
+
+**Proposed Implementation**
+How you think it could be implemented
+
+**Additional Information**
+Any relevant context or examples
+```
+
+## 📞 Getting Help
+
+- **GitHub Issues**: Create an issue for questions
+- **Discord Server**: Join our community for real-time help
+- **Documentation**: Check the README and code comments
+
+## 🏆 Recognition
+
+Contributors will be recognized in:
+- **README.md**: List of contributors
+- **CHANGELOG.md**: Credit for significant contributions
+- **Release Notes**: Acknowledgment in releases
+
+## 📄 License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+Thank you for contributing to the Avatar Realms Collide Discord Bot! 🎮 
