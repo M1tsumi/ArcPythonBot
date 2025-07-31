@@ -66,15 +66,47 @@ class DataParser:
         if self._character_list_cache is not None:
             return self._character_list_cache
             
-        character_list_file = self.characters_dir / "character_list.json"
-        data = self.load_json_file(character_list_file)
+        # Return Avatar characters with their correct primary elements
+        avatar_characters = [
+            # Firebenders
+            {"name": "Zuko", "element": "Fire", "category": "Firebender", "rarity": "Epic", "description": "Fire Nation prince and Firebending master"},
+            {"name": "Azula", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Firebending prodigy and Fire Nation princess"},
+            {"name": "Iroh", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Wise Firebending master and Dragon of the West"},
+            {"name": "Roku", "element": "Fire", "category": "Avatar", "rarity": "Legendary", "description": "Fire Nation Avatar of balance and wisdom"},
+            {"name": "Asami", "element": "Fire", "category": "Inventor", "rarity": "Epic", "description": "Genius inventor and Fire Nation engineer"},
+            
+            # Waterbenders
+            {"name": "Katara", "element": "Water", "category": "Waterbender", "rarity": "Epic", "description": "Master Waterbender and skilled healer"},
+            {"name": "Yue", "element": "Water", "category": "Spirit", "rarity": "Epic", "description": "Moon spirit and Water Tribe princess"},
+            {"name": "Katara (Painted Lady)", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Katara as the mysterious Painted Lady"},
+            {"name": "Unalaq", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Dark Waterbending master and spiritual leader"},
+            {"name": "Korra", "element": "Water", "category": "Avatar", "rarity": "Legendary", "description": "Water Tribe Avatar of the modern era"},
+            {"name": "Sokka", "element": "Water", "category": "Warrior", "rarity": "Epic", "description": "Strategic warrior and tactical leader"},
+            
+            # Earthbenders
+            {"name": "Toph", "element": "Earth", "category": "Earthbender", "rarity": "Epic", "description": "Blind Earthbending master and Metalbender"},
+            {"name": "Bumi", "element": "Air", "category": "Airbender", "rarity": "Legendary", "description": "Eccentric Airbending master and king"},
+            {"name": "King Bumi", "element": "Earth", "category": "Earthbender", "rarity": "Epic", "description": "Earthbending king and master strategist"},
+            {"name": "Kyoshi", "element": "Earth", "category": "Avatar", "rarity": "Legendary", "description": "Legendary Earth Kingdom Avatar of justice"},
+            {"name": "Lin Beifong", "element": "Earth", "category": "Earthbender", "rarity": "Legendary", "description": "Metalbending police chief and protector"},
+            {"name": "Teo", "element": "Earth", "category": "Inventor", "rarity": "Epic", "description": "Air Nomad inventor and mechanical genius"},
+            
+            # Airbenders
+            {"name": "Aang", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "The last Airbender and Avatar of the world"},
+            {"name": "Tenzin", "element": "Air", "category": "Airbender", "rarity": "Epic", "description": "Airbending master and spiritual teacher"},
+            {"name": "Meelo", "element": "Air", "category": "Airbender", "rarity": "Rare", "description": "Young Airbending prodigy and energetic warrior"},
+            {"name": "Yangchen", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "Ancient Air Nomad Avatar of wisdom"},
+            
+            # Additional characters with corrected elements and rarities
+            {"name": "Suki", "element": "Earth", "category": "Warrior", "rarity": "Epic", "description": "Kyoshi Warrior leader and skilled fighter"},
+            {"name": "Piandao", "element": "Fire", "category": "Warrior", "rarity": "Rare", "description": "Master swordsman and Fire Nation instructor"},
+            {"name": "Borte", "element": "Air", "category": "Warrior", "rarity": "Epic", "description": "Water Tribe warrior and fierce protector"},
+            {"name": "Kuei", "element": "Earth", "category": "Leader", "rarity": "Rare", "description": "Earth Kingdom king and diplomatic leader"},
+            {"name": "Amon", "element": "Water", "category": "Leader", "rarity": "Legendary", "description": "Equalist leader and revolutionary"}
+        ]
         
-        if data and 'characters' in data:
-            self._character_list_cache = data['characters']
-            return self._character_list_cache
-        else:
-            logger.error("Failed to load character list")
-            return []
+        self._character_list_cache = avatar_characters
+        return self._character_list_cache
     
     def get_character(self, character_name: str) -> Optional[Dict[str, Any]]:
         """
@@ -96,19 +128,7 @@ class DataParser:
         
         for char in characters:
             if char.get('name', '').lower() == cache_key:
-                # Load detailed character data
-                char_id = char.get('id')
-                if char_id:
-                    char_file = self.characters_dir / f"character_{char_id}.json"
-                    char_data = self.load_json_file(char_file)
-                    
-                    if char_data:
-                        # Merge basic info with detailed data
-                        char_data.update(char)
-                        self._characters_cache[cache_key] = char_data
-                        return char_data
-                
-                # If no detailed file, return basic info
+                # Return the character data directly since we have it in the list
                 self._characters_cache[cache_key] = char
                 return char
         

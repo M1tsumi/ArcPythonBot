@@ -6,166 +6,120 @@ Provides modern slash command interface for better user experience.
 import discord
 from discord import app_commands
 from discord.ext import commands
-from typing import Optional
+from typing import Optional, Dict, List
 from utils.embed_generator import EmbedGenerator
 from utils.data_parser import DataParser
 from config.settings import ERROR_MESSAGES
 from pathlib import Path
 
-class SlashCommands(commands.Cog):
-    """Slash commands for modern Discord interface."""
+class ElementSelectDropdown(discord.ui.Select):
+    """Dropdown for element selection."""
     
-    def __init__(self, bot):
-        self.bot = bot
-        self.logger = bot.logger
-        self.data_parser = DataParser()
-    
-    @app_commands.command(name="character", description="Get information about a specific character")
-    @app_commands.describe(character_name="The name of the character")
-    @app_commands.choices(character_name=[
-        app_commands.Choice(name="Kyoshi", value="Kyoshi"),
-        app_commands.Choice(name="Bumi", value="Bumi"),
-        app_commands.Choice(name="Korra", value="Korra"),
-        app_commands.Choice(name="Toph", value="Toph"),
-        app_commands.Choice(name="Azula", value="Azula"),
-        app_commands.Choice(name="Iroh", value="Iroh"),
-        app_commands.Choice(name="Asami", value="Asami"),
-        app_commands.Choice(name="Sokka", value="Sokka"),
-        app_commands.Choice(name="Suki", value="Suki"),
-        app_commands.Choice(name="Zuko", value="Zuko"),
-        app_commands.Choice(name="Katara", value="Katara"),
-        app_commands.Choice(name="Tenzin", value="Tenzin"),
-        app_commands.Choice(name="Teo", value="Teo"),
-        app_commands.Choice(name="Borte", value="Borte"),
-        app_commands.Choice(name="Aang", value="Aang"),
-        app_commands.Choice(name="Kuei", value="Kuei"),
-        app_commands.Choice(name="Meelo", value="Meelo"),
-        app_commands.Choice(name="Piandao", value="Piandao"),
-        app_commands.Choice(name="Yue", value="Yue"),
-        app_commands.Choice(name="Amon", value="Amon"),
-        app_commands.Choice(name="King Bumi", value="King Bumi"),
-        app_commands.Choice(name="Yangchen", value="Yangchen"),
-        app_commands.Choice(name="Katara (Painted Lady)", value="Katara (Painted Lady)"),
-        app_commands.Choice(name="Unalaq", value="Unalaq"),
-        app_commands.Choice(name="Roku", value="Roku"),
-        app_commands.Choice(name="Lin Beifong", value="Lin Beifong")
-    ])
-    async def character_info(self, interaction: discord.Interaction, character_name: str):
-        """Get detailed information about a specific character."""
-        await interaction.response.defer()
+    def __init__(self, data_parser: DataParser):
+        options = [
+            discord.SelectOption(label="Fire", description="Firebenders and Fire Nation", value="Fire", emoji="🔥"),
+            discord.SelectOption(label="Water", description="Waterbenders and Water Tribe", value="Water", emoji="💧"),
+            discord.SelectOption(label="Earth", description="Earthbenders and Earth Kingdom", value="Earth", emoji="🌍"),
+            discord.SelectOption(label="Air", description="Airbenders and Air Nomads", value="Air", emoji="💨")
+        ]
         
-        character = self.data_parser.get_character(character_name)
-        
-        if not character:
-            embed = EmbedGenerator.create_error_embed(
-                f"Character '{character_name}' not found. Use `/characters` to see available characters."
-            )
-            await interaction.followup.send(embed=embed)
-            return
-        
-        # Create character embed
-        embed = EmbedGenerator.create_character_embed(character)
-        
-        # Add additional information
-        if 'rarity' in character:
-            embed.add_field(name="Rarity", value=character['rarity'], inline=True)
-        
-        if 'element' in character:
-            embed.add_field(name="Element", value=character['element'], inline=True)
-        
-        if 'weapon_type' in character:
-            embed.add_field(name="Weapon Type", value=character['weapon_type'], inline=True)
-        
-        # Add usage information
-        embed.add_field(
-            name="More Information",
-            value=f"Use `/character_skills {character['name']}` to see skills\n"
-                  f"Use `/character_talent {character['name']}` to see talent tree",
-            inline=False
+        super().__init__(
+            placeholder="Select an element...",
+            min_values=1,
+            max_values=1,
+            options=options
         )
+        self.data_parser = data_parser
         
-        await interaction.followup.send(embed=embed)
-    
-    @app_commands.command(name="characters", description="List all available characters")
-    async def list_characters(self, interaction: discord.Interaction):
-        """List all available characters."""
-        await interaction.response.defer()
+    async def callback(self, interaction: discord.Interaction):
+        """Handle element selection and show character buttons."""
+        element = self.values[0]
         
+        # Get characters by element
         characters = self.data_parser.get_character_list()
+        element_characters = [char for char in characters if char.get('element', '').lower() == element.lower()]
         
-        if not characters:
-            embed = EmbedGenerator.create_error_embed("No characters found in the database.")
-            await interaction.followup.send(embed=embed)
+        if not element_characters:
+            embed = discord.Embed(
+                title="No Characters Found",
+                description=f"Looks like we don't have any {element} characters in our collection yet. Check back soon!",
+                color=discord.Color.dark_red()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
             return
         
-        # Create embed with character list
-        embed = EmbedGenerator.create_embed(
-            title="Available Characters",
-            description=f"Found {len(characters)} characters in the database.",
-            color=discord.Color.blue()
+        # Create character selection embed
+        embed = discord.Embed(
+            title=f"Meet the {element} Masters",
+            description=f"Discover {len(element_characters)} incredible characters from the {element} element",
+            color=self.get_element_color(element)
         )
         
-        # Group characters by category if available
-        character_text = ""
-        for i, char in enumerate(characters, 1):
-            name = char.get('name', 'Unknown')
-            category = char.get('category', 'General')
-            character_text += f"**{i}.** {name} ({category})\n"
-        
-        # Split into multiple embeds if too long
-        if len(character_text) > 1024:
-            # Split into chunks
-            chunks = [character_text[i:i+1024] for i in range(0, len(character_text), 1024)]
-            for i, chunk in enumerate(chunks):
-                if i == 0:
-                    embed.description = f"Found {len(characters)} characters in the database."
-                    embed.add_field(name="Characters", value=chunk, inline=False)
-                else:
-                    embed.add_field(name=f"Characters (continued)", value=chunk, inline=False)
-        else:
-            embed.add_field(name="Characters", value=character_text, inline=False)
+        # Add character list with clean formatting
+        char_list = ""
+        for char in element_characters:
+            rarity_emoji = self.get_rarity_emoji(char.get('rarity', 'Unknown'))
+            char_list += f"{rarity_emoji} **{char['name']}**\n"
         
         embed.add_field(
-            name="Usage",
-            value="Use `/character <name>` to get detailed information about a specific character.",
+            name="Available Characters",
+            value=char_list,
             inline=False
         )
         
-        await interaction.followup.send(embed=embed)
-    
-    @app_commands.command(name="character_talent", description="Show talent tree for a specific character")
-    @app_commands.choices(character_name=[
-        app_commands.Choice(name="Kyoshi", value="Kyoshi"),
-        app_commands.Choice(name="Bumi", value="Bumi"),
-        app_commands.Choice(name="Korra", value="Korra"),
-        app_commands.Choice(name="Toph", value="Toph"),
-        app_commands.Choice(name="Azula", value="Azula"),
-        app_commands.Choice(name="Iroh", value="Iroh"),
-        app_commands.Choice(name="Asami", value="Asami"),
-        app_commands.Choice(name="Sokka", value="Sokka"),
-        app_commands.Choice(name="Suki", value="Suki"),
-        app_commands.Choice(name="Zuko", value="Zuko"),
-        app_commands.Choice(name="Katara", value="Katara"),
-        app_commands.Choice(name="Tenzin", value="Tenzin"),
-        app_commands.Choice(name="Teo", value="Teo"),
-        app_commands.Choice(name="Borte", value="Borte"),
-        app_commands.Choice(name="Aang", value="Aang"),
-        app_commands.Choice(name="Kuei", value="Kuei"),
-        app_commands.Choice(name="Meelo", value="Meelo"),
-        app_commands.Choice(name="Piandao", value="Piandao"),
-        app_commands.Choice(name="Yue", value="Yue"),
-        app_commands.Choice(name="Amon", value="Amon"),
-        app_commands.Choice(name="King Bumi", value="King Bumi"),
-        app_commands.Choice(name="Yangchen", value="Yangchen"),
-        app_commands.Choice(name="Katara (Painted Lady)", value="Katara (Painted Lady)"),
-        app_commands.Choice(name="Unalaq", value="Unalaq"),
-        app_commands.Choice(name="Roku", value="Roku"),
-        app_commands.Choice(name="Lin Beifong", value="Lin Beifong")
-    ])
-    async def character_talent(self, interaction: discord.Interaction, character_name: str):
-        """Show talent tree for a specific character."""
-        await interaction.response.defer()
+        embed.set_footer(text="Choose your champion below")
         
+        # Create character selection view
+        view = CharacterSelectView(self.data_parser, element_characters)
+        await interaction.response.edit_message(embed=embed, view=view)
+    
+    def get_element_color(self, element: str) -> discord.Color:
+        """Get the appropriate color for each element."""
+        colors = {
+            "Fire": discord.Color.red(),
+            "Water": discord.Color.blue(),
+            "Earth": discord.Color.dark_green(),
+            "Air": discord.Color.light_grey()
+        }
+        return colors.get(element, discord.Color.blue())
+    
+    def get_rarity_emoji(self, rarity: str) -> str:
+        """Get emoji for character rarity."""
+        rarity_emojis = {
+            "Common": "⚪",
+            "Rare": "🔵",
+            "Epic": "🟣",
+            "Legendary": "🟡",
+            "Mythic": "🟠"
+        }
+        return rarity_emojis.get(rarity, "⚪")
+
+class CharacterSelectView(discord.ui.View):
+    """View for selecting characters with buttons."""
+    
+    def __init__(self, data_parser: DataParser, characters: List[Dict]):
+        super().__init__(timeout=60)
+        self.data_parser = data_parser
+        self.characters = characters
+        
+        # Add character buttons (max 25 buttons per Discord limit)
+        for i, char in enumerate(characters[:25]):  # Limit to 25 buttons
+            button = discord.ui.Button(
+                label=char['name'],
+                style=discord.ButtonStyle.primary,
+                custom_id=f"char_{char['name'].lower().replace(' ', '_')}"
+            )
+            button.callback = self.create_character_callback(char['name'])
+            self.add_item(button)
+        
+    def create_character_callback(self, character_name: str):
+        """Create a callback function for a character button."""
+        async def callback(interaction: discord.Interaction):
+            await self.show_character_talents(interaction, character_name)
+        return callback
+        
+    async def show_character_talents(self, interaction: discord.Interaction, character_name: str):
+        """Show talent trees for the selected character."""
         # Get character information
         character = self.data_parser.get_character(character_name)
         
@@ -176,218 +130,251 @@ class SlashCommands(commands.Cog):
         talent_images = self.data_parser.get_talent_tree_images(character_name)
         
         if not talent_images:
-            embed = EmbedGenerator.create_error_embed(
-                f"No talent tree images found for character '{character_name}'."
+            embed = discord.Embed(
+                title="No Talent Trees Found",
+                description=f"Sorry! We don't have talent trees available for {character_name} yet. They're still in development!",
+                color=discord.Color.dark_red()
             )
-            await interaction.followup.send(embed=embed)
+            await interaction.response.edit_message(embed=embed, view=None)
             return
         
         # Create comprehensive embed with character information
         embed = discord.Embed(
-            title=f"{character_name} - Talent Trees",
-            description=f"Complete talent tree information for {character_name}",
-            color=discord.Color.purple()
+            title=f"🌟 {character_name}",
+            description=character.get('description', ''),
+            color=self.get_element_color(character.get('element', 'Unknown'))
         )
         
         # Add character information if available
         if character:
-            if 'description' in character:
-                embed.add_field(name="Character Description", value=character['description'], inline=False)
-            
+            # Create stats section
+            stats_text = ""
             if 'rarity' in character:
-                embed.add_field(name="Rarity", value=character['rarity'], inline=True)
+                rarity_emoji = self.get_rarity_emoji(character['rarity'])
+                stats_text += f"{rarity_emoji} **{character['rarity']}**\n"
             
             if 'element' in character:
-                embed.add_field(name="Element", value=character['element'], inline=True)
+                element_emoji = self.get_element_emoji(character['element'])
+                stats_text += f"{element_emoji} **{character['element']}**\n"
             
-            if 'weapon_type' in character:
-                embed.add_field(name="Weapon Type", value=character['weapon_type'], inline=True)
+            if 'category' in character:
+                stats_text += f"**{character['category']}**\n"
+            
+            if stats_text:
+                embed.add_field(
+                    name="Character Stats",
+                    value=stats_text,
+                    inline=True
+                )
         
         # Add talent type information
         if talent_type_info and talent_type_info.get('talent_type'):
             embed.add_field(
-                name="Talent Tree Type",
+                name="Talent Specialization",
                 value=talent_type_info['talent_type'],
                 inline=True
             )
         
-        # Add talent tree information
+        embed.set_footer(text="Your talent trees are ready below")
+        
+        # Send the embed first
+        await interaction.response.edit_message(embed=embed, view=None)
+        
+        # Send talent tree images in separate embeds
+        if talent_images.get('talent_tree_1'):
+            embed1 = discord.Embed(
+                title=f"🌳 {character_name}'s First Talent Tree",
+                color=self.get_element_color(character.get('element', 'Unknown'))
+            )
+            file1 = discord.File(talent_images['talent_tree_1'], filename=Path(talent_images['talent_tree_1']).name)
+            embed1.set_image(url=f"attachment://{Path(talent_images['talent_tree_1']).name}")
+            await interaction.followup.send(embed=embed1, file=file1)
+        
+        if talent_images.get('talent_tree_2'):
+            embed2 = discord.Embed(
+                title=f"🌿 {character_name}'s Second Talent Tree",
+                color=self.get_element_color(character.get('element', 'Unknown'))
+            )
+            file2 = discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name)
+            embed2.set_image(url=f"attachment://{Path(talent_images['talent_tree_2']).name}")
+            await interaction.followup.send(embed=embed2, file=file2)
+    
+    def get_element_color(self, element: str) -> discord.Color:
+        """Get the appropriate color for each element."""
+        colors = {
+            "Fire": discord.Color.red(),
+            "Water": discord.Color.blue(),
+            "Earth": discord.Color.dark_green(),
+            "Air": discord.Color.light_grey()
+        }
+        return colors.get(element, discord.Color.blue())
+    
+    def get_element_emoji(self, element: str) -> str:
+        """Get emoji for element."""
+        element_emojis = {
+            "Fire": "🔥",
+            "Water": "💧",
+            "Earth": "🌍",
+            "Air": "💨"
+        }
+        return element_emojis.get(element, "❓")
+    
+    def get_rarity_emoji(self, rarity: str) -> str:
+        """Get emoji for character rarity."""
+        rarity_emojis = {
+            "Common": "⚪",
+            "Rare": "🔵",
+            "Epic": "🟣",
+            "Legendary": "🟡",
+            "Mythic": "🟠"
+        }
+        return rarity_emojis.get(rarity, "⚪")
+    
+    @discord.ui.button(label="⬅️ Back to Elements", style=discord.ButtonStyle.secondary, emoji="⬅️")
+    async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Go back to element selection."""
+        embed = discord.Embed(
+            title="Welcome to the Talent Tree Browser",
+            description="Ready to explore the bending arts? Choose your element to discover amazing characters!",
+            color=discord.Color.from_rgb(52, 152, 219)
+        )
+        
         embed.add_field(
-            name="Talent Tree Info",
-            value="• **Total Points**: 89 points for maxed hero\n"
-                  "• **Dual Purpose**: Trees may have multiple focuses\n"
-                  "• **Gold/Blue**: Activated talents\n"
-                  "• **Red X**: Ignore crossed-out talents",
+            name="Available Elements",
+            value="🔥 Fire • 💧 Water • 🌍 Earth • 💨 Air",
             inline=False
         )
         
-        # Add image information
-        image_info = ""
-        if talent_images.get('talent_tree_1'):
-            image_info += f"• **Talent Tree 1**: {Path(talent_images['talent_tree_1']).name}\n"
-        if talent_images.get('talent_tree_2'):
-            image_info += f"• **Talent Tree 2**: {Path(talent_images['talent_tree_2']).name}\n"
+        embed.set_footer(text="Pick your element to begin your journey")
         
-        if image_info:
-            embed.add_field(name="Available Talent Trees", value=image_info, inline=False)
-        
-        embed.set_footer(text="Use /character <name> for more character information")
-        
-        # Send embed with both images if available
-        files = []
-        if talent_images.get('talent_tree_1'):
-            files.append(discord.File(talent_images['talent_tree_1'], filename=Path(talent_images['talent_tree_1']).name))
-        if talent_images.get('talent_tree_2'):
-            files.append(discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name))
-        
-        # Send the embed with all files
-        await interaction.followup.send(embed=embed, files=files)
+        view = discord.ui.View(timeout=60)
+        view.add_item(ElementSelectDropdown(self.data_parser))
+        await interaction.response.edit_message(embed=embed, view=view)
+
+class LeaderboardView(discord.ui.View):
+    """View for leaderboard selection."""
     
-    @app_commands.command(name="talent_trees", description="List all available talent trees by type")
-    async def list_talent_trees(self, interaction: discord.Interaction):
-        """List all available talent trees with their types."""
-        await interaction.response.defer()
-        
+    def __init__(self):
+        super().__init__(timeout=60)
+    
+    @discord.ui.button(label="👑 Top 10 Leaders", style=discord.ButtonStyle.primary, emoji="👑")
+    async def top_leaders_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show top 10 leaders leaderboard."""
         try:
-            talent_types_file = Path("HeroTalentImages/TalentType.txt")
-            if not talent_types_file.exists():
-                embed = EmbedGenerator.create_error_embed("Talent type information not found.")
-                await interaction.followup.send(embed=embed)
-                return
-            
-            with open(talent_types_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Parse the talent type information
-            lines = content.split('\n')
-            talent_types = {}
-            
-            for line in lines:
-                line = line.strip()
-                if ':' in line and not line.startswith('Avatar Realms Collide') and not line.startswith('This document') and not line.startswith('General Talent') and not line.startswith('Dual Purpose') and not line.startswith('Total Points') and not line.startswith('"Drawn-on"') and not line.startswith('"Crossed-out"') and not line.startswith('Future Changes') and not line.startswith('Hero Talent') and not line.startswith('Below is a list'):
-                    if line.endswith(':'):
-                        continue
-                    parts = line.split(':')
-                    if len(parts) == 2:
-                        char_name = parts[0].strip()
-                        talent_type = parts[1].strip()
-                        talent_types[char_name] = talent_type
-            
-            if not talent_types:
-                embed = EmbedGenerator.create_error_embed("No talent type information found.")
-                await interaction.followup.send(embed=embed)
-                return
-            
-            # Group by talent type
-            type_groups = {}
-            for char_name, talent_type in talent_types.items():
-                if talent_type not in type_groups:
-                    type_groups[talent_type] = []
-                type_groups[talent_type].append(char_name)
-            
-            # Create embed
-            embed = EmbedGenerator.create_embed(
-                title="Available Talent Trees",
-                description=f"Found {len(talent_types)} characters with talent trees",
-                color=discord.Color.purple()
-            )
-            
-            for talent_type, characters in type_groups.items():
-                char_list = ", ".join(sorted(characters))
-                embed.add_field(
-                    name=f"{talent_type} ({len(characters)} characters)",
-                    value=char_list,
-                    inline=False
+            file_path = Path("HeroTalentImages/top-leaders.webp")
+            if not file_path.exists():
+                embed = discord.Embed(
+                    title="❌ Leaderboard Not Found",
+                    description="The top leaders leaderboard is currently unavailable.",
+                    color=discord.Color.dark_red()
                 )
+                await interaction.response.edit_message(embed=embed, view=None)
+                return
             
-            embed.add_field(
-                name="Usage",
-                value="Use `/character_talent <character_name>` to view a specific talent tree",
-                inline=False
+            embed = discord.Embed(
+                title="👑 Top 10 Leaders",
+                description="The most powerful players in Avatar Realms Collide!",
+                color=discord.Color.gold()
             )
             
-            await interaction.followup.send(embed=embed)
+            file = discord.File(file_path, filename="top-leaders.webp")
+            embed.set_image(url="attachment://top-leaders.webp")
+            embed.set_footer(text="Updated regularly")
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.followup.send(file=file)
             
         except Exception as e:
-            embed = EmbedGenerator.create_error_embed(f"Error loading talent tree information: {e}")
-            await interaction.followup.send(embed=embed)
-    
-    @app_commands.command(name="search", description="Search for characters by name or description")
-    @app_commands.describe(search_term="The search term to look for")
-    async def search_characters(self, interaction: discord.Interaction, search_term: str):
-        """Search for characters by name or description."""
-        await interaction.response.defer()
-        
-        if len(search_term) < 2:
-            embed = EmbedGenerator.create_error_embed("Search term must be at least 2 characters long.")
-            await interaction.followup.send(embed=embed)
-            return
-        
-        matches = self.data_parser.search_characters(search_term)
-        
-        if not matches:
-            embed = EmbedGenerator.create_error_embed(
-                f"No characters found matching '{search_term}'."
+            embed = discord.Embed(
+                title="❌ Error Loading Leaderboard",
+                description="Sorry! There was an issue loading the leaderboard. Please try again later.",
+                color=discord.Color.dark_red()
             )
-            await interaction.followup.send(embed=embed)
-            return
-        
-        # Create search results embed
-        embed = EmbedGenerator.create_embed(
-            title=f"Search Results for '{search_term}'",
-            description=f"Found {len(matches)} matching characters:",
-            color=discord.Color.green()
-        )
-        
-        for char in matches:
-            name = char.get('name', 'Unknown')
-            description = char.get('description', 'No description')
-            # Truncate description if too long
-            if len(description) > 100:
-                description = description[:97] + "..."
+            await interaction.response.edit_message(embed=embed, view=None)
+    
+    @discord.ui.button(label="🤝 Top 10 Alliances", style=discord.ButtonStyle.primary, emoji="🤝")
+    async def top_alliances_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show top 10 alliances leaderboard."""
+        try:
+            file_path = Path("HeroTalentImages/top-alliances.webp")
+            if not file_path.exists():
+                embed = discord.Embed(
+                    title="❌ Leaderboard Not Found",
+                    description="The top alliances leaderboard is currently unavailable.",
+                    color=discord.Color.dark_red()
+                )
+                await interaction.response.edit_message(embed=embed, view=None)
+                return
             
-            embed.add_field(
-                name=name,
-                value=description,
-                inline=False
+            embed = discord.Embed(
+                title="🤝 Top 10 Alliances",
+                description="The strongest alliances in Avatar Realms Collide!",
+                color=discord.Color.blue()
             )
-        
-        embed.add_field(
-            name="Usage",
-            value="Use `/character <name>` to get detailed information about a character.",
-            inline=False
-        )
-        
-        await interaction.followup.send(embed=embed)
+            
+            file = discord.File(file_path, filename="top-alliances.webp")
+            embed.set_image(url="attachment://top-alliances.webp")
+            embed.set_footer(text="Updated regularly")
+            
+            await interaction.response.edit_message(embed=embed, view=None)
+            await interaction.followup.send(file=file)
+            
+        except Exception as e:
+            embed = discord.Embed(
+                title="❌ Error Loading Leaderboard",
+                description="Sorry! There was an issue loading the leaderboard. Please try again later.",
+                color=discord.Color.dark_red()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+
+class SlashCommands(commands.Cog):
+    """Slash commands for modern Discord interface."""
     
-    @app_commands.command(name="server", description="Get the Discord server invite link")
-    async def server(self, interaction: discord.Interaction):
-        """Get the Discord server invite link."""
-        embed = EmbedGenerator.create_embed(
-            title="🎮 Join Our Community!",
-            description="Connect with other Avatar Realms Collide players and get bot support.",
-            color=discord.Color.blue()
+    def __init__(self, bot):
+        self.bot = bot
+        self.logger = bot.logger
+        self.data_parser = DataParser()
+    
+    @app_commands.command(name="talent_trees", description="Interactive talent tree browser")
+    async def talent_trees(self, interaction: discord.Interaction):
+        """Interactive command to browse talent trees by element."""
+        embed = discord.Embed(
+            title="Welcome to the Talent Tree Browser",
+            description="Ready to explore the bending arts? Choose your element to discover amazing characters!",
+            color=discord.Color.from_rgb(52, 152, 219)
         )
         
         embed.add_field(
-            name="Discord Server",
-            value="[Click here to join!](https://discord.gg/a3tGyAwVRc)",
+            name="Available Elements",
+            value="🔥 Fire • 💧 Water • 🌍 Earth • 💨 Air",
             inline=False
+        )
+        
+        embed.set_footer(text="Pick your element to begin your journey")
+        
+        view = discord.ui.View(timeout=60)
+        view.add_item(ElementSelectDropdown(self.data_parser))
+        await interaction.response.send_message(embed=embed, view=view)
+    
+    @app_commands.command(name="leaderboard", description="View top leaders and alliances")
+    async def leaderboard(self, interaction: discord.Interaction):
+        """Interactive command to view leaderboards."""
+        embed = discord.Embed(
+            title="🏆 Leaderboard Rankings",
+            description="Check out the top performers in Avatar Realms Collide!",
+            color=discord.Color.gold()
         )
         
         embed.add_field(
-            name="What you'll find:",
-            value="• Bot support and help\n• Game discussions\n• Character builds and strategies\n• Event coordination\n• Community features",
+            name="Available Rankings",
+            value="👑 Top 10 Leaders • 🤝 Top 10 Alliances",
             inline=False
         )
         
-        embed.add_field(
-            name="Bot Features",
-            value="• Character information and talent trees\n• Event tracking and notifications\n• User profiles and preferences\n• Search and comparison tools",
-            inline=False
-        )
+        embed.set_footer(text="Choose a leaderboard to view")
         
-        await interaction.response.send(embed=embed)
+        view = LeaderboardView()
+        await interaction.response.send_message(embed=embed, view=view)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""
