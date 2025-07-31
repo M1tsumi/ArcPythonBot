@@ -1,113 +1,231 @@
-# Avatar Realms Collide Discord Bot
+# 🌟 Avatar Realms Collide Discord Bot
 
-[![Beta Version](https://img.shields.io/badge/version-Beta-orange)](https://github.com/yourusername/ArcPythonBot)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-blue?logo=discord)](https://discord.gg/a3tGyAwVRc)
+[![Version](https://img.shields.io/badge/version-1.0.0--beta-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
+[![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
+[![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-An unofficial Discord bot for the Avatar Realms Collide game, providing comprehensive information about characters, skills, talent trees, and game events.
+> **🎮 Beta Version - Avatar Realms Collide Discord Bot**  
+> An interactive Discord bot for exploring character talent trees, leaderboards, and game information in the Avatar Realms Collide universe.
 
-> **⚠️ Beta Version**: This bot is currently in beta. Features may be added, removed, or changed without notice. Please report any issues or suggestions to help improve the bot.
+## 📋 Table of Contents
 
-## Features
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Commands](#-commands)
+- [Character Database](#-character-database)
+- [Technical Details](#-technical-details)
+- [Contributing](#-contributing)
+- [Roadmap](#-roadmap)
+- [License](#-license)
 
-- **Character Information**: Detailed character profiles with stats and abilities
-- **Skill Details**: Comprehensive skill information with cooldowns and levels
-- **Talent Trees**: Complete talent tree visualization with images and type information
-- **Event Tracking**: Current and past event information
-- **Search Functionality**: Search characters by name or description
-- **User Profiles**: Personal favorite characters and preferences
+## ✨ Features
 
-## Commands
+### 🎯 **Interactive Talent Tree Browser**
+- **Element-based Navigation**: Browse characters by Fire, Water, Earth, and Air elements
+- **Character Profiles**: Detailed character information with rarity, element, and category
+- **Talent Tree Images**: View both talent tree variations for each character
+- **Professional UI**: Clean, minimalist embeds with personalized messaging
 
-### Character Commands
-- `!characters` - List all available characters
-- `!character <name>` - Get detailed character information
-- `!character_skills <name>` - Show character skills
-- `!character_talent <name>` - Show character talent tree with images
-- `!talent_trees` - List all available talent trees by type
-- `!talent <character> <talent>` - Get detailed talent information
-- `!search <term>` - Search for characters
+### 🏆 **Leaderboard System**
+- **Top 10 Leaders**: View the most powerful players
+- **Top 10 Alliances**: Check the strongest alliances
+- **Real-time Updates**: Regularly updated leaderboard data
+- **Interactive Buttons**: Easy navigation between different rankings
 
-### User Profile Commands
-- `!myprofile` - Show your user profile
-- `!setfavorite <character>` - Set your favorite character
-- `!clearfavorite` - Clear your favorite character
-- `!setpreference <key> <value>` - Set a preference
-- `!clearpreference <key>` - Clear a preference
+### 👥 **Character Database**
+- **25+ Characters**: Comprehensive roster from the Avatar universe
+- **Element Classification**: Proper categorization by bending elements
+- **Rarity System**: Common, Rare, Epic, Legendary, and Mythic tiers
+- **Detailed Descriptions**: Rich character backgrounds and lore
 
-### Game Information
-- `!events` - List current events
-- `!leaderboard [type]` - Show leaderboards
-- `!stats` - Show your statistics
-- `!compare <char1> <char2>` - Compare two characters
+## 🚀 Installation
 
-## Talent Tree System
+### Prerequisites
+- Python 3.8 or higher
+- Discord Bot Token
+- Git
 
-The bot includes a comprehensive talent tree system with:
+### Setup Instructions
 
-### Talent Tree Types
-- **Normal PvP Based Tree**: Standard combat-focused talent trees
-- **Garrison Based Tree**: Defensive and garrison-focused talents
-- **Siege Based Tree**: Siege and attack-focused talents
-- **Shattered Skulls Based Tree**: Specialized combat talents
-- **Gathering Based Tree**: Resource gathering and utility talents
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/yourusername/ArcPythonBot.git
+   cd ArcPythonBot
+   ```
 
-### Talent Tree Features
-- **Visual Talent Trees**: High-quality talent tree images for all 26 characters
-- **Talent Type Information**: Each character's talent tree type and focus
-- **Dual Purpose Design**: Trees may have multiple focuses for versatility
-- **89 Total Points**: Maximum talent points for fully developed heroes
-- **Visual Indicators**: Gold/blue for activated talents, red X for crossed-out talents
+2. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Available Characters with Talent Trees
-- **Normal PvP**: Kyoshi, Bumi, Korra, Toph, Azula, Iroh, Asami, Sokka, Suki, Zuko, Katara, Aang, Amon, King Bumi, Yangchen, Katara (Painted Lady), Unalaq, Roku, Lin Beifong
-- **Garrison**: Tenzin
-- **Siege**: Teo
-- **Shattered Skulls**: Borte
-- **Gathering**: Kuei, Meelo, Piandao, Yue
+3. **Configure Environment**
+   ```bash
+   # Create a .env file
+   echo "DISCORD_TOKEN=your_bot_token_here" > .env
+   ```
 
-## Installation
+4. **Run the Bot**
+   ```bash
+   python main.py
+   ```
 
-1. Clone the repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Configure your bot token in the environment
-4. Run the bot: `python main.py`
+## 📖 Usage
 
-## File Structure
+### Discord Commands
 
+#### `/talent_trees`
+Browse character talent trees by element:
+- Select from Fire, Water, Earth, or Air elements
+- View character profiles with stats and descriptions
+- Access talent tree images for each character
+
+#### `/leaderboard`
+View top performers in the game:
+- **👑 Top 10 Leaders**: Individual player rankings
+- **🤝 Top 10 Alliances**: Alliance performance rankings
+
+## 🎮 Commands
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `/talent_trees` | Interactive talent tree browser | Select element → Choose character → View trees |
+| `/leaderboard` | View top leaders and alliances | Choose leaderboard type → View rankings |
+
+## 👥 Character Database
+
+### Fire Element 🔥
+- **Zuko** (Epic) - Fire Nation prince and Firebending master
+- **Azula** (Legendary) - Firebending prodigy and Fire Nation princess
+- **Iroh** (Legendary) - Wise Firebending master and Dragon of the West
+- **Roku** (Legendary) - Fire Nation Avatar of balance and wisdom
+- **Asami** (Epic) - Genius inventor and Fire Nation engineer
+
+### Water Element 💧
+- **Katara** (Epic) - Master Waterbender and skilled healer
+- **Yue** (Epic) - Moon spirit and Water Tribe princess
+- **Katara (Painted Lady)** (Legendary) - Mysterious Painted Lady
+- **Unalaq** (Legendary) - Dark Waterbending master and spiritual leader
+- **Korra** (Legendary) - Water Tribe Avatar of the modern era
+- **Sokka** (Epic) - Strategic warrior and tactical leader
+- **Amon** (Legendary) - Equalist leader and revolutionary
+
+### Earth Element 🌍
+- **Toph** (Epic) - Blind Earthbending master and Metalbender
+- **King Bumi** (Epic) - Earthbending king and master strategist
+- **Kyoshi** (Legendary) - Legendary Earth Kingdom Avatar of justice
+- **Lin Beifong** (Legendary) - Metalbending police chief and protector
+- **Teo** (Epic) - Air Nomad inventor and mechanical genius
+- **Suki** (Epic) - Kyoshi Warrior leader and skilled fighter
+- **Kuei** (Rare) - Earth Kingdom king and diplomatic leader
+
+### Air Element 💨
+- **Aang** (Legendary) - The last Airbender and Avatar of the world
+- **Tenzin** (Epic) - Airbending master and spiritual teacher
+- **Meelo** (Rare) - Young Airbending prodigy and energetic warrior
+- **Yangchen** (Legendary) - Ancient Air Nomad Avatar of wisdom
+- **Bumi** (Legendary) - Eccentric Airbending master and king
+- **Borte** (Epic) - Water Tribe warrior and fierce protector
+
+### Additional Characters
+- **Piandao** (Rare) - Master swordsman and Fire Nation instructor
+
+## 🔧 Technical Details
+
+### Architecture
+- **Discord.py 2.0+**: Modern Discord bot framework
+- **Slash Commands**: Native Discord slash command support
+- **Interactive UI**: Discord UI components for better UX
+- **Modular Design**: Organized cog structure for maintainability
+
+### File Structure
 ```
 ArcPythonBot/
-├── cogs/                 # Discord bot command modules
-├── config/              # Bot configuration and settings
-├── data/                # Game data (characters, events)
-├── HeroTalentImages/    # Talent tree images for all characters
-├── images/              # Character and skill images
-├── utils/               # Utility functions and data parsing
-├── main.py              # Bot entry point
-└── requirements.txt     # Python dependencies
+├── cogs/                 # Discord bot cogs
+│   ├── slash_commands.py # Main slash commands
+│   └── ...
+├── utils/                # Utility modules
+│   ├── data_parser.py   # Character data management
+│   └── embed_generator.py
+├── HeroTalentImages/     # Talent tree images
+├── config/              # Configuration files
+└── main.py              # Bot entry point
 ```
 
-## Talent Tree Images
+### Key Features
+- **Character Data Management**: Centralized character database
+- **Image Handling**: WebP talent tree image support
+- **Error Handling**: Graceful error management
+- **Caching**: Performance optimization with data caching
 
-The `HeroTalentImages/` directory contains talent tree images for all 26 characters:
-- Each character has two talent tree versions (-1 and -2)
-- Images are in WebP format for optimal quality and size
-- Talent trees show the complete progression path with visual indicators
-- Special handling for characters like "Katara (Painted Lady)" and "King Bumi"
+## 🤝 Contributing
 
-## Community & Support
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-- **Discord Server**: [Join our community!](https://discord.gg/a3tGyAwVRc)
-- **Issues**: Report bugs or request features on GitHub
-- **Contributions**: Pull requests are welcome!
+### How to Contribute
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Contributing
+## 🗺️ Roadmap
 
-This is an unofficial fan-made bot. Contributions are welcome for:
-- Adding new character data
-- Improving talent tree visualizations
-- Enhancing bot functionality
-- Bug fixes and improvements
+### Version 1.0.0-beta (Current)
+- ✅ Interactive talent tree browser
+- ✅ Leaderboard system
+- ✅ Character database with 25+ characters
+- ✅ Element-based categorization
+- ✅ Professional Discord UI
 
-## Disclaimer
+### Upcoming Features
+- 🔄 **Skill Priorities**: Character skill progression system
+- 🔄 **Rarity Changes**: Dynamic rarity updates
+- 🔄 **Level Requirements**: Character level progression
+- 🔄 **Resource Requirements**: Game resource management
+- 🔄 **Event System**: In-game event tracking
+- 🔄 **User Profiles**: Player profile management
+- 🔄 **Advanced Search**: Enhanced character search
+- 🔄 **Mobile Optimization**: Better mobile Discord experience
 
-This is an unofficial, fan-made Discord bot and is not affiliated with, endorsed by, or sponsored by the developers of Avatar Realms Collide. All game data used is from publicly available sources or mock data for demonstration purposes. 
+### Future Updates
+- **Real-time Data**: Live game data integration
+- **Analytics**: Usage statistics and insights
+- **Customization**: User preference settings
+- **API Integration**: External game API support
+
+## 📝 Version Notes
+
+### Beta Version 1.0.0
+This is a **beta release** with core functionality implemented. The following features are planned for future updates:
+
+- **Skill Priorities**: Character skill tree progression system
+- **Rarity Changes**: Dynamic character rarity updates based on game balance
+- **Level Requirements**: Character level progression and requirements
+- **Resource Requirements**: Game resource costs and management
+- **Advanced Analytics**: Detailed character and game statistics
+- **Event Integration**: Real-time game event tracking
+- **User Customization**: Personalized bot experience settings
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Avatar: The Last Airbender** universe for inspiration
+- **Discord.py** community for excellent documentation
+- **Contributors** who help improve this bot
+
+## 📞 Support
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/ArcPythonBot/issues)
+- **Discord Server**: Join our community server for support
+- **Documentation**: Check our [Wiki](https://github.com/yourusername/ArcPythonBot/wiki) for detailed guides
+
+---
+
+**⭐ Star this repository if you find it helpful!**
+
+*Made with ❤️ for the Avatar Realms Collide community* 
