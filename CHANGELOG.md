@@ -28,6 +28,7 @@ This release marks the transition from beta to the first stable development vers
 - **Interactive Buttons**: Easy navigation between different rankings
 - **Error Handling**: Graceful error management for missing data
 - **Caching System**: Performance optimization with data caching
+- **Skill Priorities**: Character skill tree progression system
 
 ### Changed
 - **Azula Rarity**: Updated from Epic to Legendary
@@ -80,13 +81,10 @@ This release marks the transition from beta to the first stable development vers
 ## [Unreleased]
 
 ### Planned Features
-- **Skill Priorities**: Character skill tree progression system
-- **Rarity Changes**: Dynamic character rarity updates based on game balance
 - **Level Requirements**: Character level progression and requirements
 - **Resource Requirements**: Game resource costs and management
 - **Event System**: In-game event tracking
 - **User Profiles**: Player profile management
-- **Advanced Search**: Enhanced character search functionality
 - **Mobile Optimization**: Better mobile Discord experience
 - **Real-time Data**: Live game data integration
 - **Analytics**: Usage statistics and insights
@@ -98,12 +96,13 @@ This release marks the transition from beta to the first stable development vers
 ## Version Notes
 
 ### Stable Version 1.0.0
-This is the **first stable development version** out of beta, featuring comprehensive Discord bot functionality for Avatar Realms Collide. The bot now provides a complete character database, interactive talent tree browsing, and leaderboard systems with professional UI design.
+This is the **first stable development version** out of beta, featuring comprehensive Discord bot functionality for Avatar Realms Collide. The bot now provides a complete character database, interactive talent tree browsing, leaderboard systems, and skill priorities with professional UI design.
 
 ### Key Features
 - **Complete Character Database**: 25+ characters with proper element classification
 - **Interactive Talent Trees**: Browse character skill trees with element-based navigation
 - **Leaderboard System**: View top players and alliances
+- **Skill Priorities**: Character skill tree progression system
 - **Professional UI**: Clean, minimalist design with personalized messaging
 - **Robust Error Handling**: Graceful management of missing data and edge cases
 
@@ -113,7 +112,7 @@ This is the **first stable development version** out of beta, featuring comprehe
 - Mobile Discord experience could be optimized further
 
 ### Future Roadmap
-- **v1.1.0**: Skill priorities and level requirements
-- **v1.2.0**: Resource management and event system
-- **v1.3.0**: User profiles and advanced search
+- **v1.1.0**: Level requirements and resource management
+- **v1.2.0**: Event system and user profiles
+- **v1.3.0**: Mobile optimization and analytics
 - **v2.0.0**: Real-time data integration and API support 
