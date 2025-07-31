@@ -1,312 +1,175 @@
 """
-Utility commands cog for the Avatar Realms Collide Discord Bot.
+Utility command module for Avatar Realms Collide Discord Bot.
+Provides utility commands like links, help, and bot management.
 """
 
 import discord
+from discord import app_commands
 from discord.ext import commands
-from typing import Optional
-from utils.embed_generator import EmbedGenerator
-from config.settings import DISCLAIMER, BOT_NAME, BOT_VERSION, BOT_DESCRIPTION
+from config.settings import DISCORD_SERVER_LINK, BOT_INVITE_LINK
 
 class Utility(commands.Cog):
-    """Utility commands for the bot."""
+    """Utility command cog."""
     
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
-        
-        # Command help data
-        self.commands_data = [
-            {
-                "name": "ping",
-                "description": "Check bot latency",
-                "usage": "!ping"
-            },
-            {
-                "name": "help",
-                "description": "Show this help message",
-                "usage": "!help [command]"
-            },
-            {
-                "name": "about",
-                "description": "Show information about the bot",
-                "usage": "!about"
-            },
-            {
-                "name": "server",
-                "description": "Get Discord server invite link",
-                "usage": "!server"
-            },
-            {
-                "name": "support",
-                "description": "Show support information",
-                "usage": "!support"
-            },
-            {
-                "name": "characters",
-                "description": "List all available characters",
-                "usage": "!characters"
-            },
-            {
-                "name": "character",
-                "description": "Get information about a specific character",
-                "usage": "!character <name>"
-            },
-            {
-                "name": "character_skills",
-                "description": "Show skills for a specific character",
-                "usage": "!character_skills <name>"
-            },
-            {
-                "name": "character_talent",
-                "description": "Show talent tree for a specific character",
-                "usage": "!character_talent <name>"
-            },
-            {
-                "name": "talent_trees",
-                "description": "List all available talent trees by type",
-                "usage": "!talent_trees"
-            },
-            {
-                "name": "events",
-                "description": "List current and upcoming events",
-                "usage": "!events [current/past]"
-            },
-            {
-                "name": "event_details",
-                "description": "Get detailed information about a specific event",
-                "usage": "!event_details <name>"
-            }
-        ]
     
-    @commands.command(name="ping")
-    async def ping(self, ctx):
-        """Check bot latency."""
-        latency = round(self.bot.latency * 1000)
-        
-        embed = EmbedGenerator.create_embed(
-            title="🏓 Pong!",
-            description=f"Bot latency: **{latency}ms**",
-            color=discord.Color.green()
-        )
-        
-        await ctx.send(embed=embed)
-    
-    @commands.command(name="help")
-    async def help_command(self, ctx, command_name: Optional[str] = None):
-        """Show help information for commands."""
-        if command_name:
-            # Show help for specific command
-            command = discord.utils.get(self.bot.commands, name=command_name)
-            if command:
-                embed = EmbedGenerator.create_embed(
-                    title=f"Help: !{command.name}",
-                    description=command.help or "No description available.",
-                    color=discord.Color.blue()
-                )
-                
-                # Add usage information
-                if command.usage:
-                    embed.add_field(name="Usage", value=f"`{command.usage}`", inline=False)
-                else:
-                    embed.add_field(name="Usage", value=f"`!{command.name}`", inline=False)
-                
-                # Add cooldown information
-                if hasattr(command, '_buckets') and command._buckets:
-                    cooldown = command._buckets._cooldown
-                    embed.add_field(name="Cooldown", value=f"{cooldown.per} seconds", inline=True)
-                
-            else:
-                embed = EmbedGenerator.create_error_embed(f"Command `{command_name}` not found.")
-        else:
-            # Show general help
-            embed = EmbedGenerator.create_help_embed(self.commands_data)
-        
-        await ctx.send(embed=embed)
-    
-    @commands.command(name="about")
-    async def about(self, ctx):
-        """Show information about the bot."""
-        embed = EmbedGenerator.create_embed(
-            title=f"About {BOT_NAME}",
-            description=BOT_DESCRIPTION,
-            color=discord.Color.purple()
-        )
-        
-        # Add bot information
-        embed.add_field(
-            name="Version",
-            value=BOT_VERSION,
-            inline=True
-        )
-        
-        embed.add_field(
-            name="Server Count",
-            value=f"{len(self.bot.guilds)} servers",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="User Count",
-            value=f"{len(self.bot.users)} users",
-            inline=True
-        )
-        
-        # Add disclaimer
-        embed.add_field(
-            name="Important Notice",
-            value=DISCLAIMER,
-            inline=False
-        )
-        
-        # Add developer information
-        embed.add_field(
-            name="Developer",
-            value="This bot was created as a demonstration of programming skills and is not affiliated with any game developers.",
-            inline=False
-        )
-        
-        embed.set_footer(text="Made with ❤️ for the Avatar Realms Collide community")
-        
-        await ctx.send(embed=embed)
-    
-    @commands.command(name="info")
-    async def info(self, ctx):
-        """Show technical information about the bot."""
-        embed = EmbedGenerator.create_embed(
-            title="Bot Information",
-            description="Technical details about the bot",
+    @app_commands.command(name="links", description="Get bot links and information")
+    async def links(self, interaction: discord.Interaction):
+        """Command to provide bot links and information."""
+        embed = discord.Embed(
+            title="🔗 Bot Links & Information",
+            description="Connect with the Avatar Realms Collide community!",
             color=discord.Color.blue()
         )
         
-        # System information
         embed.add_field(
-            name="Python Version",
-            value=f"{discord.__version__}",
+            name="📱 Join Our Discord Server",
+            value=f"[Join Server]({DISCORD_SERVER_LINK})",
             inline=True
         )
         
         embed.add_field(
-            name="Discord.py Version",
-            value=discord.__version__,
+            name="🤖 Add Bot to Your Server",
+            value=f"[Add to Server]({BOT_INVITE_LINK})",
             inline=True
         )
         
         embed.add_field(
-            name="Uptime",
-            value="Calculating...",  # You could add uptime tracking here
-            inline=True
+            name="👨‍💻 Developer",
+            value="**Developed by Quefep**",
+            inline=False
         )
         
-        # Memory usage (if available)
+        embed.add_field(
+            name="🎮 Bot Features",
+            value="• Talent Tree Browser\n• Skill Priorities\n• Leaderboards\n• Town Hall Info\n• Hero Rankup Guide\n• Interactive Commands",
+            inline=False
+        )
+        
+        embed.set_footer(text="Join our Discord for more information and updates!")
+        
+        await interaction.response.send_message(embed=embed)
+    
+    @app_commands.command(name="help", description="Get help and join our Discord server")
+    async def help(self, interaction: discord.Interaction):
+        """Command to provide help and Discord server link."""
+        embed = discord.Embed(
+            title="🌟 Avatar Realms Collide Bot Help",
+            description="Welcome to the Avatar Realms Collide community bot! Here's how to get help and stay connected.",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="📱 Join Our Discord Server",
+            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🤖 Available Commands",
+            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/leaderboard` - Check top players and alliances\n• `/townhall` - View town hall requirements\n• `/hero_rankup` - View hero rankup guide and costs\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="💡 Need More Help?",
+            value="Join our Discord server for:\n• Real-time help and support\n• Game updates and announcements\n• Community discussions\n• Bug reports and suggestions",
+            inline=False
+        )
+        
+        embed.set_footer(text="Developed by Quefep • Join our Discord for the best experience!")
+        
+        await interaction.response.send_message(embed=embed)
+    
+    @app_commands.command(name="addtoserver", description="Add the bot to your server")
+    async def addtoserver(self, interaction: discord.Interaction):
+        """Command to add the bot to a server with an embed and button."""
+        embed = discord.Embed(
+            title="🤖 Add Avatar Realms Collide Bot to Your Server",
+            description="Enhance your server with powerful game tools and community features!",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="🎮 Bot Features",
+            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Interactive Commands** - Modern slash command interface",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🔧 Permissions Required",
+            value="• Send Messages\n• Embed Links\n• Attach Files\n• Use Slash Commands\n• Read Message History",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📱 Community",
+            value=f"[Join our Discord server]({DISCORD_SERVER_LINK}) for support and updates!",
+            inline=False
+        )
+        
+        embed.set_footer(text="Developed by Quefep • Unofficial fan-made bot")
+        
+        # Create view with invite button
+        view = discord.ui.View(timeout=None)
+        invite_button = discord.ui.Button(
+            label="Add to Server",
+            url=BOT_INVITE_LINK,
+            style=discord.ButtonStyle.link,
+            emoji="🤖"
+        )
+        view.add_item(invite_button)
+        
+        await interaction.response.send_message(embed=embed, view=view)
+    
+    @app_commands.command(name="refresh", description="Refresh slash commands (Admin only)")
+    @app_commands.default_permissions(administrator=True)
+    async def refresh(self, interaction: discord.Interaction):
+        """Command to manually refresh slash commands."""
         try:
-            import psutil
-            process = psutil.Process()
-            memory_mb = process.memory_info().rss / 1024 / 1024
-            embed.add_field(
-                name="Memory Usage",
-                value=f"{memory_mb:.1f} MB",
-                inline=True
+            # Defer the response first to prevent timeout
+            await interaction.response.defer(ephemeral=True)
+            
+            # Sync commands
+            synced = await self.bot.tree.sync()
+            
+            embed = discord.Embed(
+                title="✅ Commands Refreshed",
+                description=f"Successfully synced {len(synced)} slash command(s)",
+                color=discord.Color.green()
             )
-        except ImportError:
+            
+            # List all available commands
+            all_commands = []
+            for cmd in self.bot.tree.get_commands():
+                all_commands.append(f"`/{cmd.name}`")
+            
             embed.add_field(
-                name="Memory Usage",
-                value="Not available",
-                inline=True
+                name="📋 Available Commands",
+                value=", ".join(all_commands),
+                inline=False
             )
-        
-        await ctx.send(embed=embed)
-    
-    @commands.command(name="invite")
-    async def invite(self, ctx):
-        """Get the bot's invite link."""
-        embed = EmbedGenerator.create_embed(
-            title="Invite Link",
-            description="Click the link below to invite this bot to your server!",
-            color=discord.Color.green()
-        )
-        
-        # Generate invite link (you'll need to replace with your bot's client ID)
-        client_id = self.bot.user.id
-        invite_link = f"https://discord.com/api/oauth2/authorize?client_id={client_id}&permissions=8&scope=bot"
-        
-        embed.add_field(
-            name="Invite Link",
-            value=f"[Click here to invite the bot]({invite_link})",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="Required Permissions",
-            value="• Send Messages\n• Embed Links\n• Read Message History\n• Use Slash Commands",
-            inline=False
-        )
-        
-        await ctx.send(embed=embed)
-    
-    @commands.command(name="support")
-    async def support(self, ctx):
-        """Show support information."""
-        embed = EmbedGenerator.create_embed(
-            title="🆘 Support",
-            description="Need help with the bot? Here's how to get support:",
-            color=discord.Color.blue()
-        )
-        
-        embed.add_field(
-            name="Discord Server",
-            value="[Join our community server!](https://discord.gg/a3tGyAwVRc)\nGet help, report bugs, and chat with other users.",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="GitHub Issues",
-            value="Report bugs or request features on our GitHub repository.",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="Commands",
-            value="Use `!help` to see all available commands\nUse `!help <command>` for detailed command information",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="Bot Status",
-            value=f"**Version**: {BOT_VERSION} (Beta)\n**Status**: Online and ready to help!",
-            inline=False
-        )
-        
-        await ctx.send(embed=embed)
-
-    @commands.command(name="server")
-    async def server(self, ctx):
-        """Get the Discord server invite link."""
-        embed = EmbedGenerator.create_embed(
-            title="🎮 Join Our Community!",
-            description="Connect with other Avatar Realms Collide players and get bot support.",
-            color=discord.Color.blue()
-        )
-        
-        embed.add_field(
-            name="Discord Server",
-            value="[Click here to join!](https://discord.gg/a3tGyAwVRc)",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="What you'll find:",
-            value="• Bot support and help\n• Game discussions\n• Character builds and strategies\n• Event coordination\n• Community features",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="Bot Features",
-            value="• Character information and talent trees\n• Event tracking and notifications\n• User profiles and preferences\n• Search and comparison tools",
-            inline=False
-        )
-        
-        await ctx.send(embed=embed)
+            
+            embed.set_footer(text="Commands are now available in Discord!")
+            
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            
+        except Exception as e:
+            try:
+                embed = discord.Embed(
+                    title="❌ Refresh Failed",
+                    description=f"Error refreshing commands: {str(e)}",
+                    color=discord.Color.red()
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+            except:
+                # If followup also fails, try to send a simple message
+                try:
+                    await interaction.followup.send("❌ Failed to refresh commands. Please try again later.", ephemeral=True)
+                except:
+                    pass  # If all else fails, just log the error
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""

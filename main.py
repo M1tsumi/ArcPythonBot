@@ -79,12 +79,14 @@ class AvatarRealmsBot(commands.Bot):
         
         # Load all cogs
         cog_files = [
+            'cogs.talent_trees',
+            'cogs.leaderboards',
+            'cogs.skill_priorities',
+            'cogs.town_hall',
+            'cogs.hero_rankup',
             'cogs.utility',
-            'cogs.game_info', 
-            'cogs.player_tools',
             'cogs.events',
-            'cogs.moderation',
-            'cogs.slash_commands'
+            'cogs.moderation'
         ]
         
         for cog in cog_files:

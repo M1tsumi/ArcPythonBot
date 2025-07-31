@@ -345,7 +345,7 @@ class DataParser:
             Dictionary with image paths or None if not found
         """
         try:
-            talent_images_dir = Path("HeroTalentImages")
+            talent_images_dir = Path("assets/images/talents")
             if not talent_images_dir.exists():
                 return None
             
