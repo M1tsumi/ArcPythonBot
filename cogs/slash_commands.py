@@ -541,7 +541,149 @@ class SlashCommands(commands.Cog):
         
         embed.set_footer(text="Join our Discord for more information and updates!")
         
-        await interaction.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed)
+    
+    @app_commands.command(name="townhall", description="View town hall information and requirements")
+    async def townhall(self, interaction: discord.Interaction):
+        """Interactive command to view town hall information."""
+        embed = discord.Embed(
+            title="🏛️ Town Hall Information",
+            description="Maximum town hall level is **30**. Resources and time increase exponentially with each level.",
+            color=discord.Color.gold()
+        )
+        
+        embed.add_field(
+            name="📊 Overview",
+            value="• **Max Level:** 30\n• **Resource Growth:** Exponential\n• **Time Growth:** Exponential\n• **Note:** Times shown do not include research and town hall buffs for time reduction",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🎯 Select Level",
+            value="Choose a town hall level (3-30) to view detailed requirements:",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Select a level below")
+        
+        # Create view with town hall level selection
+        view = TownHallView()
+        await interaction.response.send_message(embed=embed, view=view)
+
+class TownHallView(discord.ui.View):
+    """View for town hall level selection."""
+    
+    def __init__(self):
+        super().__init__(timeout=60)
+        
+        # Town hall data
+        self.town_hall_data = {
+            3: {"food": "2.3K", "wood": "2.3K", "stone": "700", "time": "15s"},
+            4: {"food": "3.7K", "wood": "3.7K", "stone": "1.0K", "time": "40s"},
+            5: {"food": "6.7K", "wood": "6.7K", "stone": "3.0K", "time": "2m"},
+            6: {"food": "12.0K", "wood": "12.0K", "stone": "7.2K", "time": "5m"},
+            7: {"food": "16.8K", "wood": "16.8K", "stone": "10.1K", "time": "50m"},
+            8: {"food": "23.5K", "wood": "23.5K", "stone": "14.1K", "time": "2h 30m"},
+            9: {"food": "32.9K", "wood": "32.9K", "stone": "19.7K", "time": "5h"},
+            10: {"food": "47.4K", "wood": "47.4K", "stone": "28.4K", "time": "7h 20m"},
+            11: {"food": "68.3K", "wood": "68.3K", "stone": "41.0K", "time": "12h"},
+            12: {"food": "98.4K", "wood": "98.4K", "stone": "59.0K", "time": "13h 12m"},
+            13: {"food": "142.0K", "wood": "142.0K", "stone": "85.2K", "time": "14h 31m 10s"},
+            14: {"food": "204.0K", "wood": "204.0K", "stone": "122.0K", "time": "1d 3h 35m 10s"},
+            15: {"food": "298.0K", "wood": "298.0K", "stone": "179.0K", "time": "1d 9h 6m 10s"},
+            16: {"food": "435.0K", "wood": "435.0K", "stone": "261.0K", "time": "1d 15h 43m 20s"},
+            17: {"food": "635.0K", "wood": "635.0K", "stone": "381.0K", "time": "1d 19h 41m 40s"},
+            18: {"food": "927.0K", "wood": "927.0K", "stone": "556.0K", "time": "2d 3m 50s"},
+            19: {"food": "1.4M", "wood": "1.4M", "stone": "840.0K", "time": "2d 4h 52m 10s"},
+            20: {"food": "2.0M", "wood": "2.0M", "stone": "1.2M", "time": "3d 2h 1m"},
+            21: {"food": "2.9M", "wood": "2.9M", "stone": "1.7M", "time": "3d 16h 49m 10s"},
+            22: {"food": "4.3M", "wood": "4.3M", "stone": "2.6M", "time": "4d 10h 35m"},
+            23: {"food": "6.3M", "wood": "6.3M", "stone": "3.8M", "time": "5d 7h 54m"},
+            24: {"food": "9.3M", "wood": "9.3M", "stone": "5.6M", "time": "6d 9h 28m 50s"},
+            25: {"food": "13.7M", "wood": "13.7M", "stone": "8.2M", "time": "8d 22h 52m 20s"},
+            26: {"food": "20.3M", "wood": "20.3M", "stone": "12.2M", "time": "16d 2h 46m 10s"},
+            27: {"food": "30.0M", "wood": "30.0M", "stone": "18.0M", "time": "20d 22h 48m"},
+            28: {"food": "44.4M", "wood": "44.4M", "stone": "26.6M", "time": "27d 5h 38m 20s"},
+            29: {"food": "65.7M", "wood": "65.7M", "stone": "39.4M", "time": "46d 7h 11m 10s"},
+            30: {"food": "98.6M", "wood": "98.6M", "stone": "59.2M", "time": "148d 3h 47m 40s"}
+        }
+        
+        # Add level selection dropdown
+        options = []
+        for level in range(3, 31):
+            options.append(discord.SelectOption(
+                label=f"Town Hall {level}",
+                description=f"Level {level} requirements",
+                value=str(level)
+            ))
+        
+        self.add_item(TownHallDropdown(self.town_hall_data, options))
+
+class TownHallDropdown(discord.ui.Select):
+    """Dropdown for town hall level selection."""
+    
+    def __init__(self, town_hall_data: dict, options: list):
+        super().__init__(
+            placeholder="Select a town hall level...",
+            min_values=1,
+            max_values=1,
+            options=options
+        )
+        self.town_hall_data = town_hall_data
+        
+    async def callback(self, interaction: discord.Interaction):
+        """Handle town hall level selection."""
+        level = int(self.values[0])
+        data = self.town_hall_data.get(level)
+        
+        if not data:
+            embed = discord.Embed(
+                title="❌ Level Not Found",
+                description=f"Town Hall level {level} information is not available.",
+                color=discord.Color.dark_red()
+            )
+            await interaction.response.edit_message(embed=embed, view=None)
+            return
+        
+        embed = discord.Embed(
+            title=f"🏛️ Town Hall {level}",
+            description=f"Requirements for upgrading to Town Hall level {level}",
+            color=discord.Color.gold()
+        )
+        
+        embed.add_field(
+            name="🌾 Food",
+            value=f"**{data['food']}**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🪵 Wood",
+            value=f"**{data['wood']}**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🪨 Stone",
+            value=f"**{data['stone']}**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="⏰ Base Time",
+            value=f"**{data['time']}**",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📝 Note",
+            value="*Times shown do not include research and town hall buffs for time reduction*",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Town Hall requirements")
+        
+        await interaction.response.edit_message(embed=embed, view=None)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""
