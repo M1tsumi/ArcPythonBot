@@ -109,8 +109,8 @@ class AvatarRealmsBot(commands.Bot):
         
         # Set bot status
         activity = discord.Activity(
-            type=discord.ActivityType.watching,
-            name="Avatar Realms Collide"
+            type=discord.ActivityType.playing,
+            name="Developed by Quefep, Join Discord For More Information!"
         )
         await self.change_presence(activity=activity)
     

@@ -56,7 +56,7 @@ class ElementSelectDropdown(discord.ui.Select):
         )
         
         # Sort characters by rarity (Legendary first, then Epic, then Rare)
-        rarity_order = {"Legendary": 1, "Epic": 2, "Rare": 3, "Mythic": 0}
+        rarity_order = {"Legendary": 1, "Epic": 2, "Rare": 3}
         sorted_characters = sorted(element_characters, key=lambda x: rarity_order.get(x.get('rarity', 'Rare'), 3))
         
         # Add character list with clean formatting
@@ -92,8 +92,7 @@ class ElementSelectDropdown(discord.ui.Select):
         rarity_emojis = {
             "Rare": "🔵",
             "Epic": "🟣",
-            "Legendary": "🟡",
-            "Mythic": "🟠"
+            "Legendary": "🟡"
         }
         return rarity_emojis.get(rarity, "🔵")
 
@@ -227,8 +226,7 @@ class CharacterSelectView(discord.ui.View):
         rarity_emojis = {
             "Rare": "🔵",
             "Epic": "🟣",
-            "Legendary": "🟡",
-            "Mythic": "🟠"
+            "Legendary": "🟡"
         }
         return rarity_emojis.get(rarity, "🔵")
     
@@ -249,7 +247,7 @@ class CharacterSelectView(discord.ui.View):
         
         embed.add_field(
             name="📊 Character Rarities",
-            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
+            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary**",
             inline=False
         )
         
@@ -444,7 +442,7 @@ class SlashCommands(commands.Cog):
         
         embed.add_field(
             name="📊 Character Rarities",
-            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary** • **🟠 Mythic**",
+            value="**🔵 Rare** • **🟣 Epic** • **🟡 Legendary**",
             inline=False
         )
         
@@ -513,6 +511,37 @@ class SlashCommands(commands.Cog):
         # Create view with hero selection buttons
         view = SkillPriorityView(self.data_parser)
         await interaction.response.send_message(embed=embed, view=view)
+    
+    @app_commands.command(name="links", description="Get bot links and information")
+    async def links(self, interaction: discord.Interaction):
+        """Command to provide bot links and information."""
+        embed = discord.Embed(
+            title="🔗 Bot Links & Information",
+            description="Connect with the Avatar Realms Collide community!",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="📱 Join Our Discord Server",
+            value="[Join Server](https://discord.gg/a3tGyAwVRc)",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🤖 Add Bot to Your Server",
+            value="[Add to Server](https://discord.com/oauth2/authorize?client_id=1242988284347420673)",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="👨‍💻 Developer",
+            value="**Developed by Quefep**",
+            inline=False
+        )
+        
+        embed.set_footer(text="Join our Discord for more information and updates!")
+        
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""
