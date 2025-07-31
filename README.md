@@ -104,7 +104,7 @@ View top performers in the game:
 
 ### Water Element 💧
 - **Katara** (Epic) - Master Waterbender and skilled healer
-- **Yue** (Epic) - Moon spirit and Water Tribe princess
+- **Yue** (Rare) - Moon spirit and Water Tribe princess
 - **Katara (Painted Lady)** (Legendary) - Mysterious Painted Lady
 - **Unalaq** (Legendary) - Dark Waterbending master and spiritual leader
 - **Korra** (Legendary) - Water Tribe Avatar of the modern era
@@ -128,7 +128,12 @@ View top performers in the game:
 - **Bumi** (Legendary) - Eccentric Airbending master and king
 - **Borte** (Epic) - Water Tribe warrior and fierce protector
 
-### Additional Characters
+### Fire Element 🔥
+- **Zuko** (Epic) - Fire Nation prince and Firebending master
+- **Azula** (Legendary) - Firebending prodigy and Fire Nation princess
+- **Iroh** (Legendary) - Wise Firebending master and Dragon of the West
+- **Roku** (Legendary) - Fire Nation Avatar of balance and wisdom
+- **Asami** (Epic) - Genius inventor and Fire Nation engineer
 - **Piandao** (Rare) - Master swordsman and Fire Nation instructor
 
 ## 🔧 Technical Details

@@ -50,24 +50,32 @@ class ElementSelectDropdown(discord.ui.Select):
         
         # Create character selection embed
         embed = discord.Embed(
-            title=f"Meet the {element} Masters",
-            description=f"Discover {len(element_characters)} incredible characters from the {element} element",
+            title=f"🌟 {element} Element Masters",
+            description=f"Explore {len(element_characters)} powerful characters from the {element} element. Each master brings unique abilities and strategies to the battlefield.",
             color=self.get_element_color(element)
         )
         
-        # Add character list with clean formatting
+        # Add character list with detailed formatting
         char_list = ""
         for char in element_characters:
             rarity_emoji = self.get_rarity_emoji(char.get('rarity', 'Unknown'))
-            char_list += f"{rarity_emoji} **{char['name']}**\n"
+            rarity_text = char.get('rarity', 'Unknown')
+            category = char.get('category', 'Unknown')
+            char_list += f"{rarity_emoji} **{char['name']}** • {rarity_text} {category}\n"
         
         embed.add_field(
-            name="Available Characters",
+            name=f"🎯 {element} Characters Available",
             value=char_list,
             inline=False
         )
         
-        embed.set_footer(text="Choose your champion below")
+        embed.add_field(
+            name="📊 Element Information",
+            value=f"**{element}** characters excel in {element.lower()} bending techniques. Select a character below to view their talent trees and abilities.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose your champion below")
         
         # Create character selection view
         view = CharacterSelectView(self.data_parser, element_characters)
@@ -86,13 +94,13 @@ class ElementSelectDropdown(discord.ui.Select):
     def get_rarity_emoji(self, rarity: str) -> str:
         """Get emoji for character rarity."""
         rarity_emojis = {
-            "Common": "⚪",
-            "Rare": "🔵",
-            "Epic": "🟣",
-            "Legendary": "🟡",
-            "Mythic": "🟠"
+            "Common": "📜",
+            "Rare": "💎",
+            "Epic": "👑",
+            "Legendary": "⭐",
+            "Mythic": "🔥"
         }
-        return rarity_emojis.get(rarity, "⚪")
+        return rarity_emojis.get(rarity, "📜")
 
 class CharacterSelectView(discord.ui.View):
     """View for selecting characters with buttons."""
@@ -140,29 +148,29 @@ class CharacterSelectView(discord.ui.View):
         
         # Create comprehensive embed with character information
         embed = discord.Embed(
-            title=f"🌟 {character_name}",
-            description=character.get('description', ''),
+            title=f"🌟 {character_name} - {character.get('rarity', 'Unknown')} {character.get('category', 'Unknown')}",
+            description=f"*{character.get('description', '')}*\n\nThis {character.get('element', 'Unknown').lower()} master brings unique abilities to your team composition.",
             color=self.get_element_color(character.get('element', 'Unknown'))
         )
         
         # Add character information if available
         if character:
-            # Create stats section
+            # Create detailed stats section
             stats_text = ""
             if 'rarity' in character:
                 rarity_emoji = self.get_rarity_emoji(character['rarity'])
-                stats_text += f"{rarity_emoji} **{character['rarity']}**\n"
+                stats_text += f"{rarity_emoji} **Rarity:** {character['rarity']}\n"
             
             if 'element' in character:
                 element_emoji = self.get_element_emoji(character['element'])
-                stats_text += f"{element_emoji} **{character['element']}**\n"
+                stats_text += f"{element_emoji} **Element:** {character['element']}\n"
             
             if 'category' in character:
-                stats_text += f"**{character['category']}**\n"
+                stats_text += f"🎯 **Role:** {character['category']}\n"
             
             if stats_text:
                 embed.add_field(
-                    name="Character Stats",
+                    name="📊 Character Statistics",
                     value=stats_text,
                     inline=True
                 )
@@ -170,12 +178,18 @@ class CharacterSelectView(discord.ui.View):
         # Add talent type information
         if talent_type_info and talent_type_info.get('talent_type'):
             embed.add_field(
-                name="Talent Specialization",
-                value=talent_type_info['talent_type'],
+                name="🌳 Talent Specialization",
+                value=f"**{talent_type_info['talent_type']}**\nThis character specializes in {talent_type_info['talent_type'].lower()} talents.",
                 inline=True
             )
         
-        embed.set_footer(text="Your talent trees are ready below")
+        embed.add_field(
+            name="🎮 Gameplay Information",
+            value=f"**{character_name}** is a {character.get('rarity', 'Unknown').lower()} tier character with {character.get('element', 'Unknown').lower()} bending abilities. Their talent trees provide strategic options for different playstyles.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Your talent trees are ready below")
         
         # Send the embed first
         await interaction.response.edit_message(embed=embed, view=None)
@@ -222,30 +236,36 @@ class CharacterSelectView(discord.ui.View):
     def get_rarity_emoji(self, rarity: str) -> str:
         """Get emoji for character rarity."""
         rarity_emojis = {
-            "Common": "⚪",
-            "Rare": "🔵",
-            "Epic": "🟣",
-            "Legendary": "🟡",
-            "Mythic": "🟠"
+            "Common": "📜",
+            "Rare": "💎",
+            "Epic": "👑",
+            "Legendary": "⭐",
+            "Mythic": "🔥"
         }
-        return rarity_emojis.get(rarity, "⚪")
+        return rarity_emojis.get(rarity, "📜")
     
     @discord.ui.button(label="⬅️ Back to Elements", style=discord.ButtonStyle.secondary, emoji="⬅️")
     async def back_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Go back to element selection."""
         embed = discord.Embed(
-            title="Welcome to the Talent Tree Browser",
-            description="Ready to explore the bending arts? Choose your element to discover amazing characters!",
+            title="🌟 Welcome to the Talent Tree Browser",
+            description="**Ready to explore the bending arts?** Choose your element to discover amazing characters with unique abilities and strategic talent trees. Each character brings their own strengths to the battlefield.",
             color=discord.Color.from_rgb(52, 152, 219)
         )
         
         embed.add_field(
-            name="Available Elements",
-            value="🔥 Fire • 💧 Water • 🌍 Earth • 💨 Air",
+            name="🎯 Available Elements",
+            value="**🔥 Fire** • **💧 Water** • **🌍 Earth** • **💨 Air**\n\nEach element represents different bending techniques and strategic approaches to combat.",
             inline=False
         )
         
-        embed.set_footer(text="Pick your element to begin your journey")
+        embed.add_field(
+            name="📊 Character Rarities",
+            value="**📜 Common** • **💎 Rare** • **👑 Epic** • **⭐ Legendary** • **🔥 Mythic**\n\nRarity indicates character power level and strategic value.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Pick your element to begin your journey")
         
         view = discord.ui.View(timeout=60)
         view.add_item(ElementSelectDropdown(self.data_parser))
@@ -273,13 +293,19 @@ class LeaderboardView(discord.ui.View):
             
             embed = discord.Embed(
                 title="👑 Top 10 Leaders",
-                description="The most powerful players in Avatar Realms Collide!",
+                description="**The most powerful players in Avatar Realms Collide!** These elite warriors have proven their strength and strategic mastery in the arena. Check out their rankings and achievements.",
                 color=discord.Color.gold()
+            )
+            
+            embed.add_field(
+                name="🏆 Leaderboard Information",
+                value="This leaderboard tracks individual player performance based on victories, strategic gameplay, and overall contribution to the Avatar Realms Collide community.",
+                inline=False
             )
             
             file = discord.File(file_path, filename="top-leaders.webp")
             embed.set_image(url="attachment://top-leaders.webp")
-            embed.set_footer(text="Updated regularly")
+            embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Updated regularly")
             
             await interaction.response.edit_message(embed=embed, view=None)
             await interaction.followup.send(file=file)
@@ -308,13 +334,19 @@ class LeaderboardView(discord.ui.View):
             
             embed = discord.Embed(
                 title="🤝 Top 10 Alliances",
-                description="The strongest alliances in Avatar Realms Collide!",
+                description="**The strongest alliances in Avatar Realms Collide!** These powerful groups have united their forces to dominate the battlefield through teamwork and coordinated strategies.",
                 color=discord.Color.blue()
+            )
+            
+            embed.add_field(
+                name="🏆 Alliance Information",
+                value="This leaderboard tracks alliance performance based on collective victories, coordinated strategies, and overall alliance strength in the Avatar Realms Collide community.",
+                inline=False
             )
             
             file = discord.File(file_path, filename="top-alliances.webp")
             embed.set_image(url="attachment://top-alliances.webp")
-            embed.set_footer(text="Updated regularly")
+            embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Updated regularly")
             
             await interaction.response.edit_message(embed=embed, view=None)
             await interaction.followup.send(file=file)
@@ -339,18 +371,24 @@ class SlashCommands(commands.Cog):
     async def talent_trees(self, interaction: discord.Interaction):
         """Interactive command to browse talent trees by element."""
         embed = discord.Embed(
-            title="Welcome to the Talent Tree Browser",
-            description="Ready to explore the bending arts? Choose your element to discover amazing characters!",
+            title="🌟 Welcome to the Talent Tree Browser",
+            description="**Ready to explore the bending arts?** Choose your element to discover amazing characters with unique abilities and strategic talent trees. Each character brings their own strengths to the battlefield.",
             color=discord.Color.from_rgb(52, 152, 219)
         )
         
         embed.add_field(
-            name="Available Elements",
-            value="🔥 Fire • 💧 Water • 🌍 Earth • 💨 Air",
+            name="🎯 Available Elements",
+            value="**🔥 Fire** • **💧 Water** • **🌍 Earth** • **💨 Air**\n\nEach element represents different bending techniques and strategic approaches to combat.",
             inline=False
         )
         
-        embed.set_footer(text="Pick your element to begin your journey")
+        embed.add_field(
+            name="📊 Character Rarities",
+            value="**📜 Common** • **💎 Rare** • **👑 Epic** • **⭐ Legendary** • **🔥 Mythic**\n\nRarity indicates character power level and strategic value.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Pick your element to begin your journey")
         
         view = discord.ui.View(timeout=60)
         view.add_item(ElementSelectDropdown(self.data_parser))
@@ -361,17 +399,29 @@ class SlashCommands(commands.Cog):
         """Interactive command to view leaderboards."""
         embed = discord.Embed(
             title="🏆 Leaderboard Rankings",
-            description="Check out the top performers in Avatar Realms Collide!",
+            description="**Check out the top performers in Avatar Realms Collide!** Track the most powerful players and strongest alliances as they compete for dominance in the arena.",
             color=discord.Color.gold()
         )
         
         embed.add_field(
-            name="Available Rankings",
-            value="👑 Top 10 Leaders • 🤝 Top 10 Alliances",
+            name="👑 Individual Rankings",
+            value="**Top 10 Leaders**\nTrack the most powerful individual players based on victories, strategic gameplay, and overall performance.",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🤝 Alliance Rankings",
+            value="**Top 10 Alliances**\nMonitor the strongest groups based on collective victories, coordinated strategies, and alliance strength.",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="📊 Leaderboard Information",
+            value="These leaderboards are updated regularly to reflect current player and alliance performance. Rankings are based on multiple factors including victories, strategic gameplay, and community contribution.",
             inline=False
         )
         
-        embed.set_footer(text="Choose a leaderboard to view")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose a leaderboard to view")
         
         view = LeaderboardView()
         await interaction.response.send_message(embed=embed, view=view)

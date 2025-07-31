@@ -77,7 +77,7 @@ class DataParser:
             
             # Waterbenders
             {"name": "Katara", "element": "Water", "category": "Waterbender", "rarity": "Epic", "description": "Master Waterbender and skilled healer"},
-            {"name": "Yue", "element": "Water", "category": "Spirit", "rarity": "Epic", "description": "Moon spirit and Water Tribe princess"},
+            {"name": "Yue", "element": "Water", "category": "Spirit", "rarity": "Rare", "description": "Moon spirit and Water Tribe princess"},
             {"name": "Katara (Painted Lady)", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Katara as the mysterious Painted Lady"},
             {"name": "Unalaq", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Dark Waterbending master and spiritual leader"},
             {"name": "Korra", "element": "Water", "category": "Avatar", "rarity": "Legendary", "description": "Water Tribe Avatar of the modern era"},
