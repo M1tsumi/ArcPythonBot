@@ -3,6 +3,7 @@ Events commands cog for the Avatar Realms Collide Discord Bot.
 """
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from typing import Optional
 from utils.embed_generator import EmbedGenerator
@@ -17,14 +18,20 @@ class Events(commands.Cog):
         self.logger = bot.logger
         self.data_parser = DataParser()
     
-    @commands.command(name="events")
-    async def list_events(self, ctx, event_type: Optional[str] = "current"):
+    @app_commands.command(name="events", description="List current and upcoming events")
+    @app_commands.describe(event_type="Type of events to show (current, past, or all)")
+    @app_commands.choices(event_type=[
+        app_commands.Choice(name="Current Events", value="current"),
+        app_commands.Choice(name="Past Events", value="past"),
+        app_commands.Choice(name="All Events", value="all")
+    ])
+    async def list_events(self, interaction: discord.Interaction, event_type: str = "current"):
         """List current and upcoming events."""
         if event_type not in ["current", "past", "all"]:
             embed = EmbedGenerator.create_error_embed(
                 "Invalid event type. Use 'current', 'past', or 'all'."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         events = self.data_parser.get_events(event_type)
@@ -35,7 +42,7 @@ class Events(commands.Cog):
                 description=f"No {event_type} events found in the database.",
                 color=discord.Color.orange()
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         # Create events list embed
@@ -62,22 +69,23 @@ class Events(commands.Cog):
         
         embed.add_field(
             name="Usage",
-            value="Use `!event_details <name>` to get detailed information about a specific event.",
+            value="Use `/event_details <name>` to get detailed information about a specific event.",
             inline=False
         )
         
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
     
-    @commands.command(name="event_details")
-    async def event_details(self, ctx, *, event_name: str):
+    @app_commands.command(name="event_details", description="Get detailed information about a specific event")
+    @app_commands.describe(event_name="Name of the event to get details for")
+    async def event_details(self, interaction: discord.Interaction, event_name: str):
         """Get detailed information about a specific event."""
         event = self.data_parser.get_event(event_name)
         
         if not event:
             embed = EmbedGenerator.create_error_embed(
-                f"Event '{event_name}' not found. Use `!events` to see available events."
+                f"Event '{event_name}' not found. Use `/events` to see available events."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         # Create detailed event embed
@@ -107,10 +115,10 @@ class Events(commands.Cog):
                 tips_text += f"💡 {tip}\n"
             embed.add_field(name="Tips", value=tips_text, inline=False)
         
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
     
-    @commands.command(name="upcoming")
-    async def upcoming_events(self, ctx):
+    @app_commands.command(name="upcoming", description="Show upcoming events only")
+    async def upcoming_events(self, interaction: discord.Interaction):
         """Show upcoming events only."""
         events = self.data_parser.get_events("current")
         
@@ -120,7 +128,7 @@ class Events(commands.Cog):
                 description="There are no upcoming events at this time.",
                 color=discord.Color.orange()
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         # Filter for upcoming events (you could add date logic here)
@@ -145,18 +153,19 @@ class Events(commands.Cog):
         
         embed.add_field(
             name="More Information",
-            value="Use `!event_details <name>` to get detailed information about a specific event.",
+            value="Use `/event_details <name>` to get detailed information about a specific event.",
             inline=False
         )
         
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
     
-    @commands.command(name="event_search")
-    async def search_events(self, ctx, *, search_term: str):
+    @app_commands.command(name="event_search", description="Search for events by name or description")
+    @app_commands.describe(search_term="Search term to find events")
+    async def search_events(self, interaction: discord.Interaction, search_term: str):
         """Search for events by name or description."""
         if len(search_term) < 2:
             embed = EmbedGenerator.create_error_embed("Search term must be at least 2 characters long.")
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         events = self.data_parser.get_events("all")
@@ -174,7 +183,7 @@ class Events(commands.Cog):
             embed = EmbedGenerator.create_error_embed(
                 f"No events found matching '{search_term}'."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         # Create search results embed
@@ -201,14 +210,15 @@ class Events(commands.Cog):
         
         embed.add_field(
             name="Usage",
-            value="Use `!event_details <name>` to get detailed information about an event.",
+            value="Use `/event_details <name>` to get detailed information about an event.",
             inline=False
         )
         
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
     
-    @commands.command(name="event_rewards")
-    async def event_rewards(self, ctx, *, event_name: str):
+    @app_commands.command(name="event_rewards", description="Show rewards for a specific event")
+    @app_commands.describe(event_name="Name of the event to show rewards for")
+    async def event_rewards(self, interaction: discord.Interaction, event_name: str):
         """Show rewards for a specific event."""
         event = self.data_parser.get_event(event_name)
         
@@ -216,14 +226,14 @@ class Events(commands.Cog):
             embed = EmbedGenerator.create_error_embed(
                 f"Event '{event_name}' not found."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         if 'rewards' not in event or not event['rewards']:
             embed = EmbedGenerator.create_error_embed(
                 f"No rewards information available for event '{event_name}'."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         
         # Create rewards embed
@@ -263,7 +273,7 @@ class Events(commands.Cog):
                 req_text += f"📋 {req}\n"
             embed.add_field(name="Requirements", value=req_text, inline=False)
         
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""
