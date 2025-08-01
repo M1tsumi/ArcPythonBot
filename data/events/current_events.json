@@ -1,0 +1,78 @@
+{
+  "events": [
+    {
+      "name": "Glorious Victory",
+      "description": "A special event where players compete to earn points and claim valuable rewards including gems, spirit badges, spirit shards, and research speedups. Defeat Shattered Skull Fortresses of different levels to earn points - higher levels give more points!",
+      "type": "Competitive",
+      "difficulty": "Medium",
+      "duration": "3 days",
+      "start_date": "2024-01-15",
+      "end_date": "2024-01-18",
+      "mechanics": [
+        "Earn points through various activities",
+        "Complete daily objectives",
+        "Participate in alliance events",
+        "Win battles and skirmishes",
+        "Defeat Shattered Skull Fortresses for points:",
+        "• Level 1: 10 points each",
+        "• Level 2: 20 points each", 
+        "• Level 3: 30 points each",
+        "• Level 4: 45 points each",
+        "• Level 5: 50 points each",
+        "• Level 6: 60 points each"
+      ],
+      "tips": [
+        "Focus on daily objectives for consistent point gains",
+        "Coordinate with your alliance for better rewards",
+        "Save speedups for the final push",
+        "Prioritize activities that give the most points per time invested",
+        "Target higher level Shattered Skull Fortresses for better point efficiency",
+        "Level 6 fortresses give the most points (60) but may be harder to defeat",
+        "Level 4 fortresses offer good point-to-difficulty ratio (45 points)",
+        "Coordinate with alliance members to take down higher level fortresses together"
+      ],
+      "rewards": [
+        {
+          "points": 30,
+          "rewards": [
+            "100 Gems",
+            "3 Rare Spirit Badges",
+            "1 60-minute Research Speedup"
+          ]
+        },
+        {
+          "points": 70,
+          "rewards": [
+            "150 Gems",
+            "1 Epic Spirit Shard",
+            "1 Epic Spirit Badge",
+            "3 60-minute Research Speedups"
+          ]
+        },
+        {
+          "points": 120,
+          "rewards": [
+            "200 Gems",
+            "3 Epic Spirit Shards",
+            "3 Epic Spirit Badges",
+            "5 60-minute Research Speedups"
+          ]
+        },
+        {
+          "points": 200,
+          "rewards": [
+            "300 Gems",
+            "1 Legendary Spirit Shard",
+            "1 Legendary Spirit Badge",
+            "10 60-minute Research Speedups"
+          ]
+        }
+      ],
+      "requirements": [
+        "Must be level 10 or higher",
+        "Must be in an active alliance",
+        "Must have completed tutorial"
+      ]
+    }
+  ]
+} 

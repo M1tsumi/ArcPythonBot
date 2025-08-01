@@ -5,6 +5,37 @@ All notable changes to the Avatar Realms Collide Discord Bot will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-01-XX
+
+### 🎮 New Event System & Glorious Victory Event
+This release introduces a comprehensive event system with the first event - Glorious Victory, featuring point-based rewards and Shattered Skull Fortress mechanics.
+
+### 🆕 New Event System
+- **Event Management**: Complete event tracking and display system
+- **Point-Based Rewards**: Tiered reward system with point requirements
+- **Event Commands**: `/events`, `/event_details`, `/event_rewards`, `/upcoming`, `/event_search`
+- **Rich Event Data**: Detailed event information with mechanics, tips, and requirements
+- **Backward Compatibility**: Supports both new point-based and legacy reward formats
+
+### 🏆 Glorious Victory Event
+- **Competitive Event**: 3-day competitive event with point-based progression
+- **Shattered Skull Fortresses**: Detailed point system for fortress levels:
+  - Level 1: 10 points each
+  - Level 2: 20 points each
+  - Level 3: 30 points each
+  - Level 4: 45 points each
+  - Level 5: 50 points each
+  - Level 6: 60 points each
+- **Reward Tiers**: 4 reward tiers (30, 70, 120, 200 points)
+- **Valuable Rewards**: Gems, Spirit Badges, Spirit Shards, and Research Speedups
+- **Strategic Tips**: Event-specific advice for maximizing points
+
+### 🔧 Technical Improvements
+- **Enhanced Embed System**: Updated embed generator to handle point-based reward structures
+- **Data Parser Updates**: Improved event data loading and caching
+- **Event Search**: Full-text search across event names and descriptions
+- **Modular Event Structure**: Easy to add new events with consistent formatting
+
 ## [1.0.0] - 2024-01-XX
 
 ### 🎉 Major Code Reorganization & First Stable Version

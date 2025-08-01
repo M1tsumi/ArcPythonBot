@@ -224,17 +224,59 @@ class EmbedGenerator:
         if 'end_date' in event_data:
             embed.add_field(name="End Date", value=event_data['end_date'], inline=True)
         
-        if 'requirements' in event_data:
+        if 'type' in event_data:
+            embed.add_field(name="Event Type", value=event_data['type'], inline=True)
+        
+        if 'difficulty' in event_data:
+            embed.add_field(name="Difficulty", value=event_data['difficulty'], inline=True)
+        
+        if 'duration' in event_data:
+            embed.add_field(name="Duration", value=event_data['duration'], inline=True)
+        
+        # Add requirements if available
+        if 'requirements' in event_data and event_data['requirements']:
             req_text = ""
             for req in event_data['requirements']:
-                req_text += f"• {req}\n"
+                req_text += f"📋 {req}\n"
             embed.add_field(name="Requirements", value=req_text, inline=False)
         
-        if 'rewards' in event_data:
-            reward_text = ""
-            for reward in event_data['rewards']:
-                reward_text += f"• {reward}\n"
-            embed.add_field(name="Rewards", value=reward_text, inline=False)
+        # Handle rewards with new point-based structure
+        if 'rewards' in event_data and event_data['rewards']:
+            if isinstance(event_data['rewards'], list) and len(event_data['rewards']) > 0 and isinstance(event_data['rewards'][0], dict):
+                # New format with point tiers
+                for reward_tier in event_data['rewards']:
+                    points = reward_tier.get('points', 0)
+                    rewards = reward_tier.get('rewards', [])
+                    
+                    tier_text = ""
+                    for reward in rewards:
+                        tier_text += f"🏆 {reward}\n"
+                    
+                    embed.add_field(
+                        name=f"🎯 {points} Points",
+                        value=tier_text,
+                        inline=False
+                    )
+            else:
+                # Old format (simple list)
+                reward_text = ""
+                for reward in event_data['rewards']:
+                    reward_text += f"🏆 {reward}\n"
+                embed.add_field(name="Rewards", value=reward_text, inline=False)
+        
+        # Add mechanics if available
+        if 'mechanics' in event_data and event_data['mechanics']:
+            mechanics_text = ""
+            for mechanic in event_data['mechanics']:
+                mechanics_text += f"⚙️ {mechanic}\n"
+            embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)
+        
+        # Add tips if available
+        if 'tips' in event_data and event_data['tips']:
+            tips_text = ""
+            for tip in event_data['tips']:
+                tips_text += f"💡 {tip}\n"
+            embed.add_field(name="Tips", value=tips_text, inline=False)
         
         return embed
     

@@ -233,11 +233,28 @@ class Events(commands.Cog):
             color=discord.Color.gold()
         )
         
-        rewards_text = ""
-        for reward in event['rewards']:
-            rewards_text += f"🏆 {reward}\n"
-        
-        embed.add_field(name="Rewards", value=rewards_text, inline=False)
+        # Handle new rewards structure with point tiers
+        if isinstance(event['rewards'], list) and len(event['rewards']) > 0 and isinstance(event['rewards'][0], dict):
+            # New format with point tiers
+            for reward_tier in event['rewards']:
+                points = reward_tier.get('points', 0)
+                rewards = reward_tier.get('rewards', [])
+                
+                tier_text = f"**{points} Points Required:**\n"
+                for reward in rewards:
+                    tier_text += f"🏆 {reward}\n"
+                
+                embed.add_field(
+                    name=f"🎯 {points} Points",
+                    value=tier_text,
+                    inline=False
+                )
+        else:
+            # Old format (simple list)
+            rewards_text = ""
+            for reward in event['rewards']:
+                rewards_text += f"🏆 {reward}\n"
+            embed.add_field(name="Rewards", value=rewards_text, inline=False)
         
         # Add requirements if available
         if 'requirements' in event and event['requirements']:
