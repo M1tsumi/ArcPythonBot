@@ -10,6 +10,135 @@ from utils.embed_generator import EmbedGenerator
 from utils.data_parser import DataParser
 from config.settings import ERROR_MESSAGES
 
+class EventDetailsView(discord.ui.View):
+    """Interactive view for event details with buttons."""
+    
+    def __init__(self, event_data: dict, data_parser: DataParser):
+        super().__init__(timeout=300)  # 5 minute timeout
+        self.event_data = event_data
+        self.data_parser = data_parser
+    
+    @discord.ui.button(label="Rewards", style=discord.ButtonStyle.primary, emoji="🏆")
+    async def show_rewards(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show detailed rewards information."""
+        embed = discord.Embed(
+            title=f"{self.event_data['name']} - Rewards",
+            description="Detailed reward information:",
+            color=discord.Color.gold()
+        )
+        
+        if 'rewards' in self.event_data and self.event_data['rewards']:
+            if isinstance(self.event_data['rewards'], list) and len(self.event_data['rewards']) > 0 and isinstance(self.event_data['rewards'][0], dict):
+                # New format with point tiers
+                for reward_tier in self.event_data['rewards']:
+                    points = reward_tier.get('points', 0)
+                    rewards = reward_tier.get('rewards', [])
+                    
+                    tier_text = ""
+                    for reward in rewards:
+                        tier_text += f"🏆 {reward}\n"
+                    
+                    embed.add_field(
+                        name=f"🎯 {points} Points",
+                        value=tier_text,
+                        inline=False
+                    )
+            else:
+                # Old format (simple list)
+                rewards_text = ""
+                for reward in self.event_data['rewards']:
+                    rewards_text += f"🏆 {reward}\n"
+                embed.add_field(name="Rewards", value=rewards_text, inline=False)
+        
+        await interaction.response.edit_message(embed=embed, view=self)
+    
+    @discord.ui.button(label="Mechanics", style=discord.ButtonStyle.secondary, emoji="⚙️")
+    async def show_mechanics(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show event mechanics."""
+        embed = discord.Embed(
+            title=f"{self.event_data['name']} - Event Mechanics",
+            description="How to participate and earn points:",
+            color=discord.Color.blue()
+        )
+        
+        if 'mechanics' in self.event_data and self.event_data['mechanics']:
+            mechanics_text = ""
+            for mechanic in self.event_data['mechanics']:
+                mechanics_text += f"⚙️ {mechanic}\n"
+            embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)
+        
+        await interaction.response.edit_message(embed=embed, view=self)
+    
+    @discord.ui.button(label="Tips", style=discord.ButtonStyle.success, emoji="💡")
+    async def show_tips(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show event tips and strategies."""
+        embed = discord.Embed(
+            title=f"{self.event_data['name']} - Tips & Strategy",
+            description="Helpful tips to maximize your event performance:",
+            color=discord.Color.green()
+        )
+        
+        if 'tips' in self.event_data and self.event_data['tips']:
+            tips_text = ""
+            for tip in self.event_data['tips']:
+                tips_text += f"💡 {tip}\n"
+            embed.add_field(name="Tips", value=tips_text, inline=False)
+        
+        await interaction.response.edit_message(embed=embed, view=self)
+    
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.danger, emoji="⬅️")
+    async def go_back(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Return to main event overview."""
+        embed = discord.Embed(
+            title=f"Event: {self.event_data.get('name', 'Unknown')}",
+            description=self.event_data.get('description', ''),
+            color=discord.Color.gold()
+        )
+        
+        # Add basic event details
+        if 'start_date' in self.event_data:
+            embed.add_field(name="Start Date", value=self.event_data['start_date'], inline=True)
+        
+        if 'end_date' in self.event_data:
+            embed.add_field(name="End Date", value=self.event_data['end_date'], inline=True)
+        
+        if 'type' in self.event_data:
+            embed.add_field(name="Event Type", value=self.event_data['type'], inline=True)
+        
+        if 'difficulty' in self.event_data:
+            embed.add_field(name="Difficulty", value=self.event_data['difficulty'], inline=True)
+        
+        if 'duration' in self.event_data:
+            embed.add_field(name="Duration", value=self.event_data['duration'], inline=True)
+        
+        # Add requirements if available
+        if 'requirements' in self.event_data and self.event_data['requirements']:
+            req_text = ""
+            for req in self.event_data['requirements']:
+                req_text += f"📋 {req}\n"
+            embed.add_field(name="Requirements", value=req_text, inline=False)
+        
+        # Add basic rewards info
+        if 'rewards' in self.event_data and self.event_data['rewards']:
+            if isinstance(self.event_data['rewards'], list) and len(self.event_data['rewards']) > 0 and isinstance(self.event_data['rewards'][0], dict):
+                # New format with point tiers
+                reward_tiers = len(self.event_data['rewards'])
+                total_points = sum(tier.get('points', 0) for tier in self.event_data['rewards'])
+                embed.add_field(
+                    name="Rewards",
+                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Total points needed: {total_points}\n\nClick **Rewards** button for details!",
+                    inline=False
+                )
+            else:
+                # Old format (simple list)
+                embed.add_field(
+                    name="Rewards",
+                    value=f"🏆 {len(self.event_data['rewards'])} rewards available\n\nClick **Rewards** button for details!",
+                    inline=False
+                )
+        
+        await interaction.response.edit_message(embed=embed, view=self)
+
 class Events(commands.Cog):
     """Event-related commands for the bot."""
     
@@ -88,10 +217,20 @@ class Events(commands.Cog):
             await interaction.response.send_message(embed=embed)
             return
         
-        # Create detailed event embed
-        embed = EmbedGenerator.create_event_embed(event)
+        # Create compact event embed
+        embed = discord.Embed(
+            title=f"Event: {event.get('name', 'Unknown')}",
+            description=event.get('description', ''),
+            color=discord.Color.gold()
+        )
         
-        # Add additional information
+        # Add basic event details
+        if 'start_date' in event:
+            embed.add_field(name="Start Date", value=event['start_date'], inline=True)
+        
+        if 'end_date' in event:
+            embed.add_field(name="End Date", value=event['end_date'], inline=True)
+        
         if 'type' in event:
             embed.add_field(name="Event Type", value=event['type'], inline=True)
         
@@ -101,21 +240,36 @@ class Events(commands.Cog):
         if 'duration' in event:
             embed.add_field(name="Duration", value=event['duration'], inline=True)
         
-        # Add special mechanics
-        if 'mechanics' in event:
-            mechanics_text = ""
-            for mechanic in event['mechanics']:
-                mechanics_text += f"• {mechanic}\n"
-            embed.add_field(name="Special Mechanics", value=mechanics_text, inline=False)
+        # Add requirements if available
+        if 'requirements' in event and event['requirements']:
+            req_text = ""
+            for req in event['requirements']:
+                req_text += f"📋 {req}\n"
+            embed.add_field(name="Requirements", value=req_text, inline=False)
         
-        # Add tips
-        if 'tips' in event:
-            tips_text = ""
-            for tip in event['tips']:
-                tips_text += f"💡 {tip}\n"
-            embed.add_field(name="Tips", value=tips_text, inline=False)
+        # Add basic rewards info
+        if 'rewards' in event and event['rewards']:
+            if isinstance(event['rewards'], list) and len(event['rewards']) > 0 and isinstance(event['rewards'][0], dict):
+                # New format with point tiers
+                reward_tiers = len(event['rewards'])
+                total_points = sum(tier.get('points', 0) for tier in event['rewards'])
+                embed.add_field(
+                    name="Rewards",
+                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Total points needed: {total_points}\n\nClick **Rewards** button for details!",
+                    inline=False
+                )
+            else:
+                # Old format (simple list)
+                embed.add_field(
+                    name="Rewards",
+                    value=f"🏆 {len(event['rewards'])} rewards available\n\nClick **Rewards** button for details!",
+                    inline=False
+                )
         
-        await interaction.response.send_message(embed=embed)
+        # Create buttons for detailed information
+        view = EventDetailsView(event, self.data_parser)
+        
+        await interaction.response.send_message(embed=embed, view=view)
     
     @app_commands.command(name="upcoming", description="Show upcoming events only")
     async def upcoming_events(self, interaction: discord.Interaction):
