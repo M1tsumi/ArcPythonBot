@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.3.0 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.4.0 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -33,6 +33,8 @@
 - **Top 10 Alliances**: Check the strongest alliances
 - **Real-time Updates**: Regularly updated leaderboard data
 - **Interactive Buttons**: Easy navigation between different rankings
+- **Admin Controls**: Pause/resume/clear leaderboards during non-event periods
+- **Event-Aware**: Automatic pause when Glorious Victory event is not active
 
 ### 🏰 **Rally System**
 - **Shattered Skulls Fortress**: Create and join rallies for levels 1-6
@@ -100,6 +102,7 @@ Browse character talent trees by element:
 View top performers in the game:
 - **👑 Top 10 Leaders**: Individual player rankings
 - **🤝 Top 10 Alliances**: Alliance performance rankings
+- **Event Status**: Shows pause status when events are not active
 
 #### `/rally`
 Create and manage Shattered Skulls Fortress rallies:
@@ -127,6 +130,7 @@ Bot status and information:
 | `/ping` | Check bot status and latency | Performance metrics and statistics |
 | `/info` | Bot information and contribution details | Development server and features |
 | `/setup` | Configure rally system (Admin) | Set rally channel for server |
+| `/leader` | Admin leaderboard management | Pause/resume/clear leaderboards |
 
 ## 👥 Character Database
 
@@ -212,18 +216,19 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.3.0 (Current)
+### Version 1.4.0 (Current)
 - ✅ Interactive talent tree browser
-- ✅ Leaderboard system
+- ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
 - ✅ **Performance Optimizations**: Embed caching and faster operations
-- ✅ **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`
+- ✅ **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`, `/leader`
 - ✅ Character database with 25+ characters
 - ✅ Element-based categorization
 - ✅ Professional Discord UI
 - ✅ **Creator Restrictions**: Rally creators cannot join own rallies
 - ✅ **Time Limits**: Configurable rally durations with auto-cleanup
 - ✅ **Point System**: Automatic tracking and rewards
+- ✅ **Admin Controls**: Leaderboard pause/resume/clear functionality
 
 ### Upcoming Features
 - 🔄 **Skill Priorities**: Character skill progression system
@@ -243,16 +248,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📝 Version Notes
 
-### Version 1.3.0
-This is a **stable release** with comprehensive functionality including the new rally system and performance optimizations:
+### Version 1.4.0
+This is a **stable release** with comprehensive functionality including leaderboard management, rally system, and performance optimizations:
 
+- **Leaderboard Management**: Complete admin controls for pausing, resuming, and clearing leaderboards
+- **Event-Aware System**: Automatic leaderboard pausing when events are not active
 - **Rally System**: Complete Shattered Skulls Fortress management with time limits and point tracking
 - **Performance Optimizations**: Embed caching, optimized operations, and enhanced logging
-- **New Commands**: `/ping`, `/info`, and comprehensive rally management commands
+- **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`, `/leader`
 - **Creator Restrictions**: Rally creators cannot join their own rallies
 - **Auto-cleanup**: Automatic expiration and creator notifications
 - **Professional UI**: Enhanced embeds and interactive buttons
-- **Data Persistence**: JSON-based storage for rally statistics and configuration
+- **Data Persistence**: JSON-based storage for rally statistics, leaderboard state, and configuration
 
 ### Planned Future Updates
 - **Skill Priorities**: Character skill tree progression system

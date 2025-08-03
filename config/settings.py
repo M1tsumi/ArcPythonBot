@@ -6,7 +6,7 @@ import discord
 
 # Bot Configuration
 BOT_NAME = "Avatar Realms Collide Bot"
-BOT_VERSION = "1.3.0"
+BOT_VERSION = "1.4.0"
 BOT_DESCRIPTION = "Unofficial community bot for Avatar Realms Collide"
 
 # Discord Links

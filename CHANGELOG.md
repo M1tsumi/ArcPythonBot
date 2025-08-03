@@ -5,6 +5,39 @@ All notable changes to the Avatar Realms Collide Discord Bot will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-01-08
+
+### 🏆 Leaderboard Management & Admin Controls
+This release adds comprehensive admin controls for leaderboard management, allowing administrators to pause, resume, and clear leaderboards during non-event periods.
+
+### 🆕 New Admin Commands
+- **`/leader pause`**: Pause leaderboard functionality with optional reason
+- **`/leader resume`**: Resume leaderboard functionality
+- **`/leader clear`**: Clear leaderboard state and reset to default
+- **State Management**: Persistent JSON storage for leaderboard pause state
+- **Permission Controls**: Administrator-only access to leaderboard management
+
+### 🎮 Leaderboard Features
+- **Event-Aware System**: Automatically pause leaderboards when events are not active
+- **Pause Notifications**: Clear messaging when leaderboards are paused
+- **Resume Functionality**: Easy reactivation when events become active
+- **State Persistence**: Leaderboard state saved across bot restarts
+- **Professional UI**: Clean embeds with pause status and admin information
+
+### 🔧 Technical Implementation
+- **JSON State Storage**: Persistent leaderboard state management
+- **Permission System**: Proper administrator permission checks
+- **Error Handling**: Comprehensive error handling for all admin operations
+- **User Feedback**: Clear status messages and confirmation embeds
+- **Data Integrity**: Safe state management with backup defaults
+
+### 📊 Admin Controls
+- **Pause Management**: Administrators can pause leaderboards with custom reasons
+- **Resume Control**: Quick reactivation when events are active
+- **Clear Function**: Reset all leaderboard state to default
+- **Audit Trail**: Track who paused/resumed and when
+- **Reason Tracking**: Optional reason field for pause actions
+
 ## [1.3.0] - 2025-01-08
 
 ### 🏰 Rally System & Shattered Skulls Fortress
