@@ -1,12 +1,13 @@
 """
 Utility command module for Avatar Realms Collide Discord Bot.
-Provides utility commands like links, help, and bot management.
+Provides utility commands like links, help, ping, info, and bot management.
 """
 
 import discord
 from discord import app_commands
 from discord.ext import commands
-from config.settings import DISCORD_SERVER_LINK, BOT_INVITE_LINK
+from config.settings import DISCORD_SERVER_LINK, BOT_INVITE_LINK, DEVELOPMENT_SERVER_LINK
+import time
 
 class Utility(commands.Cog):
     """Utility command cog."""
@@ -14,6 +15,246 @@ class Utility(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
+    
+    @commands.command(name="ping", description="Check bot latency and status")
+    async def ping_prefix(self, ctx):
+        """Traditional prefix command to check bot latency and status."""
+        start_time = time.time()
+        
+        # Create initial embed
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Checking bot status and latency...",
+            color=discord.Color.blue()
+        )
+        
+        # Send initial response
+        message = await ctx.send(embed=embed)
+        
+        # Calculate latency
+        end_time = time.time()
+        latency = (end_time - start_time) * 1000  # Convert to milliseconds
+        api_latency = round(self.bot.latency * 1000, 2)  # Discord API latency
+        
+        # Update embed with results
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Bot is online and responding!",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="📊 Response Time",
+            value=f"**{latency:.1f}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🌐 API Latency",
+            value=f"**{api_latency}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🆔 Bot Status",
+            value="✅ Online and Ready",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🏠 Servers",
+            value=f"**{len(self.bot.guilds)}** servers",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="👥 Users",
+            value=f"**{len(self.bot.users)}** users",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="⚡ Commands",
+            value=f"**{len(self.bot.tree.get_commands())}** slash commands",
+            inline=True
+        )
+        
+        embed.set_footer(text="Developed by Quefep • Avatar Realms Collide Bot")
+        
+        await message.edit(embed=embed)
+    
+    @commands.command(name="info", description="Get comprehensive bot information and contribution details")
+    async def info_prefix(self, ctx):
+        """Traditional prefix command to provide comprehensive bot information and contribution details."""
+        embed = discord.Embed(
+            title="🤖 Avatar Realms Collide Bot Information",
+            description="Welcome to the unofficial Avatar Realms Collide community bot! This bot provides comprehensive game tools and information for the community.",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="🎮 Bot Features",
+            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Interactive Commands** - Modern slash command interface",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="👨‍💻 Developer",
+            value="**Developed by Quefep**\nUnofficial fan-made bot for the community",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🤝 Want to Contribute?",
+            value="We welcome contributions from the community! If you have any information, data, images, or other resources to share, please don't be a stranger and reach out to **quefep** on Discord.",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📊 Bot Statistics",
+            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}\n• **Uptime**: Online and ready!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚠️ Disclaimer",
+            value="This is an unofficial, fan-made Discord bot and is not affiliated with the game developers. All game data used is from publicly available sources.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Join our Discord for updates and community support!")
+        
+        # Create view with development server button
+        view = discord.ui.View(timeout=None)
+        dev_server_button = discord.ui.Button(
+            label="Join Development Server",
+            url=DEVELOPMENT_SERVER_LINK,
+            style=discord.ButtonStyle.link,
+            emoji="🔗"
+        )
+        view.add_item(dev_server_button)
+        
+        await ctx.send(embed=embed, view=view)
+    
+    @app_commands.command(name="ping", description="Check bot latency and status")
+    async def ping(self, interaction: discord.Interaction):
+        """Command to check bot latency and status."""
+        start_time = time.time()
+        
+        # Create initial embed
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Checking bot status and latency...",
+            color=discord.Color.blue()
+        )
+        
+        # Send initial response
+        await interaction.response.send_message(embed=embed)
+        
+        # Calculate latency
+        end_time = time.time()
+        latency = (end_time - start_time) * 1000  # Convert to milliseconds
+        api_latency = round(self.bot.latency * 1000, 2)  # Discord API latency
+        
+        # Update embed with results
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Bot is online and responding!",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="📊 Response Time",
+            value=f"**{latency:.1f}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🌐 API Latency",
+            value=f"**{api_latency}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🆔 Bot Status",
+            value="✅ Online and Ready",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🏠 Servers",
+            value=f"**{len(self.bot.guilds)}** servers",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="👥 Users",
+            value=f"**{len(self.bot.users)}** users",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="⚡ Commands",
+            value=f"**{len(self.bot.tree.get_commands())}** slash commands",
+            inline=True
+        )
+        
+        embed.set_footer(text="Developed by Quefep • Avatar Realms Collide Bot")
+        
+        await interaction.edit_original_response(embed=embed)
+    
+    @app_commands.command(name="info", description="Get comprehensive bot information and contribution details")
+    async def info(self, interaction: discord.Interaction):
+        """Command to provide comprehensive bot information and contribution details."""
+        embed = discord.Embed(
+            title="🤖 Avatar Realms Collide Bot Information",
+            description="Welcome to the unofficial Avatar Realms Collide community bot! This bot provides comprehensive game tools and information for the community.",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="🎮 Bot Features",
+            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Rally System** - Create and join Shattered Skulls Fortress rallies\n• **Interactive Commands** - Modern slash command interface",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="👨‍💻 Developer",
+            value="**Developed by Quefep**\nUnofficial fan-made bot for the community",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🤝 Want to Contribute?",
+            value="We welcome contributions from the community! If you have any information, data, images, or other resources to share, please don't be a stranger and reach out to **quefep** on Discord.",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📊 Bot Statistics",
+            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}\n• **Uptime**: Online and ready!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚠️ Disclaimer",
+            value="This is an unofficial, fan-made Discord bot and is not affiliated with the game developers. All game data used is from publicly available sources.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Join our Discord for updates and community support!")
+        
+        # Create view with development server button
+        view = discord.ui.View(timeout=None)
+        dev_server_button = discord.ui.Button(
+            label="Join Development Server",
+            url=DEVELOPMENT_SERVER_LINK,
+            style=discord.ButtonStyle.link,
+            emoji="🔗"
+        )
+        view.add_item(dev_server_button)
+        
+        await interaction.response.send_message(embed=embed, view=view)
     
     @app_commands.command(name="links", description="Get bot links and information")
     async def links(self, interaction: discord.Interaction):
@@ -69,13 +310,13 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="🤖 Available Commands",
-            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/leaderboard` - Check top players and alliances\n• `/townhall` - View town hall requirements\n• `/hero_rankup` - View hero rankup guide and costs\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server",
+            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/leaderboard` - Check top players and alliances\n• `/townhall` - View town hall requirements\n• `/hero_rankup` - View hero rankup guide and costs\n• `/events` - View current and upcoming events\n• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server\n• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard",
             inline=False
         )
         
         embed.add_field(
             name="💡 Need More Help?",
-            value="Join our Discord server for:\n• Real-time help and support\n• Game updates and announcements\n• Community discussions\n• Bug reports and suggestions",
+            value="Join our Discord server for:\n• Real-time help and support\n• Game updates and announcements\n• Community discussions\n• Bug reports and suggestions\n• Contribution opportunities",
             inline=False
         )
         
@@ -94,7 +335,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="🎮 Bot Features",
-            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Interactive Commands** - Modern slash command interface",
+            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Rally System** - Create and join Shattered Skulls Fortress rallies\n• **Interactive Commands** - Modern slash command interface",
             inline=False
         )
         

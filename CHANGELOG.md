@@ -5,7 +5,83 @@ All notable changes to the Avatar Realms Collide Discord Bot will be documented 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.0] - 2024-01-XX
+## [1.3.0] - 2025-01-08
+
+### 🏰 Rally System & Shattered Skulls Fortress
+This release introduces a comprehensive rally system for organizing Shattered Skulls Fortress raids with point tracking and user statistics.
+
+### 🆕 New Rally System
+- **Rally Management**: Complete rally creation and management system
+- **Shattered Skulls Fortress**: Support for levels 1-6 with different player requirements
+- **Point System**: Automatic point tracking based on fortress level:
+  - Level 1: 10 points (1 player)
+  - Level 2: 20 points (1 player)
+  - Level 3: 30 points (2 players)
+  - Level 4: 45 points (3 players)
+  - Level 5: 50 points (4 players)
+  - Level 6: 60 points (5 players)
+- **Auto-Completion**: Rallies automatically complete and disappear when full
+- **Professional Embeds**: Beautiful, informative rally embeds with real-time updates
+
+### 🎮 Rally Commands
+- **`/setup`**: Setup rally system for server (Admin only)
+- **`/rally`**: Create a new rally with level selection (1-6)
+- **`/rally_stats`**: View personal rally statistics and points
+- **`/rally_leaderboard`**: View top players by points earned
+
+### 📊 Rally Features
+- **Interactive Buttons**: Green button to join, red button to delete (admin/creator only)
+- **Real-time Updates**: Player count and status updates automatically
+- **User Statistics**: Track rallies joined, rallies created, and points earned
+- **JSON Logging**: Complete data persistence for user statistics
+- **Channel Management**: Dedicated rally channels per server
+- **Permission System**: Proper admin controls and creator permissions
+
+### 🔧 Technical Implementation
+- **Persistent Storage**: JSON-based data storage for rally channels and user stats
+- **Button Interactions**: Discord UI components for rally management
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Performance Optimized**: Efficient data structures and caching
+- **Professional UI**: Clean, informative embeds with proper formatting
+
+### 📈 User Experience
+- **Easy Setup**: Simple one-time setup process for administrators
+- **Intuitive Interface**: Clear buttons and informative messages
+- **Statistics Tracking**: Personal and global leaderboards
+- **Automatic Cleanup**: Rallies disappear when complete
+- **Point Rewards**: Clear point system with immediate feedback
+
+## [1.2.0] - 2025-01-08
+
+### 🚀 Performance Optimizations & New Commands
+This release focuses on performance improvements and adds essential utility commands for better user experience.
+
+### ⚡ Performance Optimizations
+- **Command Loading**: Optimized cog loading with better error handling and logging
+- **Memory Management**: Improved memory usage with better data caching strategies
+- **Response Times**: Reduced command response times through optimized embed generation
+- **Error Handling**: Enhanced global error handling with more informative messages
+- **Logging**: Improved logging system with better structured output
+- **Resource Usage**: Optimized image and data loading for better performance
+
+### 🆕 New Commands
+- **`!ping` Command**: Simple ping command to check bot latency and status
+- **`!info` Command**: Comprehensive information embed with contribution details and development server link
+- **Enhanced Help System**: Better organized help command with categorized features
+
+### 🔧 Technical Improvements
+- **Code Optimization**: Streamlined command execution and response generation
+- **Better Error Messages**: More user-friendly error handling throughout the bot
+- **Enhanced Logging**: Improved debug information and error tracking
+- **Memory Efficiency**: Reduced memory footprint with optimized data structures
+- **Response Optimization**: Faster embed generation and message sending
+
+### 📝 New Features
+- **Contribution Information**: Clear instructions for users to contribute data, images, and information
+- **Development Server Integration**: Direct link to development server for community involvement
+- **Enhanced User Experience**: Better organized information and more intuitive command structure
+
+## [1.1.0] - 2025-01-08
 
 ### 🎮 New Event System & Glorious Victory Event
 This release introduces a comprehensive event system with the first event - Glorious Victory, featuring point-based rewards and Shattered Skull Fortress mechanics.
@@ -36,7 +112,7 @@ This release introduces a comprehensive event system with the first event - Glor
 - **Event Search**: Full-text search across event names and descriptions
 - **Modular Event Structure**: Easy to add new events with consistent formatting
 
-## [1.0.0] - 2024-01-XX
+## [1.0.0] - 2025-01-08
 
 ### 🎉 Major Code Reorganization & First Stable Version
 This release features a complete code reorganization for better maintainability and scalability, plus comprehensive Discord bot functionality for Avatar Realms Collide.

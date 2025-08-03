@@ -123,10 +123,10 @@ class EventDetailsView(discord.ui.View):
             if isinstance(self.event_data['rewards'], list) and len(self.event_data['rewards']) > 0 and isinstance(self.event_data['rewards'][0], dict):
                 # New format with point tiers
                 reward_tiers = len(self.event_data['rewards'])
-                total_points = sum(tier.get('points', 0) for tier in self.event_data['rewards'])
+                max_points = max(tier.get('points', 0) for tier in self.event_data['rewards'])
                 embed.add_field(
                     name="Rewards",
-                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Total points needed: {total_points}\n\nClick **Rewards** button for details!",
+                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Max points needed: {max_points}\n\nClick **Rewards** button for details!",
                     inline=False
                 )
             else:
@@ -252,10 +252,10 @@ class Events(commands.Cog):
             if isinstance(event['rewards'], list) and len(event['rewards']) > 0 and isinstance(event['rewards'][0], dict):
                 # New format with point tiers
                 reward_tiers = len(event['rewards'])
-                total_points = sum(tier.get('points', 0) for tier in event['rewards'])
+                max_points = max(tier.get('points', 0) for tier in event['rewards'])
                 embed.add_field(
                     name="Rewards",
-                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Total points needed: {total_points}\n\nClick **Rewards** button for details!",
+                    value=f"🎯 {reward_tiers} reward tiers available\n🏆 Max points needed: {max_points}\n\nClick **Rewards** button for details!",
                     inline=False
                 )
             else:

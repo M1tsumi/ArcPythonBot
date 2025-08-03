@@ -1,14 +1,29 @@
 """
-Embed generator utility for creating consistent Discord embeds.
+Optimized embed generator utility for creating consistent Discord embeds.
 """
 
 import discord
 from typing import Optional, List, Dict, Any
 from config.settings import EMBED_COLORS
 from pathlib import Path
+import time
 
 class EmbedGenerator:
-    """Utility class for generating consistent Discord embeds."""
+    """Optimized utility class for generating consistent Discord embeds."""
+    
+    # Cache for frequently used embeds
+    _embed_cache = {}
+    _cache_timeout = 300  # 5 minutes
+    
+    @staticmethod
+    def _get_cache_key(*args, **kwargs) -> str:
+        """Generate a cache key for embed parameters."""
+        return f"{hash(str(args) + str(sorted(kwargs.items())))}"
+    
+    @staticmethod
+    def _is_cache_valid(timestamp: float) -> bool:
+        """Check if cached embed is still valid."""
+        return time.time() - timestamp < EmbedGenerator._cache_timeout
     
     @staticmethod
     def create_embed(
@@ -19,10 +34,11 @@ class EmbedGenerator:
         thumbnail: Optional[str] = None,
         image: Optional[str] = None,
         footer: Optional[str] = None,
-        timestamp: Optional[bool] = True
+        timestamp: Optional[bool] = True,
+        use_cache: bool = True
     ) -> discord.Embed:
         """
-        Create a standardized embed with consistent styling.
+        Create a standardized embed with consistent styling and optional caching.
         
         Args:
             title: The embed title
@@ -33,10 +49,20 @@ class EmbedGenerator:
             image: URL for main image
             footer: Footer text
             timestamp: Whether to add current timestamp
+            use_cache: Whether to use caching for this embed
             
         Returns:
             discord.Embed: The created embed
         """
+        # Check cache if enabled
+        if use_cache:
+            cache_key = EmbedGenerator._get_cache_key(title, description, color, fields, thumbnail, image, footer, timestamp)
+            if cache_key in EmbedGenerator._embed_cache:
+                cached_data = EmbedGenerator._embed_cache[cache_key]
+                if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
+                    return cached_data['embed']
+        
+        # Create new embed
         embed = discord.Embed(
             title=title,
             description=description,
@@ -62,58 +88,88 @@ class EmbedGenerator:
             
         if timestamp:
             embed.timestamp = discord.utils.utcnow()
+        
+        # Cache the embed if enabled
+        if use_cache:
+            EmbedGenerator._embed_cache[cache_key] = {
+                'embed': embed,
+                'timestamp': time.time()
+            }
             
         return embed
     
     @staticmethod
-    def create_character_embed(character_data: Dict[str, Any]) -> discord.Embed:
+    def create_character_embed(character_data: Dict[str, Any], use_cache: bool = True) -> discord.Embed:
         """
-        Create an embed for character information.
+        Create an optimized embed for character information.
         
         Args:
             character_data: Dictionary containing character information
+            use_cache: Whether to use caching for this embed
             
         Returns:
             discord.Embed: Character information embed
         """
+        character_name = character_data.get('name', 'Unknown')
+        
+        # Check cache first
+        if use_cache:
+            cache_key = f"character_{character_name}"
+            if cache_key in EmbedGenerator._embed_cache:
+                cached_data = EmbedGenerator._embed_cache[cache_key]
+                if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
+                    return cached_data['embed']
+        
         embed = discord.Embed(
-            title=f"Character: {character_data.get('name', 'Unknown')}",
+            title=f"Character: {character_name}",
             description=character_data.get('description', ''),
             color=EMBED_COLORS["info"]
         )
         
-        # Add character stats
+        # Add character stats efficiently
         if 'stats' in character_data:
-            stats_text = ""
-            for stat, value in character_data['stats'].items():
-                stats_text += f"**{stat.title()}**: {value}\n"
+            stats_text = "\n".join([f"**{stat.title()}**: {value}" for stat, value in character_data['stats'].items()])
             embed.add_field(name="Stats", value=stats_text, inline=False)
         
-        # Add character abilities
+        # Add character abilities efficiently
         if 'abilities' in character_data:
-            abilities_text = ""
-            for ability in character_data['abilities']:
-                abilities_text += f"• {ability}\n"
+            abilities_text = "\n".join([f"• {ability}" for ability in character_data['abilities']])
             embed.add_field(name="Abilities", value=abilities_text, inline=False)
         
         # Add character image if available
         if 'image_url' in character_data:
             embed.set_thumbnail(url=character_data['image_url'])
         
+        # Cache the embed
+        if use_cache:
+            EmbedGenerator._embed_cache[cache_key] = {
+                'embed': embed,
+                'timestamp': time.time()
+            }
+        
         return embed
     
     @staticmethod
-    def create_skills_embed(character_name: str, skills_data: List[Dict[str, Any]]) -> discord.Embed:
+    def create_skills_embed(character_name: str, skills_data: List[Dict[str, Any]], use_cache: bool = True) -> discord.Embed:
         """
-        Create an embed for character skills.
+        Create an optimized embed for character skills.
         
         Args:
             character_name: Name of the character
             skills_data: List of skill dictionaries
+            use_cache: Whether to use caching for this embed
             
         Returns:
             discord.Embed: Skills information embed
         """
+        # Check cache first
+        if use_cache:
+            cache_key = f"skills_{character_name}"
+            if cache_key in EmbedGenerator._embed_cache:
+                cached_data = EmbedGenerator._embed_cache[cache_key]
+                if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
+                    return cached_data['embed']
+        
         embed = discord.Embed(
             title=f"{character_name} - Skills",
             description=f"All skills for {character_name}",
@@ -124,11 +180,9 @@ class EmbedGenerator:
             skill_text = f"**Description**: {skill.get('description', 'No description')}\n"
             skill_text += f"**Cooldown**: {skill.get('cooldown', 'N/A')}\n"
             
-            # Add skill levels
+            # Add skill levels efficiently
             if 'levels' in skill:
-                levels_text = ""
-                for level, details in skill['levels'].items():
-                    levels_text += f"**Level {level}**: {details}\n"
+                levels_text = "\n".join([f"**Level {level}**: {details}" for level, details in skill['levels'].items()])
                 skill_text += f"\n**Levels**:\n{levels_text}"
             
             embed.add_field(
@@ -137,22 +191,38 @@ class EmbedGenerator:
                 inline=False
             )
         
+        # Cache the embed
+        if use_cache:
+            EmbedGenerator._embed_cache[cache_key] = {
+                'embed': embed,
+                'timestamp': time.time()
+            }
+        
         return embed
     
     @staticmethod
-    def create_talent_embed(character_name: str, talent_data: Dict[str, Any], talent_type_info: Optional[Dict[str, Any]] = None, talent_images: Optional[Dict[str, str]] = None) -> discord.Embed:
+    def create_talent_embed(character_name: str, talent_data: Dict[str, Any], talent_type_info: Optional[Dict[str, Any]] = None, talent_images: Optional[Dict[str, str]] = None, use_cache: bool = True) -> discord.Embed:
         """
-        Create an embed for character talent tree.
+        Create an optimized embed for character talent tree.
         
         Args:
             character_name: Name of the character
             talent_data: Talent tree data
             talent_type_info: Talent type information
             talent_images: Dictionary with talent tree image paths
+            use_cache: Whether to use caching for this embed
             
         Returns:
             discord.Embed: Talent tree embed
         """
+        # Check cache first
+        if use_cache:
+            cache_key = f"talent_{character_name}"
+            if cache_key in EmbedGenerator._embed_cache:
+                cached_data = EmbedGenerator._embed_cache[cache_key]
+                if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
+                    return cached_data['embed']
+        
         embed = discord.Embed(
             title=f"{character_name} - Talent Tree",
             description=talent_data.get('description', ''),
@@ -177,12 +247,10 @@ class EmbedGenerator:
             inline=False
         )
         
-        # Add talent tree structure if available
+        # Add talent tree structure efficiently
         if 'talents' in talent_data:
             for tier, talents in talent_data['talents'].items():
-                tier_text = ""
-                for talent in talents:
-                    tier_text += f"• **{talent['name']}**: {talent.get('description', '')}\n"
+                tier_text = "\n".join([f"• **{talent['name']}**: {talent.get('description', '')}" for talent in talents])
                 embed.add_field(
                     name=f"Tier {tier}",
                     value=tier_text,
@@ -198,49 +266,62 @@ class EmbedGenerator:
         
         embed.set_footer(text="Use !talent <character> <talent_name> for detailed talent information")
         
+        # Cache the embed
+        if use_cache:
+            EmbedGenerator._embed_cache[cache_key] = {
+                'embed': embed,
+                'timestamp': time.time()
+            }
+        
         return embed
     
     @staticmethod
-    def create_event_embed(event_data: Dict[str, Any]) -> discord.Embed:
+    def create_event_embed(event_data: Dict[str, Any], use_cache: bool = True) -> discord.Embed:
         """
-        Create an embed for event information.
+        Create an optimized embed for event information.
         
         Args:
             event_data: Dictionary containing event information
+            use_cache: Whether to use caching for this embed
             
         Returns:
             discord.Embed: Event information embed
         """
+        event_name = event_data.get('name', 'Unknown')
+        
+        # Check cache first
+        if use_cache:
+            cache_key = f"event_{event_name}"
+            if cache_key in EmbedGenerator._embed_cache:
+                cached_data = EmbedGenerator._embed_cache[cache_key]
+                if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
+                    return cached_data['embed']
+        
         embed = discord.Embed(
-            title=f"Event: {event_data.get('name', 'Unknown')}",
+            title=f"Event: {event_name}",
             description=event_data.get('description', ''),
             color=EMBED_COLORS["warning"]
         )
         
-        # Add event details
-        if 'start_date' in event_data:
-            embed.add_field(name="Start Date", value=event_data['start_date'], inline=True)
+        # Add event details efficiently
+        event_fields = [
+            ('start_date', 'Start Date'),
+            ('end_date', 'End Date'),
+            ('type', 'Event Type'),
+            ('difficulty', 'Difficulty'),
+            ('duration', 'Duration')
+        ]
         
-        if 'end_date' in event_data:
-            embed.add_field(name="End Date", value=event_data['end_date'], inline=True)
-        
-        if 'type' in event_data:
-            embed.add_field(name="Event Type", value=event_data['type'], inline=True)
-        
-        if 'difficulty' in event_data:
-            embed.add_field(name="Difficulty", value=event_data['difficulty'], inline=True)
-        
-        if 'duration' in event_data:
-            embed.add_field(name="Duration", value=event_data['duration'], inline=True)
+        for field_key, field_name in event_fields:
+            if field_key in event_data:
+                embed.add_field(name=field_name, value=event_data[field_key], inline=True)
         
         # Add requirements if available
         if 'requirements' in event_data and event_data['requirements']:
-            req_text = ""
-            for req in event_data['requirements']:
-                req_text += f"📋 {req}\n"
+            req_text = "\n".join([f"📋 {req}" for req in event_data['requirements']])
             embed.add_field(name="Requirements", value=req_text, inline=False)
         
-        # Handle rewards with new point-based structure
+        # Handle rewards with new point-based structure efficiently
         if 'rewards' in event_data and event_data['rewards']:
             if isinstance(event_data['rewards'], list) and len(event_data['rewards']) > 0 and isinstance(event_data['rewards'][0], dict):
                 # New format with point tiers
@@ -248,9 +329,7 @@ class EmbedGenerator:
                     points = reward_tier.get('points', 0)
                     rewards = reward_tier.get('rewards', [])
                     
-                    tier_text = ""
-                    for reward in rewards:
-                        tier_text += f"🏆 {reward}\n"
+                    tier_text = "\n".join([f"🏆 {reward}" for reward in rewards])
                     
                     embed.add_field(
                         name=f"🎯 {points} Points",
@@ -259,24 +338,25 @@ class EmbedGenerator:
                     )
             else:
                 # Old format (simple list)
-                reward_text = ""
-                for reward in event_data['rewards']:
-                    reward_text += f"🏆 {reward}\n"
+                reward_text = "\n".join([f"🏆 {reward}" for reward in event_data['rewards']])
                 embed.add_field(name="Rewards", value=reward_text, inline=False)
         
         # Add mechanics if available
         if 'mechanics' in event_data and event_data['mechanics']:
-            mechanics_text = ""
-            for mechanic in event_data['mechanics']:
-                mechanics_text += f"⚙️ {mechanic}\n"
+            mechanics_text = "\n".join([f"⚙️ {mechanic}" for mechanic in event_data['mechanics']])
             embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)
         
         # Add tips if available
         if 'tips' in event_data and event_data['tips']:
-            tips_text = ""
-            for tip in event_data['tips']:
-                tips_text += f"💡 {tip}\n"
+            tips_text = "\n".join([f"💡 {tip}" for tip in event_data['tips']])
             embed.add_field(name="Tips", value=tips_text, inline=False)
+        
+        # Cache the embed
+        if use_cache:
+            EmbedGenerator._embed_cache[cache_key] = {
+                'embed': embed,
+                'timestamp': time.time()
+            }
         
         return embed
     
@@ -340,4 +420,18 @@ class EmbedGenerator:
         
         embed.set_footer(text="Use !help <command> for detailed information about a specific command.")
         
-        return embed 
+        return embed
+    
+    @staticmethod
+    def clear_cache():
+        """Clear the embed cache."""
+        EmbedGenerator._embed_cache.clear()
+    
+    @staticmethod
+    def get_cache_stats() -> Dict[str, Any]:
+        """Get cache statistics."""
+        return {
+            'cache_size': len(EmbedGenerator._embed_cache),
+            'cache_timeout': EmbedGenerator._cache_timeout,
+            'cached_embeds': list(EmbedGenerator._embed_cache.keys())
+        } 

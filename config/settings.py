@@ -6,12 +6,13 @@ import discord
 
 # Bot Configuration
 BOT_NAME = "Avatar Realms Collide Bot"
-BOT_VERSION = "1.0.0"
+BOT_VERSION = "1.3.0"
 BOT_DESCRIPTION = "Unofficial community bot for Avatar Realms Collide"
 
 # Discord Links
 DISCORD_SERVER_LINK = "https://discord.gg/a3tGyAwVRc"
 BOT_INVITE_LINK = "https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=8&scope=bot%20applications.commands"
+DEVELOPMENT_SERVER_LINK = "https://discord.gg/a3tGyAwVRc"  # Development server for contributions
 
 # Command Configuration
 COMMAND_PREFIX = "!"
