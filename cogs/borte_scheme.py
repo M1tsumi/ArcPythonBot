@@ -80,29 +80,33 @@ class BorteSchemeView(discord.ui.View):
             color=discord.Color.blue()
         )
         
-        guide_text = """**🎭 Event Lore**
-Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land.
-
-**📋 How to Participate**
+        # Break the guide into multiple fields to avoid Discord's 1024 character limit
+        lore_text = """**🎭 Event Lore**
+Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land."""
+        
+        participation_text = """**📋 How to Participate**
 1. **Field Combat**: Defeat Shattered Skulls on the field to earn Borte's Drum and Beads
 2. **Summon Allies**: Use drums and beads to summon Borte's Berserkers and Elite Berserkers
 3. **Rally Battles**: Join alliance rallies to defeat Borte herself
-4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance
-
-**💡 Tips & Strategy**
+4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance"""
+        
+        tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
-• **Communication**: Coordinate rally timing with alliance members
-
-**🏆 Best Strategy**
+• **Communication**: Coordinate rally timing with alliance members"""
+        
+        strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
 • **Resource Efficiency**: Use drums and beads at optimal times"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        embed.add_field(name="Event Lore", value=lore_text, inline=False)
+        embed.add_field(name="How to Participate", value=participation_text, inline=False)
+        embed.add_field(name="Tips & Strategy", value=tips_text, inline=False)
+        embed.add_field(name="Best Strategy", value=strategy_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -276,35 +280,40 @@ class BorteScheme(commands.Cog):
             color=discord.Color.blue()
         )
         
-        guide_text = """**🎭 Event Lore**
-Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land.
-
-**📋 How to Participate**
+        # Break the guide into multiple fields to avoid Discord's 1024 character limit
+        lore_text = """**🎭 Event Lore**
+Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land."""
+        
+        participation_text = """**📋 How to Participate**
 1. **Field Combat**: Defeat Shattered Skulls on the field to earn Borte's Drum and Beads
 2. **Summon Allies**: Use drums and beads to summon Borte's Berserkers and Elite Berserkers
 3. **Rally Battles**: Join alliance rallies to defeat Borte herself
-4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance
-
-**💡 Tips & Strategy**
+4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance"""
+        
+        tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
-• **Communication**: Coordinate rally timing with alliance members
-
-**🏆 Best Strategy**
+• **Communication**: Coordinate rally timing with alliance members"""
+        
+        strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
-• **Resource Efficiency**: Use drums and beads at optimal times
-
-**📊 Performance Priority**
+• **Resource Efficiency**: Use drums and beads at optimal times"""
+        
+        priority_text = """**📊 Performance Priority**
 1. **Rally Participation**: Join all available rally battles
 2. **Damage Output**: Maximize your contribution in battles
 3. **Alliance Coordination**: Work with alliance for optimal timing
 4. **Resource Usage**: Use drums and beads efficiently"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        embed.add_field(name="Event Lore", value=lore_text, inline=False)
+        embed.add_field(name="How to Participate", value=participation_text, inline=False)
+        embed.add_field(name="Tips & Strategy", value=tips_text, inline=False)
+        embed.add_field(name="Best Strategy", value=strategy_text, inline=False)
+        embed.add_field(name="Performance Priority", value=priority_text, inline=False)
         
         embed.add_field(
             name="📝 Information Source",
@@ -434,35 +443,40 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
             color=discord.Color.blue()
         )
         
-        guide_text = """**🎭 Event Lore**
-Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land.
-
-**📋 How to Participate**
+        # Break the guide into multiple fields to avoid Discord's 1024 character limit
+        lore_text = """**🎭 Event Lore**
+Borte was once a slave girl offered as a sacrifice to Father Glowworm, but through her cunning and deceit, she rose to become the corrupt high priestess of a temple that guides fanatics. However, her thirst for Power knows no bounds. It seems she now seeks to oust Chanyu and even aims for the mocking throne. They say the enemy of your enemy is your friend. Leveraging Borte's insatiable greed might just aid in purging the corruption entrenched in this land."""
+        
+        participation_text = """**📋 How to Participate**
 1. **Field Combat**: Defeat Shattered Skulls on the field to earn Borte's Drum and Beads
 2. **Summon Allies**: Use drums and beads to summon Borte's Berserkers and Elite Berserkers
 3. **Rally Battles**: Join alliance rallies to defeat Borte herself
-4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance
-
-**💡 Tips & Strategy**
+4. **Earn Rewards**: Receive Spirit Shard: Borte based on rally performance"""
+        
+        tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
-• **Communication**: Coordinate rally timing with alliance members
-
-**🏆 Best Strategy**
+• **Communication**: Coordinate rally timing with alliance members"""
+        
+        strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
-• **Resource Efficiency**: Use drums and beads at optimal times
-
-**📊 Performance Priority**
+• **Resource Efficiency**: Use drums and beads at optimal times"""
+        
+        priority_text = """**📊 Performance Priority**
 1. **Rally Participation**: Join all available rally battles
 2. **Damage Output**: Maximize your contribution in battles
 3. **Alliance Coordination**: Work with alliance for optimal timing
 4. **Resource Usage**: Use drums and beads efficiently"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        embed.add_field(name="Event Lore", value=lore_text, inline=False)
+        embed.add_field(name="How to Participate", value=participation_text, inline=False)
+        embed.add_field(name="Tips & Strategy", value=tips_text, inline=False)
+        embed.add_field(name="Best Strategy", value=strategy_text, inline=False)
+        embed.add_field(name="Performance Priority", value=priority_text, inline=False)
         
         embed.add_field(
             name="📝 Information Source",
