@@ -1,12 +1,12 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.0.0--beta-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Beta Version - Avatar Realms Collide Discord Bot**  
-> An interactive Discord bot for exploring character talent trees, leaderboards, and game information in the Avatar Realms Collide universe.
+> **🎮 Version 1.3.0 - Avatar Realms Collide Discord Bot**  
+> An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
 
@@ -34,11 +34,26 @@
 - **Real-time Updates**: Regularly updated leaderboard data
 - **Interactive Buttons**: Easy navigation between different rankings
 
+### 🏰 **Rally System**
+- **Shattered Skulls Fortress**: Create and join rallies for levels 1-6
+- **Time Limits**: Configurable durations (5m, 15m, 30m, 1hr)
+- **Point System**: Automatic point tracking and rewards
+- **Real-time Updates**: Live player count and status tracking
+- **Professional Embeds**: Beautiful rally management interface
+- **Creator Restrictions**: Prevent creators from joining own rallies
+- **Auto-cleanup**: Automatic expiration and notifications
+
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
 - **Element Classification**: Proper categorization by bending elements
 - **Rarity System**: Common, Rare, Epic, Legendary, and Mythic tiers
 - **Detailed Descriptions**: Rich character backgrounds and lore
+
+### ⚡ **Performance Optimizations**
+- **Embed Caching**: 5-minute cache for frequently used embeds
+- **Optimized Operations**: Faster string processing and field generation
+- **Enhanced Logging**: Structured output with timing information
+- **Memory Management**: Efficient resource usage and cleanup
 
 ## 🚀 Installation
 
@@ -86,12 +101,32 @@ View top performers in the game:
 - **👑 Top 10 Leaders**: Individual player rankings
 - **🤝 Top 10 Alliances**: Alliance performance rankings
 
+#### `/rally`
+Create and manage Shattered Skulls Fortress rallies:
+- **Level Selection**: Choose fortress levels 1-6
+- **Time Limits**: Set duration (5m, 15m, 30m, 1hr)
+- **Player Tracking**: Real-time join/leave management
+- **Point Rewards**: Automatic point distribution
+
+#### `/ping` & `/info`
+Bot status and information:
+- **Performance Metrics**: Latency and response times
+- **Bot Statistics**: Server count, user count, commands
+- **Contribution Details**: How to contribute to the project
+- **Development Server**: Link to community Discord
+
 ## 🎮 Commands
 
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `/talent_trees` | Interactive talent tree browser | Select element → Choose character → View trees |
 | `/leaderboard` | View top leaders and alliances | Choose leaderboard type → View rankings |
+| `/rally` | Create and manage rallies | Level → Time limit → Join/Leave system |
+| `/rally_stats` | View personal rally statistics | Personal points and participation |
+| `/rally_leaderboard` | View global rally leaderboard | Top players by rally points |
+| `/ping` | Check bot status and latency | Performance metrics and statistics |
+| `/info` | Bot information and contribution details | Development server and features |
+| `/setup` | Configure rally system (Admin) | Set rally channel for server |
 
 ## 👥 Character Database
 
@@ -177,12 +212,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.0.0-beta (Current)
+### Version 1.3.0 (Current)
 - ✅ Interactive talent tree browser
 - ✅ Leaderboard system
+- ✅ **Rally System**: Complete Shattered Skulls Fortress management
+- ✅ **Performance Optimizations**: Embed caching and faster operations
+- ✅ **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`
 - ✅ Character database with 25+ characters
 - ✅ Element-based categorization
 - ✅ Professional Discord UI
+- ✅ **Creator Restrictions**: Rally creators cannot join own rallies
+- ✅ **Time Limits**: Configurable rally durations with auto-cleanup
+- ✅ **Point System**: Automatic tracking and rewards
 
 ### Upcoming Features
 - 🔄 **Skill Priorities**: Character skill progression system
@@ -202,9 +243,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📝 Version Notes
 
-### Beta Version 1.0.0
-This is a **beta release** with core functionality implemented. The following features are planned for future updates:
+### Version 1.3.0
+This is a **stable release** with comprehensive functionality including the new rally system and performance optimizations:
 
+- **Rally System**: Complete Shattered Skulls Fortress management with time limits and point tracking
+- **Performance Optimizations**: Embed caching, optimized operations, and enhanced logging
+- **New Commands**: `/ping`, `/info`, and comprehensive rally management commands
+- **Creator Restrictions**: Rally creators cannot join their own rallies
+- **Auto-cleanup**: Automatic expiration and creator notifications
+- **Professional UI**: Enhanced embeds and interactive buttons
+- **Data Persistence**: JSON-based storage for rally statistics and configuration
+
+### Planned Future Updates
 - **Skill Priorities**: Character skill tree progression system
 - **Rarity Changes**: Dynamic character rarity updates based on game balance
 - **Level Requirements**: Character level progression and requirements
