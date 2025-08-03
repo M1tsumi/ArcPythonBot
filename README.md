@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.6.0 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.6.1 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -310,7 +310,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.6.0 (Current)
+### Version 1.6.1 (Current)
 - ✅ Interactive talent tree browser
 - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
@@ -347,6 +347,16 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **API Integration**: External game API support
 
 ## 📝 Version Notes
+
+### Version 1.6.1
+This is a **minor update** with acknowledgments and UI improvements:
+
+- **Added Kuvira**: Added Kuvira to the acknowledgments section
+- **Optimized `/info` Command**: Streamlined the info command to be more concise and user-friendly
+- **All Contributors Listed**: Now properly credits all contributors including Lycaris, PrincessBell, Samkee, and Kuvira
+- **Reduced Text Wall**: Condensed verbose descriptions into concise, readable format
+- **Better UX**: Much easier to read and digest information
+- **Maintained Functionality**: All essential information preserved while improving readability
 
 ### Version 1.6.0
 This is a **major feature release** with comprehensive event systems and timer functionality:
@@ -411,7 +421,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Contributors** who help improve this bot
 - **[Lycaris](https://notion.so/)** for the comprehensive Notion website with detailed game information
 - **PrincessBell** and **Samkee** for providing valuable game information and event details
-- **Bell** for contributing to the purification event implementation and game mechanics
+- **Kuvira** for contributing to the bot's development and community support
 
 ## 📞 Support
 

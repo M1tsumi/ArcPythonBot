@@ -137,41 +137,35 @@ class Utility(commands.Cog):
         """Traditional prefix command to provide comprehensive bot information and contribution details."""
         embed = discord.Embed(
             title="🤖 Avatar Realms Collide Bot Information",
-            description="Welcome to the unofficial Avatar Realms Collide community bot! This bot provides comprehensive game tools and information for the community.",
+            description="Unofficial community bot providing game tools and information.",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="🎮 Bot Features",
-            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Avatar Day Festival** - Comprehensive festival information\n• **Interactive Commands** - Modern slash command interface",
+            name="🎮 Key Features",
+            value="• Talent Trees & Hero Info\n• Leaderboards & Rally System\n• Event Tools & Timers\n• Town Hall & Skill Guides",
             inline=False
         )
         
         embed.add_field(
-            name="👨‍💻 Developer",
-            value="**Developed by Quefep**\nUnofficial fan-made bot for the community",
+            name="👨‍💻 Developer & Contributors",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris, PrincessBell, Samkee, Kuvira",
             inline=False
         )
         
         embed.add_field(
-            name="🤝 Want to Contribute?",
-            value="We welcome contributions from the community! If you have any information, data, images, or other resources to share, please don't be a stranger and reach out to **quefep** on Discord.",
+            name="📊 Statistics",
+            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}",
             inline=False
         )
         
         embed.add_field(
-            name="📊 Bot Statistics",
-            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}\n• **Uptime**: Online and ready!",
+            name="🤝 Contribute",
+            value="Share game data, images, or resources! Contact **quefep** on Discord.",
             inline=False
         )
         
-        embed.add_field(
-            name="⚠️ Disclaimer",
-            value="This is an unofficial, fan-made Discord bot and is not affiliated with the game developers. All game data used is from publicly available sources.",
-            inline=False
-        )
-        
-        embed.set_footer(text="Join our Discord for updates and community support!")
+        embed.set_footer(text="Unofficial fan-made bot • Join our Discord!")
         
         # Create view with development server button
         view = discord.ui.View(timeout=None)
@@ -257,41 +251,35 @@ class Utility(commands.Cog):
         """Command to provide comprehensive bot information and contribution details."""
         embed = discord.Embed(
             title="🤖 Avatar Realms Collide Bot Information",
-            description="Welcome to the unofficial Avatar Realms Collide community bot! This bot provides comprehensive game tools and information for the community.",
+            description="Unofficial community bot providing game tools and information.",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="🎮 Bot Features",
-            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Rally System** - Create and join Shattered Skulls Fortress rallies\n• **Interactive Commands** - Modern slash command interface",
+            name="🎮 Key Features",
+            value="• Talent Trees & Hero Info\n• Leaderboards & Rally System\n• Event Tools & Timers\n• Town Hall & Skill Guides",
             inline=False
         )
         
         embed.add_field(
-            name="👨‍💻 Developer",
-            value="**Developed by Quefep**\nUnofficial fan-made bot for the community",
+            name="👨‍💻 Developer & Contributors",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris, PrincessBell, Samkee, Kuvira",
             inline=False
         )
         
         embed.add_field(
-            name="🤝 Want to Contribute?",
-            value="We welcome contributions from the community! If you have any information, data, images, or other resources to share, please don't be a stranger and reach out to **quefep** on Discord.",
+            name="📊 Statistics",
+            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}",
             inline=False
         )
         
         embed.add_field(
-            name="📊 Bot Statistics",
-            value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}\n• **Uptime**: Online and ready!",
+            name="🤝 Contribute",
+            value="Share game data, images, or resources! Contact **quefep** on Discord.",
             inline=False
         )
         
-        embed.add_field(
-            name="⚠️ Disclaimer",
-            value="This is an unofficial, fan-made Discord bot and is not affiliated with the game developers. All game data used is from publicly available sources.",
-            inline=False
-        )
-        
-        embed.set_footer(text="Join our Discord for updates and community support!")
+        embed.set_footer(text="Unofficial fan-made bot • Join our Discord!")
         
         # Create view with development server button
         view = discord.ui.View(timeout=None)
