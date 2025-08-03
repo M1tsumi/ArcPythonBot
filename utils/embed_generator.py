@@ -26,6 +26,44 @@ class EmbedGenerator:
         return time.time() - timestamp < EmbedGenerator._cache_timeout
     
     @staticmethod
+    def add_safe_field(embed: discord.Embed, name: str, value: str, inline: bool = False, max_length: int = 1024):
+        """
+        Safely add a field to an embed, splitting long values into multiple fields.
+        
+        Args:
+            embed: The discord embed to add fields to
+            name: The field name
+            value: The field value
+            inline: Whether the field should be inline
+            max_length: Maximum length for each field value (Discord limit is 1024)
+        """
+        if len(value) <= max_length:
+            embed.add_field(name=name, value=value, inline=inline)
+        else:
+            # Split the value into chunks
+            chunks = []
+            current_chunk = ""
+            
+            for line in value.split('\n'):
+                if len(current_chunk) + len(line) + 1 <= max_length:
+                    current_chunk += line + '\n'
+                else:
+                    if current_chunk:
+                        chunks.append(current_chunk.strip())
+                    current_chunk = line + '\n'
+            
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            
+            # Add the first chunk with the original name
+            if chunks:
+                embed.add_field(name=name, value=chunks[0], inline=inline)
+                
+                # Add remaining chunks with continuation names
+                for i, chunk in enumerate(chunks[1:], 1):
+                    embed.add_field(name=f"{name} (continued)", value=chunk, inline=inline)
+    
+    @staticmethod
     def create_embed(
         title: str,
         description: str = "",
@@ -71,10 +109,11 @@ class EmbedGenerator:
         
         if fields:
             for field in fields:
-                embed.add_field(
-                    name=field.get("name", ""),
-                    value=field.get("value", ""),
-                    inline=field.get("inline", True)
+                EmbedGenerator.add_safe_field(
+                    embed,
+                    field.get("name", ""),
+                    field.get("value", ""),
+                    field.get("inline", True)
                 )
         
         if thumbnail:

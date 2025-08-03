@@ -169,7 +169,8 @@ class AvatarDayFestivalView(discord.ui.View):
 • Spirit Shards for specific heroes (8 cookies each)
 • Reset Talents (10 cookies, limited quantity)"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        from utils.embed_generator import EmbedGenerator
+        EmbedGenerator.add_safe_field(embed, "Event Guide", guide_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     

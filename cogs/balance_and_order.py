@@ -74,7 +74,8 @@ class BalanceAndOrderView(discord.ui.View):
 • Silver Scrolls (from basic tasks)
 • Speedups (for ongoing development)"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        from utils.embed_generator import EmbedGenerator
+        EmbedGenerator.add_safe_field(embed, "Event Guide", guide_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -254,7 +255,8 @@ class BalanceAndOrder(commands.Cog):
 3. **Silver Scroll Tasks**: Good secondary priority
 4. **Resource Tasks**: Complete for basic progression"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        from utils.embed_generator import EmbedGenerator
+        EmbedGenerator.add_safe_field(embed, "Event Guide", guide_text, inline=False)
         
         embed.add_field(
             name="📝 Information Source",
@@ -384,7 +386,8 @@ class BalanceAndOrder(commands.Cog):
 3. **Silver Scroll Tasks**: Good secondary priority
 4. **Resource Tasks**: Complete for basic progression"""
         
-        embed.add_field(name="Event Guide", value=guide_text, inline=False)
+        from utils.embed_generator import EmbedGenerator
+        EmbedGenerator.add_safe_field(embed, "Event Guide", guide_text, inline=False)
         
         embed.add_field(
             name="📝 Information Source",
