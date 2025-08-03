@@ -411,7 +411,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Contributors** who help improve this bot
 - **[Lycaris](https://notion.so/)** for the comprehensive Notion website with detailed game information
 - **PrincessBell** and **Samkee** for providing valuable game information and event details
-- **Bell** for contributing to the purification event implementation and game mechanics
 
 ## 📞 Support
 
