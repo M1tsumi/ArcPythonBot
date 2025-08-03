@@ -149,7 +149,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris, PrincessBell, Samkee, Kuvira",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive game data & documentation), PrincessBell, Samkee, Kuvira",
             inline=False
         )
         
@@ -263,7 +263,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris, PrincessBell, Samkee, Kuvira",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive game data & documentation), PrincessBell, Samkee, Kuvira",
             inline=False
         )
         
