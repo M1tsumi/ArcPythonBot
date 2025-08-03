@@ -180,43 +180,43 @@ class DataParser:
         if self._character_list_cache is not None:
             return self._character_list_cache
             
-        # Return Avatar characters with their correct primary elements
+        # Return Avatar characters with their correct primary elements and unlock sources
         avatar_characters = [
             # Firebenders
-            {"name": "Zuko", "element": "Fire", "category": "Firebender", "rarity": "Epic", "description": "Fire Nation prince and Firebending master"},
-            {"name": "Azula", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Firebending prodigy and Fire Nation princess"},
-            {"name": "Iroh", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Wise Firebending master and Dragon of the West"},
-            {"name": "Roku", "element": "Fire", "category": "Avatar", "rarity": "Legendary", "description": "Fire Nation Avatar of balance and wisdom"},
-            {"name": "Asami", "element": "Fire", "category": "Inventor", "rarity": "Epic", "description": "Genius inventor and Fire Nation engineer"},
+            {"name": "Zuko", "element": "Fire", "category": "Firebender", "rarity": "Epic", "description": "Fire Nation prince and Firebending master", "unlock_sources": ["Avatar Day Exchange", "Scrolls", "Starter Hero (Fire)", "Trail Shop"]},
+            {"name": "Azula", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Firebending prodigy and Fire Nation princess", "unlock_sources": ["Top Up Rewards", "VIP Chests"]},
+            {"name": "Iroh", "element": "Fire", "category": "Firebender", "rarity": "Legendary", "description": "Wise Firebending master and Dragon of the West", "unlock_sources": ["Golden Scroll", "Wheel of Fate"]},
+            {"name": "Roku", "element": "Fire", "category": "Avatar", "rarity": "Legendary", "description": "Fire Nation Avatar of balance and wisdom", "unlock_sources": ["Daily Deals", "The Greatest Leader"]},
+            {"name": "Asami", "element": "Fire", "category": "Inventor", "rarity": "Epic", "description": "Genius inventor and Fire Nation engineer", "unlock_sources": ["Scrolls"]},
             
             # Waterbenders
-            {"name": "Katara", "element": "Water", "category": "Waterbender", "rarity": "Epic", "description": "Master Waterbender and skilled healer"},
-            {"name": "Yue", "element": "Water", "category": "Spirit", "rarity": "Rare", "description": "Moon spirit and Water Tribe princess"},
-            {"name": "Katara (Painted Lady)", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Katara as the mysterious Painted Lady"},
-            {"name": "Unalaq", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Dark Waterbending master and spiritual leader"},
-            {"name": "Korra", "element": "Water", "category": "Avatar", "rarity": "Legendary", "description": "Water Tribe Avatar of the modern era"},
-            {"name": "Sokka", "element": "Water", "category": "Warrior", "rarity": "Epic", "description": "Strategic warrior and tactical leader"},
+            {"name": "Katara", "element": "Water", "category": "Waterbender", "rarity": "Epic", "description": "Master Waterbender and skilled healer", "unlock_sources": ["Avatar Day Exchange", "Scrolls", "Starter Hero (Water)", "Trail Shop"]},
+            {"name": "Yue", "element": "Water", "category": "Spirit", "rarity": "Rare", "description": "Moon spirit and Water Tribe princess", "unlock_sources": ["Silver Scroll"]},
+            {"name": "Katara (Painted Lady)", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Katara as the mysterious Painted Lady", "unlock_sources": ["Wheel of Fate"]},
+            {"name": "Unalaq", "element": "Water", "category": "Waterbender", "rarity": "Legendary", "description": "Dark Waterbending master and spiritual leader", "unlock_sources": ["Daily Deals", "Unalaq Pass (26 days after server start)"]},
+            {"name": "Korra", "element": "Water", "category": "Avatar", "rarity": "Legendary", "description": "Water Tribe Avatar of the modern era", "unlock_sources": ["Hall of Avatars", "Daily Deals", "The Greatest Leader"]},
+            {"name": "Sokka", "element": "Water", "category": "Warrior", "rarity": "Epic", "description": "Strategic warrior and tactical leader", "unlock_sources": ["First Hero you unlock", "Scrolls"]},
             
             # Earthbenders
-            {"name": "Toph", "element": "Earth", "category": "Earthbender", "rarity": "Epic", "description": "Blind Earthbending master and Metalbender"},
-            {"name": "Bumi", "element": "Air", "category": "Airbender", "rarity": "Legendary", "description": "Eccentric Airbending master and king"},
-            {"name": "King Bumi", "element": "Earth", "category": "Earthbender", "rarity": "Epic", "description": "Earthbending king and master strategist"},
-            {"name": "Kyoshi", "element": "Earth", "category": "Avatar", "rarity": "Legendary", "description": "Legendary Earth Kingdom Avatar of justice"},
-            {"name": "Lin Beifong", "element": "Earth", "category": "Earthbender", "rarity": "Legendary", "description": "Metalbending police chief and protector"},
-            {"name": "Teo", "element": "Earth", "category": "Inventor", "rarity": "Epic", "description": "Air Nomad inventor and mechanical genius"},
+            {"name": "Toph", "element": "Earth", "category": "Earthbender", "rarity": "Epic", "description": "Blind Earthbending master and Metalbender", "unlock_sources": ["Avatar Day Exchange", "Scrolls", "Starter Hero (Earth)", "Trail Shop"]},
+            {"name": "Bumi", "element": "Air", "category": "Airbender", "rarity": "Legendary", "description": "Eccentric Airbending master and king", "unlock_sources": ["Expedition", "Golden Scroll", "Login Event", "Trail Shop"]},
+            {"name": "King Bumi", "element": "Earth", "category": "Earthbender", "rarity": "Legendary", "description": "Earthbending king and master strategist", "unlock_sources": ["Wheel of Fate"]},
+            {"name": "Kyoshi", "element": "Earth", "category": "Avatar", "rarity": "Legendary", "description": "Legendary Earth Kingdom Avatar of justice", "unlock_sources": ["Daily Deals", "The Greatest Leader"]},
+            {"name": "Lin Beifong", "element": "Earth", "category": "Earthbender", "rarity": "Legendary", "description": "Metalbending police chief and protector", "unlock_sources": ["Wheel of Fate"]},
+            {"name": "Teo", "element": "Earth", "category": "Inventor", "rarity": "Epic", "description": "Air Nomad inventor and mechanical genius", "unlock_sources": ["Expedition", "Scrolls"]},
             
             # Airbenders
-            {"name": "Aang", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "The last Airbender and Avatar of the world"},
-            {"name": "Tenzin", "element": "Air", "category": "Airbender", "rarity": "Epic", "description": "Airbending master and spiritual teacher"},
-            {"name": "Meelo", "element": "Air", "category": "Airbender", "rarity": "Rare", "description": "Young Airbending prodigy and energetic warrior"},
-            {"name": "Yangchen", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "Ancient Air Nomad Avatar of wisdom"},
+            {"name": "Aang", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "The last Airbender and Avatar of the world", "unlock_sources": ["Hall of Avatars", "Daily Deals", "The Greatest Leader", "Trail Shop"]},
+            {"name": "Tenzin", "element": "Air", "category": "Airbender", "rarity": "Epic", "description": "Airbending master and spiritual teacher", "unlock_sources": ["Avatar Day Exchange", "Scrolls", "Starter Hero (Air)", "Trail Shop"]},
+            {"name": "Meelo", "element": "Air", "category": "Airbender", "rarity": "Rare", "description": "Young Airbending prodigy and energetic warrior", "unlock_sources": ["Silver Scroll"]},
+            {"name": "Yangchen", "element": "Air", "category": "Avatar", "rarity": "Legendary", "description": "Ancient Air Nomad Avatar of wisdom", "unlock_sources": ["Daily Deals", "The Greatest Leader"]},
             
             # Additional characters with corrected elements and rarities
-            {"name": "Suki", "element": "Earth", "category": "Warrior", "rarity": "Epic", "description": "Kyoshi Warrior leader and skilled fighter"},
-            {"name": "Piandao", "element": "Fire", "category": "Warrior", "rarity": "Rare", "description": "Master swordsman and Fire Nation instructor"},
-            {"name": "Borte", "element": "Air", "category": "Warrior", "rarity": "Epic", "description": "Water Tribe warrior and fierce protector"},
-            {"name": "Kuei", "element": "Earth", "category": "Leader", "rarity": "Rare", "description": "Earth Kingdom king and diplomatic leader"},
-            {"name": "Amon", "element": "Water", "category": "Leader", "rarity": "Legendary", "description": "Equalist leader and revolutionary"}
+            {"name": "Suki", "element": "Earth", "category": "Warrior", "rarity": "Epic", "description": "Kyoshi Warrior leader and skilled fighter", "unlock_sources": ["Scrolls", "Rookie Leader Event"]},
+            {"name": "Piandao", "element": "Fire", "category": "Warrior", "rarity": "Rare", "description": "Master swordsman and Fire Nation instructor", "unlock_sources": ["Silver Scroll"]},
+            {"name": "Borte", "element": "Air", "category": "Warrior", "rarity": "Epic", "description": "Water Tribe warrior and fierce protector", "unlock_sources": ["Borte's Scheme"]},
+            {"name": "Kuei", "element": "Earth", "category": "Leader", "rarity": "Rare", "description": "Earth Kingdom king and diplomatic leader", "unlock_sources": ["Silver Scroll"]},
+            {"name": "Amon", "element": "Water", "category": "Leader", "rarity": "Legendary", "description": "Equalist leader and revolutionary", "unlock_sources": ["Daily Deals", "The Greatest Leader"]}
         ]
         
         self._character_list_cache = avatar_characters

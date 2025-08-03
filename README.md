@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.4.0 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.5.0 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -45,11 +45,36 @@
 - **Creator Restrictions**: Prevent creators from joining own rallies
 - **Auto-cleanup**: Automatic expiration and notifications
 
+### 🏆 **TGL System**
+- **The Greatest Leader**: Comprehensive event information and tools
+- **Event Stages**: Detailed breakdown of all 5 daily stages
+- **Point Calculator**: Calculate points for any TGL activity
+- **Rewards Guide**: Daily and overall ranking rewards
+- **Strategy Tips**: Event optimization and planning tools
+- **Single/Cross Server**: Support for both event types
+
+### 🏆 **Glorious Victory System**
+- **Event Information**: Complete Glorious Victory event details
+- **Point Calculator**: Calculate points for fortress destruction activities
+- **Rewards Guide**: Daily and overall ranking rewards
+- **Strategy Tips**: Event optimization and planning tools
+- **Activity Breakdown**: Detailed point values for all activities
+- **Event Stages**: Comprehensive stage-by-stage information
+
+### 🦸 **Hero Information System**
+- **Complete Hero Guide**: Comprehensive information about all heroes
+- **Unlock Methods**: Detailed guide on how to obtain hero shards
+- **Rarity Classification**: Legendary, Epic, Rare, and Future heroes
+- **Source Tracking**: All unlock sources and methods
+- **Hero Search**: Search for specific hero information
+- **Unlock Strategies**: Best practices for hero acquisition
+
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
 - **Element Classification**: Proper categorization by bending elements
 - **Rarity System**: Common, Rare, Epic, Legendary, and Mythic tiers
 - **Detailed Descriptions**: Rich character backgrounds and lore
+- **Unlock Information**: Complete guide to obtaining hero shards
 
 ### ⚡ **Performance Optimizations**
 - **Embed Caching**: 5-minute cache for frequently used embeds
@@ -111,12 +136,33 @@ Create and manage Shattered Skulls Fortress rallies:
 - **Player Tracking**: Real-time join/leave management
 - **Point Rewards**: Automatic point distribution
 
+#### `/glorious_victory`
+Access Glorious Victory event information:
+- **Event Overview**: Complete event details and duration
+- **Point Calculator**: Calculate points for fortress destruction
+- **Rewards Guide**: Daily and overall ranking rewards
+- **Strategy Tips**: Event optimization and planning
+
+#### `/hero_info`
+Comprehensive hero information system:
+- **Hero Overview**: Complete guide to all heroes
+- **Rarity Breakdown**: Legendary, Epic, Rare, and Future heroes
+- **Unlock Sources**: Detailed guide to obtaining hero shards
+- **Hero Search**: Find specific hero information
+
 #### `/ping` & `/info`
 Bot status and information:
 - **Performance Metrics**: Latency and response times
 - **Bot Statistics**: Server count, user count, commands
 - **Contribution Details**: How to contribute to the project
 - **Development Server**: Link to community Discord
+
+#### `/tgl` & `/tgl_calc`
+The Greatest Leader event tools:
+- **Event Information**: Overview, stages, and rewards
+- **Point Calculator**: Calculate points for any activity
+- **Strategy Guide**: Tips and optimization strategies
+- **Stage Details**: Specific information for each day
 
 ## 🎮 Commands
 
@@ -127,10 +173,16 @@ Bot status and information:
 | `/rally` | Create and manage rallies | Level → Time limit → Join/Leave system |
 | `/rally_stats` | View personal rally statistics | Personal points and participation |
 | `/rally_leaderboard` | View global rally leaderboard | Top players by rally points |
+| `/glorious_victory` | Glorious Victory event information | Event details, stages, rewards |
+| `/gv_calc` | Calculate Glorious Victory points | Point calculation tool |
+| `/hero_info` | Hero information and unlock guide | Hero details, rarity, unlock methods |
+| `/hero_search` | Search for specific hero information | Hero name search |
 | `/ping` | Check bot status and latency | Performance metrics and statistics |
 | `/info` | Bot information and contribution details | Development server and features |
 | `/setup` | Configure rally system (Admin) | Set rally channel for server |
 | `/leader` | Admin leaderboard management | Pause/resume/clear leaderboards |
+| `/tgl` | The Greatest Leader event information | Event details, stages, rewards |
+| `/tgl_calc` | Calculate TGL points for activities | Point calculation tool |
 
 ## 👥 Character Database
 
@@ -187,12 +239,17 @@ Bot status and information:
 ```
 ArcPythonBot/
 ├── cogs/                 # Discord bot cogs
-│   ├── slash_commands.py # Main slash commands
+│   ├── talent_trees.py   # Talent tree browser
+│   ├── leaderboards.py   # Leaderboard system
+│   ├── rally_system.py   # Rally management
+│   ├── tgl_system.py     # The Greatest Leader system
+│   ├── glorious_victory.py # Glorious Victory system
+│   ├── hero_info.py      # Hero information system
 │   └── ...
 ├── utils/                # Utility modules
 │   ├── data_parser.py   # Character data management
 │   └── embed_generator.py
-├── HeroTalentImages/     # Talent tree images
+├── assets/images/        # Talent tree images
 ├── config/              # Configuration files
 └── main.py              # Bot entry point
 ```
@@ -202,6 +259,8 @@ ArcPythonBot/
 - **Image Handling**: WebP talent tree image support
 - **Error Handling**: Graceful error management
 - **Caching**: Performance optimization with data caching
+- **Event Systems**: TGL and Glorious Victory event management
+- **Hero Information**: Complete hero unlock and rarity guide
 
 ## 🤝 Contributing
 
@@ -216,15 +275,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.4.0 (Current)
+### Version 1.5.0 (Current)
 - ✅ Interactive talent tree browser
 - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
+- ✅ **TGL System**: The Greatest Leader event tools and point calculator
+- ✅ **Glorious Victory System**: Complete event information and point calculator
+- ✅ **Hero Information System**: Comprehensive hero guide and unlock methods
 - ✅ **Performance Optimizations**: Embed caching and faster operations
-- ✅ **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`, `/leader`
-- ✅ Character database with 25+ characters
-- ✅ Element-based categorization
-- ✅ Professional Discord UI
+- ✅ **New Commands**: `/glorious_victory`, `/gv_calc`, `/hero_info`, `/hero_search`
+- ✅ Character database with 25+ characters and unlock information
+- ✅ Element-based categorization with rarity system
+- ✅ Professional Discord UI with interactive components
 - ✅ **Creator Restrictions**: Rally creators cannot join own rallies
 - ✅ **Time Limits**: Configurable rally durations with auto-cleanup
 - ✅ **Point System**: Automatic tracking and rewards
@@ -248,8 +310,20 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📝 Version Notes
 
+### Version 1.5.0
+This is a **major feature release** with comprehensive event systems and hero information:
+
+- **Glorious Victory System**: Complete event information, point calculator, and strategy guide
+- **Hero Information System**: Comprehensive hero guide with unlock methods and rarity classification
+- **Enhanced Character Database**: Added unlock sources and detailed hero information
+- **New Commands**: `/glorious_victory`, `/gv_calc`, `/hero_info`, `/hero_search`
+- **Event Integration**: Seamless integration of multiple event systems
+- **Improved Data Management**: Better organization of hero and event data
+- **Professional UI**: Enhanced embeds and interactive components
+- **Performance Optimizations**: Continued improvements in speed and efficiency
+
 ### Version 1.4.0
-This is a **stable release** with comprehensive functionality including leaderboard management, rally system, and performance optimizations:
+Previous stable release with leaderboard management, rally system, and performance optimizations:
 
 - **Leaderboard Management**: Complete admin controls for pausing, resuming, and clearing leaderboards
 - **Event-Aware System**: Automatic leaderboard pausing when events are not active

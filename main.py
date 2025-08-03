@@ -93,7 +93,10 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.moderation',
             'cogs.game_info',
             'cogs.player_tools',
-            'cogs.rally_system'
+            'cogs.rally_system',
+            'cogs.tgl_system',
+            'cogs.glorious_victory',
+            'cogs.hero_info'
         ]
         
         for cog in cog_files:

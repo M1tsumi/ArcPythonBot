@@ -88,11 +88,21 @@ class GameInfo(commands.Cog):
         if 'weapon_type' in character:
             embed.add_field(name="Weapon Type", value=character['weapon_type'], inline=True)
         
+        # Add unlock information if available
+        if 'unlock_sources' in character:
+            sources_text = ", ".join(character['unlock_sources'])
+            embed.add_field(
+                name="🎯 Unlock Sources",
+                value=sources_text,
+                inline=False
+            )
+        
         # Add usage information
         embed.add_field(
             name="More Information",
             value=f"Use `!character_skills {character['name']}` to see skills\n"
-                  f"Use `!character_talent {character['name']}` to see talent tree",
+                  f"Use `!character_talent {character['name']}` to see talent tree\n"
+                  f"Use `/hero_info overview` for complete hero guide",
             inline=False
         )
         

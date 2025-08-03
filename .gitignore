@@ -6,6 +6,12 @@
 # Project specific files
 instructions.md
 
+# Game data files (prevent from being pushed to GitHub)
+*.txt
+gloriousvictory.txt
+heroinfo.txt
+tgl.txt
+
 # Python
 __pycache__/
 *.py[cod]
