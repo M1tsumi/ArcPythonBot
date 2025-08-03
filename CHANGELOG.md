@@ -5,7 +5,25 @@ All notable changes to the Avatar Realms Collide Discord Bot project will be doc
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.0] - 2024-12-19
+## [1.6.1] - 2025-08-03
+
+### Added
+- **Purification System**: New purification mechanics and tools
+  - Enhanced purification tracking and management
+  - Improved purification event handling
+  - Better purification data organization
+
+### Changed
+- Updated version to 1.6.1
+- Enhanced purification system functionality
+- Improved data handling for purification events
+
+### Technical
+- Added purification data management
+- Enhanced purification event processing
+- Improved purification system integration
+
+## [1.6.0] - 2025-08-03
 
 ### Added
 - **Timer System**: Complete game activity timer with DM notifications
@@ -38,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added timer storage and management system
 - Enhanced error handling for timer operations
 
-## [1.5.0] - 2024-12-19
+## [1.5.0] - 2025-08-03
 
 ### Added
 - **Glorious Victory System**: Complete event information and tools
@@ -70,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced data parser with unlock information
 - Improved error handling and user experience
 
-## [1.4.0] - 2024-12-18
+## [1.4.0] - 2025-08-03
 
 ### Added
 - **Leaderboard System**: Complete leaderboard management
@@ -107,7 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved data management and caching
 - Better file structure and organization
 
-## [1.3.0] - 2024-12-17
+## [1.3.0] - 2025-08-03
 
 ### Added
 - **Interactive Talent Tree Browser**: Complete talent tree system
@@ -136,7 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implemented embed generator for consistent UI
 - Added image handling for talent tree images
 
-## [1.2.0] - 2024-12-16
+## [1.2.0] - 2025-08-03
 
 ### Added
 - **Basic Bot Structure**: Foundation for Discord bot
@@ -160,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added configuration management
 - Set up logging and error handling
 
-## [1.1.0] - 2024-12-15
+## [1.1.0] - 2025-08-03
 
 ### Added
 - **Project Foundation**: Initial setup and structure
@@ -178,7 +196,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added dependency management
 - Implemented basic documentation
 
-## [1.0.0] - 2024-12-14
+## [1.0.0] - 2025-08-03
 
 ### Added
 - **Initial Release**: Avatar Realms Collide Discord Bot
@@ -195,7 +213,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.6.0** (Current): Timer System, Game Activity Tracking, DM Notifications
+- **1.6.1** (Current): Purification System, Enhanced Event Handling, Improved Data Management
+- **1.6.0**: Timer System, Game Activity Tracking, DM Notifications
 - **1.5.0**: Glorious Victory System, Hero Information System, Enhanced Character Database
 - **1.4.0**: Leaderboard System, Rally System, TGL System, Performance Optimizations
 - **1.3.0**: Interactive Talent Tree Browser, Character Database, Basic Commands
