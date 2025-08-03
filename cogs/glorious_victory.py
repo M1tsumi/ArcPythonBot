@@ -138,6 +138,12 @@ class GloriousVictorySystem(commands.Cog):
             inline=False
         )
         
+        embed.add_field(
+            name="📝 Information Source",
+            value="Event information gathered by **Lycaris** (@lycaris_1)",
+            inline=False
+        )
+        
         embed.set_footer(text="The joy of victory is doubled when shared!")
         await interaction.response.send_message(embed=embed)
     

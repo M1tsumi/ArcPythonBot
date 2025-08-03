@@ -83,6 +83,55 @@ class Utility(commands.Cog):
         
         await message.edit(embed=embed)
     
+    @commands.command(name="help", description="Get help and command information")
+    async def help_prefix(self, ctx):
+        """Traditional prefix command to provide help and command information."""
+        embed = discord.Embed(
+            title="🌟 Avatar Realms Collide Bot Help",
+            description="Welcome to the Avatar Realms Collide community bot! Here are all available commands organized by category.",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="🎮 Game Information Commands",
+            value="• `!talent_trees` - Browse character talent trees\n• `!skill_priorities` - View hero skill priorities\n• `!hero_info` - Get detailed hero information\n• `!hero_rankup` - View hero rankup guide and costs\n• `!townhall` - View town hall requirements\n• `!leaderboard` - Check top players and alliances",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🎭 Event Commands",
+            value="• `!events` - View current and upcoming events\n• `!avatar_day_festival` - Avatar Day Festival information\n• `!festival_tasks` - View all festival tasks by day\n• `!festival_shop` - View festival exchange shop\n• `!festival_guide` - Get festival tips and strategy\n• `!festival_rewards` - View all festival rewards\n• `!balance_and_order` - Balance and Order event information\n• `!balance_tasks` - View Balance and Order tasks\n• `!balance_guide` - Get Balance and Order tips\n• `!borte_scheme` - Borte's Scheme event information\n• `!borte_mechanics` - View Borte's Scheme mechanics\n• `!borte_rewards` - View Borte's Scheme rewards\n• `!borte_guide` - Get Borte's Scheme tips",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚔️ Rally System Commands",
+            value="• `!setup` - Setup rally system (Admin)\n• `!rally` - Create a new rally (level + time limit)\n• `!rally_stats` - View your rally statistics\n• `!rally_leaderboard` - View rally leaderboard\n• `!leader` - Admin leaderboard management (pause/resume/clear)",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🏆 TGL Commands",
+            value="• `!tgl` - The Greatest Leader event information\n• `!tgl_calc` - Calculate TGL points for activities",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🔧 Utility Commands",
+            value="• `!ping` - Check bot status and latency\n• `!info` - Comprehensive bot information\n• `!links` - Get bot links and information\n• `!addtoserver` - Add bot to your server",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📱 Join Our Discord Server",
+            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
+            inline=False
+        )
+        
+        embed.set_footer(text="Developed by Quefep • Use /help for slash commands • Join our Discord for the best experience!")
+        
+        await ctx.send(embed=embed)
+    
     @commands.command(name="info", description="Get comprehensive bot information and contribution details")
     async def info_prefix(self, ctx):
         """Traditional prefix command to provide comprehensive bot information and contribution details."""
@@ -94,7 +143,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="🎮 Bot Features",
-            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Interactive Commands** - Modern slash command interface",
+            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Avatar Day Festival** - Comprehensive festival information\n• **Interactive Commands** - Modern slash command interface",
             inline=False
         )
         
@@ -309,8 +358,32 @@ class Utility(commands.Cog):
         )
         
         embed.add_field(
-            name="🤖 Available Commands",
-            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/leaderboard` - Check top players and alliances\n• `/townhall` - View town hall requirements\n• `/hero_rankup` - View hero rankup guide and costs\n• `/events` - View current and upcoming events\n• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server\n• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard\n• `/leader` - Admin leaderboard management (pause/resume/clear)\n• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities",
+            name="🎮 Game Information Commands",
+            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/hero_info` - Get detailed hero information\n• `/hero_rankup` - View hero rankup guide and costs\n• `/townhall` - View town hall requirements\n• `/leaderboard` - Check top players and alliances",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🎭 Event Commands",
+            value="• `/events` - View current and upcoming events\n• `/avatar_day_festival` - Avatar Day Festival information\n• `/festival_tasks` - View all festival tasks by day\n• `/festival_shop` - View festival exchange shop\n• `/festival_guide` - Get festival tips and strategy\n• `/festival_rewards` - View all festival rewards\n• `/balance_and_order` - Balance and Order event information\n• `/balance_tasks` - View Balance and Order tasks\n• `/balance_guide` - Get Balance and Order tips\n• `/borte_scheme` - Borte's Scheme event information\n• `/borte_mechanics` - View Borte's Scheme mechanics\n• `/borte_rewards` - View Borte's Scheme rewards\n• `/borte_guide` - Get Borte's Scheme tips",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚔️ Rally System Commands",
+            value="• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard\n• `/leader` - Admin leaderboard management (pause/resume/clear)",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🏆 TGL Commands",
+            value="• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🔧 Utility Commands",
+            value="• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server",
             inline=False
         )
         

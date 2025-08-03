@@ -61,6 +61,14 @@
 - **Activity Breakdown**: Detailed point values for all activities
 - **Event Stages**: Comprehensive stage-by-stage information
 
+### 🛠️ **Purification Event System**
+- **Progressive Challenge**: 30-level progressive event with increasing difficulty
+- **Event Information**: Complete Purification event details and mechanics
+- **Rewards Guide**: Detailed rewards for each level (1-30)
+- **Strategy Tips**: Event optimization and alliance coordination strategies
+- **Enemy Types**: 6 different Shattered Skull variants (Fuzhi, Toghrul, Amur, Lushan, Kyro, Chanyu)
+- **Alliance Cooperation**: Enhanced rewards through alliance coordination
+
 ### 🦸 **Hero Information System**
 - **Complete Hero Guide**: Comprehensive information about all heroes
 - **Unlock Methods**: Detailed guide on how to obtain hero shards
@@ -203,6 +211,11 @@ The Greatest Leader event tools:
 | `/leader` | Admin leaderboard management | Pause/resume/clear leaderboards |
 | `/tgl` | The Greatest Leader event information | Event details, stages, rewards |
 | `/tgl_calc` | Calculate TGL points for activities | Point calculation tool |
+| `/events` | List current and upcoming events | View all available events |
+| `/event_details` | Get detailed information about specific events | Event mechanics, tips, rewards |
+| `/upcoming` | Show upcoming events only | Future event information |
+| `/event_search` | Search for events by name or description | Find specific events |
+| `/event_rewards` | Show rewards for a specific event | Detailed reward breakdown |
 
 ## 👥 Character Database
 
@@ -303,10 +316,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
 - ✅ **TGL System**: The Greatest Leader event tools and point calculator
 - ✅ **Glorious Victory System**: Complete event information and point calculator
+- ✅ **Purification Event System**: Complete 30-level progressive challenge event
 - ✅ **Hero Information System**: Comprehensive hero guide and unlock methods
 - ✅ **Timer System**: Game activity timers with DM notifications
 - ✅ **Performance Optimizations**: Embed caching and faster operations
 - ✅ **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
+- ✅ **Event Commands**: `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
 - ✅ Character database with 25+ characters and unlock information
 - ✅ Element-based categorization with rarity system
 - ✅ Professional Discord UI with interactive components
@@ -334,8 +349,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ## 📝 Version Notes
 
 ### Version 1.6.0
-This is a **major feature release** with a comprehensive timer system for game activities:
+This is a **major feature release** with comprehensive event systems and timer functionality:
 
+- **Purification Event System**: Complete 30-level progressive challenge event with detailed mechanics
+- **Event Management**: Comprehensive event system with `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
+- **Progressive Challenge**: 30 levels with 6 different enemy types and increasing rewards
+- **Alliance Cooperation**: Enhanced rewards through alliance coordination and strategy
 - **Timer System**: Complete game activity timer with DM notifications
 - **Activity Tracking**: Support for Recruiting, Gathering, Build 1, Build 2, Research, and Event
 - **Custom Duration**: Flexible time input up to 24 hours (hours, minutes, seconds)
@@ -343,6 +362,7 @@ This is a **major feature release** with a comprehensive timer system for game a
 - **Notes Support**: Optional notes to remember what each timer is for
 - **Real-time Updates**: Automatic timer checking every 30 seconds
 - **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
+- **Event Commands**: `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
 - **DM Notifications**: Private messages when timers complete
 - **Professional UI**: Clean embeds with timer information and management
 
@@ -389,6 +409,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Avatar: The Last Airbender** universe for inspiration
 - **Discord.py** community for excellent documentation
 - **Contributors** who help improve this bot
+- **[Lycaris](https://notion.so/)** for the comprehensive Notion website with detailed game information
+- **PrincessBell** and **Samkee** for providing valuable game information and event details
+- **Bell** for contributing to the purification event implementation and game mechanics
 
 ## 📞 Support
 

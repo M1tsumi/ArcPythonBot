@@ -97,7 +97,10 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.tgl_system',
             'cogs.glorious_victory',
             'cogs.hero_info',
-            'cogs.timer_system'
+            'cogs.timer_system',
+            'cogs.avatar_day_festival',
+            'cogs.balance_and_order',
+            'cogs.borte_scheme'
         ]
         
         for cog in cog_files:
