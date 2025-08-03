@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.6.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.5.0 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.6.0 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -68,6 +68,14 @@
 - **Source Tracking**: All unlock sources and methods
 - **Hero Search**: Search for specific hero information
 - **Unlock Strategies**: Best practices for hero acquisition
+
+### ⏰ **Timer System**
+- **Game Activity Timers**: Track Recruiting, Gathering, Build 1, Build 2, Research, and Event activities
+- **Custom Duration**: Flexible time input (hours, minutes, seconds)
+- **DM Notifications**: Receive private messages when timers complete
+- **Timer Management**: View, cancel individual timers, or cancel all timers
+- **Notes Support**: Add optional notes to remember what each timer is for
+- **Real-time Updates**: Automatic timer checking every 30 seconds
 
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
@@ -150,6 +158,13 @@ Comprehensive hero information system:
 - **Unlock Sources**: Detailed guide to obtaining hero shards
 - **Hero Search**: Find specific hero information
 
+#### `/timer`
+Set timers for game activities:
+- **Activity Selection**: Choose from Recruiting, Gathering, Build 1, Build 2, Research, or Event
+- **Custom Duration**: Set any duration up to 24 hours (e.g., 2h 30m, 45m, 1h 15m 30s)
+- **Optional Notes**: Add notes to remember what each timer is for
+- **DM Notifications**: Receive private messages when timers complete
+
 #### `/ping` & `/info`
 Bot status and information:
 - **Performance Metrics**: Latency and response times
@@ -177,6 +192,11 @@ The Greatest Leader event tools:
 | `/gv_calc` | Calculate Glorious Victory points | Point calculation tool |
 | `/hero_info` | Hero information and unlock guide | Hero details, rarity, unlock methods |
 | `/hero_search` | Search for specific hero information | Hero name search |
+| `/timer` | Set a timer for game activities | Activity → Duration → Optional note |
+| `/timers` | View your active timers | List all current timers |
+| `/cancel_timer` | Cancel a specific timer | Timer ID → Cancel specific timer |
+| `/cancel_all_timers` | Cancel all your timers | Remove all active timers |
+| `/timer_help` | Get help with timer commands | Timer system guide |
 | `/ping` | Check bot status and latency | Performance metrics and statistics |
 | `/info` | Bot information and contribution details | Development server and features |
 | `/setup` | Configure rally system (Admin) | Set rally channel for server |
@@ -245,6 +265,7 @@ ArcPythonBot/
 │   ├── tgl_system.py     # The Greatest Leader system
 │   ├── glorious_victory.py # Glorious Victory system
 │   ├── hero_info.py      # Hero information system
+│   ├── timer_system.py   # Timer system for game activities
 │   └── ...
 ├── utils/                # Utility modules
 │   ├── data_parser.py   # Character data management
@@ -261,6 +282,7 @@ ArcPythonBot/
 - **Caching**: Performance optimization with data caching
 - **Event Systems**: TGL and Glorious Victory event management
 - **Hero Information**: Complete hero unlock and rarity guide
+- **Timer System**: Game activity timers with DM notifications
 
 ## 🤝 Contributing
 
@@ -275,15 +297,16 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.5.0 (Current)
+### Version 1.6.0 (Current)
 - ✅ Interactive talent tree browser
 - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
 - ✅ **TGL System**: The Greatest Leader event tools and point calculator
 - ✅ **Glorious Victory System**: Complete event information and point calculator
 - ✅ **Hero Information System**: Comprehensive hero guide and unlock methods
+- ✅ **Timer System**: Game activity timers with DM notifications
 - ✅ **Performance Optimizations**: Embed caching and faster operations
-- ✅ **New Commands**: `/glorious_victory`, `/gv_calc`, `/hero_info`, `/hero_search`
+- ✅ **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
 - ✅ Character database with 25+ characters and unlock information
 - ✅ Element-based categorization with rarity system
 - ✅ Professional Discord UI with interactive components
@@ -309,6 +332,19 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **API Integration**: External game API support
 
 ## 📝 Version Notes
+
+### Version 1.6.0
+This is a **major feature release** with a comprehensive timer system for game activities:
+
+- **Timer System**: Complete game activity timer with DM notifications
+- **Activity Tracking**: Support for Recruiting, Gathering, Build 1, Build 2, Research, and Event
+- **Custom Duration**: Flexible time input up to 24 hours (hours, minutes, seconds)
+- **Timer Management**: View, cancel individual timers, or cancel all timers
+- **Notes Support**: Optional notes to remember what each timer is for
+- **Real-time Updates**: Automatic timer checking every 30 seconds
+- **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
+- **DM Notifications**: Private messages when timers complete
+- **Professional UI**: Clean embeds with timer information and management
 
 ### Version 1.5.0
 This is a **major feature release** with comprehensive event systems and hero information:

@@ -5,6 +5,39 @@ All notable changes to the Avatar Realms Collide Discord Bot project will be doc
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2024-12-19
+
+### Added
+- **Timer System**: Complete game activity timer with DM notifications
+  - `/timer` command for setting custom timers
+  - `/timers` command for viewing active timers
+  - `/cancel_timer` command for cancelling specific timers
+  - `/cancel_all_timers` command for cancelling all timers
+  - `/timer_help` command for timer system help
+- **Activity Tracking**: Support for 6 game activities
+  - Recruiting, Gathering, Build 1, Build 2, Research, and Event
+- **Custom Duration**: Flexible time input up to 24 hours
+  - Support for hours, minutes, and seconds (e.g., 2h 30m, 45m, 1h 15m 30s)
+- **Timer Management**: Comprehensive timer control system
+  - View all active timers with remaining time
+  - Cancel individual timers by ID
+  - Cancel all timers at once
+  - Optional notes for each timer
+- **Real-time Updates**: Automatic timer checking every 30 seconds
+- **DM Notifications**: Private messages when timers complete
+- **Professional UI**: Clean embeds with timer information and management
+
+### Changed
+- Updated version to 1.6.0
+- Enhanced bot with 15 cogs and 32 commands
+- Improved user experience with timer notifications
+
+### Technical
+- Added new cog: `timer_system.py`
+- Implemented background task for timer checking
+- Added timer storage and management system
+- Enhanced error handling for timer operations
+
 ## [1.5.0] - 2024-12-19
 
 ### Added
@@ -162,7 +195,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.5.0** (Current): Glorious Victory System, Hero Information System, Enhanced Character Database
+- **1.6.0** (Current): Timer System, Game Activity Tracking, DM Notifications
+- **1.5.0**: Glorious Victory System, Hero Information System, Enhanced Character Database
 - **1.4.0**: Leaderboard System, Rally System, TGL System, Performance Optimizations
 - **1.3.0**: Interactive Talent Tree Browser, Character Database, Basic Commands
 - **1.2.0**: Basic Bot Structure, Core Features, Discord.py Integration

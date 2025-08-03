@@ -96,7 +96,8 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.rally_system',
             'cogs.tgl_system',
             'cogs.glorious_victory',
-            'cogs.hero_info'
+            'cogs.hero_info',
+            'cogs.timer_system'
         ]
         
         for cog in cog_files:
