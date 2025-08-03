@@ -427,7 +427,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/ArcPythonBot/issues)
 - **Discord Server**: Join our community server for support
-- **Documentation**: Check our [Wiki](https://github.com/yourusername/ArcPythonBot/wiki) for detailed guides
+- **Documentation**: Check out [Lycaris' Notion Page](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe) for detailed guides
 
 ---
 
