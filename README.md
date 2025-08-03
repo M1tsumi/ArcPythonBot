@@ -419,7 +419,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Avatar: The Last Airbender** universe for inspiration
 - **Discord.py** community for excellent documentation
 - **Contributors** who help improve this bot
-- **[Lycaris](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe)** for the comprehensive Avatar Realms Collide Event Overview with login checkpoints/mini events and main recurring events information
+- **[Lycaris](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe)** for the comprehensive Avatar Realms Collide Event Overview
 - **PrincessBell** and **Samkee** for providing valuable game information and event details
 - **Kuvira** for contributing talent trees, skill priorities, and town hall statistics to the bot's development
 

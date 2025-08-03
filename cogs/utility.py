@@ -149,7 +149,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris (login checkpoints/mini events & recurring events), PrincessBell, Samkee, Kuvira (talent trees, skill priorities, town hall stats)",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell, Samkee, Kuvira (talent trees, skill priorities, town hall stats)",
             inline=False
         )
         
@@ -263,7 +263,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris (login checkpoints/mini events & recurring events), PrincessBell, Samkee, Kuvira (talent trees, skill priorities, town hall stats)",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell, Samkee, Kuvira (talent trees, skill priorities, town hall stats)",
             inline=False
         )
         
