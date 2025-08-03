@@ -141,7 +141,7 @@ class AvatarRealmsBot(commands.Bot):
         # Set bot status with optimized activity
         activity = discord.Activity(
             type=discord.ActivityType.playing,
-            name="Developed by Quefep, Join Discord For More Information!"
+            name="Master all four elements!"
         )
         await self.change_presence(activity=activity)
     

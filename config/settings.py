@@ -11,7 +11,7 @@ BOT_DESCRIPTION = "Unofficial community bot for Avatar Realms Collide"
 
 # Discord Links
 DISCORD_SERVER_LINK = "https://discord.gg/a3tGyAwVRc"
-BOT_INVITE_LINK = "https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=8&scope=bot%20applications.commands"
+BOT_INVITE_LINK = "https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=274877910016&scope=bot%20applications.commands"
 DEVELOPMENT_SERVER_LINK = "https://discord.gg/a3tGyAwVRc"  # Development server for contributions
 
 # Command Configuration
