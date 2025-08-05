@@ -263,7 +263,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Kuvira (talent trees, skill priorities, town hall stats)",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Kuvira (talent trees, skill priorities, town hall stats), Drummer (@priskent) & Marshmellow (@sophremachy) (troop information and costs)",
             inline=False
         )
         

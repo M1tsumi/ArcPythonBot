@@ -5,6 +5,32 @@ All notable changes to the Avatar Realms Collide Discord Bot project will be doc
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2025-01-27
+
+### Added
+- **Troops System**: Complete troops information and management
+  - `/troops` command for viewing detailed troop information
+  - Interactive element selection (Water, Earth, Fire, Air)
+  - Tier-based troop browsing (T1-T6)
+  - Detailed troop stats, costs, and descriptions
+  - Element-specific troop overviews and strategies
+- **Enhanced UI**: Professional troop selection interface
+  - Color-coded element buttons with emojis
+  - Tier selection with visual styling
+  - Comprehensive troop information displays
+  - Interactive navigation system
+
+### Changed
+- Updated version to 1.6.2
+- Enhanced bot with 16 cogs and 33 commands
+- Improved data organization and management
+
+### Technical
+- Added new cog: `troops.py`
+- Enhanced data parser with troop information
+- Improved embed generation for troop displays
+- Added comprehensive troop database integration
+
 ## [1.6.1] - 2025-08-03
 
 ### Added
@@ -213,7 +239,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.6.1** (Current): Purification System, Enhanced Event Handling, Improved Data Management
+- **1.6.2** (Current): Troops System, Enhanced UI, Improved Data Management
+- **1.6.1**: Purification System, Enhanced Event Handling, Improved Data Management
 - **1.6.0**: Timer System, Game Activity Tracking, DM Notifications
 - **1.5.0**: Glorious Victory System, Hero Information System, Enhanced Character Database
 - **1.4.0**: Leaderboard System, Rally System, TGL System, Performance Optimizations

@@ -545,3 +545,124 @@ class DataParser:
         self.get_character_list()
         self.get_events("all")
         logger.info("Data reloaded from files") 
+
+    def get_troops_data(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
+        """
+        Parse troops data from troops.txt file.
+        
+        Returns:
+            Dictionary with structure: {element: {tier: troop_data}}
+        """
+        troops_file = Path("text files/troops.txt")
+        
+        if not troops_file.exists():
+            logger.warning(f"Troops file not found: {troops_file}")
+            return {}
+        
+        troops_data = {}
+        current_tier = None
+        
+        try:
+            with open(troops_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+                
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                    
+                parts = line.split('\t')
+                if len(parts) < 2:
+                    continue
+                
+                # Check if this is a tier line (starts with T1, T2, etc.)
+                if parts[0].startswith('T') and parts[0][1:].isdigit():
+                    current_tier = parts[0]
+                    element = parts[1].strip()
+                    # For tier lines, unit name is at index 2
+                    unit_name = parts[2].strip() if len(parts) > 2 and parts[2].strip() else ''
+                    # Recruitment costs start at index 3
+                    rec_food = int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 0
+                    rec_wood = int(parts[4]) if len(parts) > 4 and parts[4].isdigit() else 0
+                    rec_stone = int(parts[5]) if len(parts) > 5 and parts[5].isdigit() and parts[5] != '-' else 0
+                    rec_gold = int(parts[6]) if len(parts) > 6 and parts[6].isdigit() and parts[6] != '-' else 0
+                    rec_time = parts[7] if len(parts) > 7 else '0m 0s'
+                    # Healing costs start at index 8
+                    heal_food = int(parts[8]) if len(parts) > 8 and parts[8].isdigit() else 0
+                    heal_wood = int(parts[9]) if len(parts) > 9 and parts[9].isdigit() else 0
+                    heal_stone = int(parts[10]) if len(parts) > 10 and parts[10].isdigit() and parts[10] != '-' else 0
+                    heal_gold = int(parts[11]) if len(parts) > 11 and parts[11].isdigit() and parts[11] != '-' else 0
+                    heal_time = parts[12] if len(parts) > 12 else '0m 0s'
+                    # Stats start at index 13
+                    power = int(parts[13]) if len(parts) > 13 and parts[13].isdigit() else 0
+                    power_diff = int(parts[14]) if len(parts) > 14 and parts[14].isdigit() else 0
+                    atk = int(parts[15]) if len(parts) > 15 and parts[15].isdigit() else 0
+                    defense = int(parts[16]) if len(parts) > 16 and parts[16].isdigit() else 0
+                    health = int(parts[17]) if len(parts) > 17 and parts[17].isdigit() else 0
+                    speed = int(parts[18]) if len(parts) > 18 and parts[18].isdigit() else 0
+                    load = int(parts[19]) if len(parts) > 19 and parts[19].isdigit() else 0
+                # Check if this is an element line for the current tier (starts with element name)
+                elif current_tier and parts[0].strip() in ['Water', 'Earth', 'Fire', 'Air']:
+                    element = parts[0].strip()
+                    # For element lines, unit name is at index 1
+                    unit_name = parts[1].strip() if len(parts) > 1 and parts[1].strip() else ''
+                    # Recruitment costs start at index 2
+                    rec_food = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+                    rec_wood = int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 0
+                    rec_stone = int(parts[4]) if len(parts) > 4 and parts[4].isdigit() and parts[4] != '-' else 0
+                    rec_gold = int(parts[5]) if len(parts) > 5 and parts[5].isdigit() and parts[5] != '-' else 0
+                    rec_time = parts[6] if len(parts) > 6 else '0m 0s'
+                    # Healing costs start at index 7
+                    heal_food = int(parts[7]) if len(parts) > 7 and parts[7].isdigit() else 0
+                    heal_wood = int(parts[8]) if len(parts) > 8 and parts[8].isdigit() else 0
+                    heal_stone = int(parts[9]) if len(parts) > 9 and parts[9].isdigit() and parts[9] != '-' else 0
+                    heal_gold = int(parts[10]) if len(parts) > 10 and parts[10].isdigit() and parts[10] != '-' else 0
+                    heal_time = parts[11] if len(parts) > 11 else '0m 0s'
+                    # Stats start at index 12
+                    power = int(parts[12]) if len(parts) > 12 and parts[12].isdigit() else 0
+                    power_diff = int(parts[13]) if len(parts) > 13 and parts[13].isdigit() else 0
+                    atk = int(parts[14]) if len(parts) > 14 and parts[14].isdigit() else 0
+                    defense = int(parts[15]) if len(parts) > 15 and parts[15].isdigit() else 0
+                    health = int(parts[16]) if len(parts) > 16 and parts[16].isdigit() else 0
+                    speed = int(parts[17]) if len(parts) > 17 and parts[17].isdigit() else 0
+                    load = int(parts[18]) if len(parts) > 18 and parts[18].isdigit() else 0
+                else:
+                    continue
+                
+                if element not in troops_data:
+                    troops_data[element] = {}
+                
+                troop_data = {
+                    'tier': current_tier,
+                    'element': element,
+                    'unit_name': unit_name,
+                    'recruitment_costs': {
+                        'food': rec_food,
+                        'wood': rec_wood,
+                        'stone': rec_stone,
+                        'gold': rec_gold,
+                        'time': rec_time
+                    },
+                    'healing_costs': {
+                        'food': heal_food,
+                        'wood': heal_wood,
+                        'stone': heal_stone,
+                        'gold': heal_gold,
+                        'time': heal_time
+                    },
+                    'power': power,
+                    'power_diff': power_diff,
+                    'atk': atk,
+                    'def': defense,
+                    'health': health,
+                    'speed': speed,
+                    'load': load
+                }
+                
+                troops_data[element][current_tier] = troop_data
+                    
+        except Exception as e:
+            logger.error(f"Error parsing troops data: {e}")
+            return {}
+        
+        return troops_data 

@@ -100,7 +100,8 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.timer_system',
             'cogs.avatar_day_festival',
             'cogs.balance_and_order',
-            'cogs.borte_scheme'
+            'cogs.borte_scheme',
+            'cogs.troops'
         ]
         
         for cog in cog_files:

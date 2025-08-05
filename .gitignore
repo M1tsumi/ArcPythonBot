@@ -11,6 +11,10 @@ instructions.md
 gloriousvictory.txt
 heroinfo.txt
 tgl.txt
+discord_announcements.txt
+
+# Wiki documentation (text files)
+wiki/
 
 # Python
 __pycache__/
