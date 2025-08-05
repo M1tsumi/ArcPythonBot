@@ -1,8 +1,0 @@
-warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'cogs/utility.py', LF will be replaced by CRLF the next time Git touches it
-.gitignore
-README.md
-cogs/utility.py
-data/rally_stats.json
-main.py
-utils/data_parser.py
