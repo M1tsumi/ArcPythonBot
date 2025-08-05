@@ -147,15 +147,7 @@ class TroopTierView(discord.ui.View):
             inline=True
         )
         
-        # Healing costs with better formatting
-        heal_costs = troop_data['healing_costs']
-        heal_text = self.format_costs(heal_costs, "Healing")
-        
-        embed.add_field(
-            name="🏥 Healing Costs",
-            value=heal_text,
-            inline=True
-        )
+
         
         # Stats with better formatting
         stats_text = self.format_stats(troop_data)
