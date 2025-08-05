@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.6.1-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.6.1 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.6.2 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -84,6 +84,15 @@
 - **Timer Management**: View, cancel individual timers, or cancel all timers
 - **Notes Support**: Add optional notes to remember what each timer is for
 - **Real-time Updates**: Automatic timer checking every 30 seconds
+
+### ⚔️ **Troops System**
+- **Interactive Troop Browser**: Complete troops information with `/troops` command
+- **Element Selection**: Choose from Water, Earth, Fire, and Air elements
+- **Tier-based Navigation**: Browse troops by tiers T1-T6 with detailed information
+- **Professional UI**: Color-coded element buttons with emojis and visual styling
+- **Comprehensive Data**: Detailed troop stats, costs, and element-specific descriptions
+- **Strategic Information**: Element overviews and troop characteristics
+- **Enhanced Navigation**: Interactive tier selection with professional embeds
 
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
@@ -347,6 +356,19 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **API Integration**: External game API support
 
 ## 📝 Version Notes
+
+### Version 1.6.2
+This is a **major feature release** with comprehensive troops system:
+
+- **Troops System**: Complete troops information and management with `/troops` command
+- **Interactive Element Selection**: Choose from Water, Earth, Fire, and Air elements
+- **Tier-based Browsing**: Browse troops by tiers T1-T6 with detailed information
+- **Professional UI**: Color-coded element buttons with emojis and visual styling
+- **Comprehensive Data**: Detailed troop stats, costs, and element-specific descriptions
+- **Enhanced Navigation**: Interactive tier selection with professional embeds
+- **Element Overviews**: Strategic information for each element's troop characteristics
+- **New Cog**: Added `troops.py` with 315 lines of troop management functionality
+- **Improved Data Management**: Enhanced data parser and embed generation for troops
 
 ### Version 1.6.1
 This is a **minor update** with acknowledgments and UI improvements:
