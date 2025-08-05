@@ -354,8 +354,4 @@ class TroopCalculator(commands.Cog):
 
 async def setup(bot: commands.Bot):
     """Setup function for the cog."""
-    await bot.add_cog(TroopCalculator(bot)) [33md6beb28[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: Add comprehensive troop calculator system - Interactive troop cost calculator with element and tier selection - Quick calculation command for direct input - Real-time cost calculations for any quantity - Time calculation for recruitment duration - Professional UI with buttons and dropdowns - Integration with existing troops data system
-[33m7ae6470[m feat: Add bot addition webhook notification system - Added bot_added_webhook.py script for tracking bot additions - Integrated webhook handler into main.py - Added webhook script to .gitignore for privacy - Sends detailed notifications with server and user info
-[33m932e66c[m Delete system v1.6.2
-[33m6a7485a[m docs: Update README to show version 1.6.2 as current
-[33mc26ff23[m fix: Remove heal times from troops system - Removed healing costs parsing from data_parser.py - Removed healing costs display from troops.py - Updated index references for stats parsing - Kept recruitment times as they are correct
+    await bot.add_cog(TroopCalculator(bot))
