@@ -68,4 +68,7 @@ logs/
 # Database files
 *.db
 *.sqlite
-*.sqlite3 
+*.sqlite3
+
+# Bot webhook scripts (keep private)
+bot_added_webhook.py 

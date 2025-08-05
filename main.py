@@ -115,6 +115,16 @@ class AvatarRealmsBot(commands.Bot):
                 self.logger.error(f"❌ Failed to load cog {cog}: {e}")
         
         self.logger.info(f"📊 Cog loading complete. Total cogs loaded: {len(self._cog_load_times)}")
+        
+        # Load webhook handler (if file exists)
+        try:
+            import bot_added_webhook
+            bot_added_webhook.setup(self)
+            self.logger.info("✅ Webhook handler loaded successfully")
+        except ImportError:
+            self.logger.info("ℹ️ Webhook handler not found (bot_added_webhook.py)")
+        except Exception as e:
+            self.logger.error(f"❌ Failed to load webhook handler: {e}")
     
     async def on_ready(self):
         """Optimized ready event with enhanced logging."""
