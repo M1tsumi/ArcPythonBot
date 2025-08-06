@@ -546,6 +546,103 @@ class DataParser:
         self.get_events("all")
         logger.info("Data reloaded from files") 
 
+    def get_troops_data_fixed(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
+        """
+        Parse troops data from troops.txt file with correct format handling.
+        
+        Returns:
+            Dictionary with structure: {element: {tier: troop_data}}
+        """
+        troops_file = Path("text files/troops.txt")
+        
+        if not troops_file.exists():
+            logger.warning(f"Troops file not found: {troops_file}")
+            return {}
+        
+        troops_data = {}
+        
+        try:
+            with open(troops_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                
+            # Split content into lines and clean up
+            lines = [line.strip() for line in content.split('\n') if line.strip()]
+            logger.info(f"Loaded {len(lines)} lines from troops file")
+            
+            current_tier = None
+            
+            for i, line in enumerate(lines):
+                # Skip header lines
+                if line.startswith('Unit') or line.startswith('Research') or line.startswith('Food'):
+                    continue
+                    
+                # Split by tabs and filter out empty strings
+                parts = [part.strip() for part in line.split('\t') if part.strip()]
+                
+                if len(parts) < 8:
+                    continue
+                
+                # Check if this is a tier line (starts with T1, T2, etc.)
+                if parts[0].startswith('T') and parts[0][1:].isdigit():
+                    current_tier = parts[0]
+                    continue
+                
+                # Check if this is an element line (indented under tier)
+                if parts[0] in ['Water', 'Earth', 'Fire', 'Air']:
+                    element = parts[0]
+                    unit_name = parts[1] if len(parts) > 1 and parts[1] else ''
+                    
+                    # Recruitment costs (columns 2-6)
+                    rec_food = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+                    rec_wood = int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 0
+                    rec_stone = int(parts[4]) if len(parts) > 4 and parts[4].isdigit() and parts[4] != '-' else 0
+                    rec_gold = int(parts[5]) if len(parts) > 5 and parts[5].isdigit() and parts[5] != '-' else 0
+                    rec_time = parts[6] if len(parts) > 6 else '0m 0s'
+                    
+                    # Stats (columns 11-16)
+                    power = int(parts[11]) if len(parts) > 11 and parts[11].isdigit() else 0
+                    power_diff = int(parts[12]) if len(parts) > 12 and parts[12].isdigit() else 0
+                    atk = int(parts[13]) if len(parts) > 13 and parts[13].isdigit() else 0
+                    defense = int(parts[14]) if len(parts) > 14 and parts[14].isdigit() else 0
+                    health = int(parts[15]) if len(parts) > 15 and parts[15].isdigit() else 0
+                    speed = int(parts[16]) if len(parts) > 16 and parts[16].isdigit() else 0
+                    load = int(parts[17]) if len(parts) > 17 and parts[17].isdigit() else 0
+                    
+                    if element not in troops_data:
+                        troops_data[element] = {}
+                    
+                    troop_data = {
+                        'tier': current_tier,
+                        'element': element,
+                        'unit_name': unit_name,
+                        'recruitment_costs': {
+                            'food': rec_food,
+                            'wood': rec_wood,
+                            'stone': rec_stone,
+                            'gold': rec_gold,
+                            'time': rec_time
+                        },
+                        'power': power,
+                        'power_diff': power_diff,
+                        'atk': atk,
+                        'def': defense,
+                        'health': health,
+                        'speed': speed,
+                        'load': load
+                    }
+                    
+                    troops_data[element][current_tier] = troop_data
+                    
+        except Exception as e:
+            logger.error(f"Error parsing troops data: {e}")
+            return {}
+        
+        logger.info(f"Successfully parsed troops data: {len(troops_data)} elements")
+        for element, tiers in troops_data.items():
+            logger.info(f"  {element}: {len(tiers)} tiers")
+        
+        return troops_data
+
     def get_troops_data(self) -> Dict[str, Dict[str, Dict[str, Any]]]:
         """
         Parse troops data from troops.txt file.

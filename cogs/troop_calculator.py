@@ -12,13 +12,51 @@ from typing import Dict, List, Optional, Tuple
 from utils.data_parser import DataParser
 import re
 
+class TroopQuantityModal(discord.ui.Modal, title="Set Troop Quantity"):
+    """Modal for setting troop quantity like townhall level input."""
+    
+    quantity_input = discord.ui.TextInput(
+        label="Enter Quantity (1-10000)",
+        placeholder="e.g., 100",
+        min_length=1,
+        max_length=5,
+        required=True
+    )
+    
+    def __init__(self, calculator_view):
+        super().__init__()
+        self.calculator_view = calculator_view
+    
+    async def on_submit(self, interaction: discord.Interaction):
+        """Handle quantity submission."""
+        try:
+            quantity = int(self.quantity_input.value)
+            if 1 <= quantity <= 10000:
+                self.calculator_view.quantity = quantity
+                embed = self.calculator_view.create_calculator_embed()
+                await interaction.response.edit_message(embed=embed, view=self.calculator_view)
+            else:
+                embed = discord.Embed(
+                    title="❌ Invalid Quantity",
+                    description="Please enter a quantity between 1 and 10,000.",
+                    color=discord.Color.red()
+                )
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+        except ValueError:
+            embed = discord.Embed(
+                title="❌ Invalid Input",
+                description="Please enter a valid number.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 class TroopCalculatorView(View):
     """Interactive view for troop calculator."""
     
     def __init__(self, data_parser: DataParser):
         super().__init__(timeout=300)
         self.data_parser = data_parser
-        self.troops_data = data_parser.get_troops_data()
+        self.troops_data = data_parser.get_troops_data_fixed()
         self.selected_element = None
         self.selected_tier = None
         self.quantity = 1
@@ -40,7 +78,7 @@ class TroopCalculatorView(View):
         # Update tier options based on selected element
         tier_options = []
         if self.selected_element in self.troops_data:
-            for tier in self.troops_data[self.selected_element].keys():
+            for tier in sorted(self.troops_data[self.selected_element].keys()):
                 troop = self.troops_data[self.selected_element][tier]
                 tier_options.append(
                     discord.SelectOption(
@@ -90,8 +128,8 @@ class TroopCalculatorView(View):
     
     @discord.ui.button(label="🔢 Set Quantity", style=discord.ButtonStyle.success, emoji="🔢")
     async def set_quantity(self, interaction: discord.Interaction, button: Button):
-        """Set custom quantity."""
-        await interaction.response.send_modal(QuantityModal(self))
+        """Set custom quantity using modal."""
+        await interaction.response.send_modal(TroopQuantityModal(self))
     
     def create_calculator_embed(self) -> discord.Embed:
         """Create the calculator embed."""
@@ -204,34 +242,6 @@ class TroopCalculatorView(View):
         else:
             return f"{seconds}s"
 
-class QuantityModal(discord.ui.Modal, title="Set Troop Quantity"):
-    """Modal for setting custom quantity."""
-    
-    def __init__(self, calculator_view: TroopCalculatorView):
-        super().__init__()
-        self.calculator_view = calculator_view
-    
-    quantity_input = discord.ui.TextInput(
-        label="Quantity",
-        placeholder="Enter number of troops (1-10000)",
-        min_length=1,
-        max_length=5,
-        required=True
-    )
-    
-    async def on_submit(self, interaction: discord.Interaction):
-        """Handle quantity submission."""
-        try:
-            quantity = int(self.quantity_input.value)
-            if 1 <= quantity <= 10000:
-                self.calculator_view.quantity = quantity
-                embed = self.calculator_view.create_calculator_embed()
-                await interaction.response.edit_message(embed=embed, view=self.calculator_view)
-            else:
-                await interaction.response.send_message("❌ Quantity must be between 1 and 10,000!", ephemeral=True)
-        except ValueError:
-            await interaction.response.send_message("❌ Please enter a valid number!", ephemeral=True)
-
 class TroopCalculator(commands.Cog):
     """Troop Calculator commands."""
     
@@ -244,7 +254,7 @@ class TroopCalculator(commands.Cog):
         """Main troop calculator command."""
         try:
             # Debug: Check if troops data is available
-            troops_data = self.data_parser.get_troops_data()
+            troops_data = self.data_parser.get_troops_data_fixed()
             if not troops_data:
                 await interaction.response.send_message("❌ Error: No troops data available. Please check the troops.txt file.", ephemeral=True)
                 return
@@ -274,7 +284,7 @@ class TroopCalculator(commands.Cog):
                 await interaction.response.send_message("❌ Quantity must be between 1 and 10,000!", ephemeral=True)
                 return
             
-            troops_data = self.data_parser.get_troops_data()
+            troops_data = self.data_parser.get_troops_data_fixed()
             
             if element not in troops_data:
                 await interaction.response.send_message(f"❌ Invalid element: {element}", ephemeral=True)
