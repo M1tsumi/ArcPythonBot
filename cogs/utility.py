@@ -532,10 +532,14 @@ class Utility(commands.Cog):
     
     def _format_uptime(self):
         """Format bot uptime in a readable format."""
-        uptime = discord.utils.utcnow() - self.bot.start_time
-        days = uptime.days
-        hours, remainder = divmod(uptime.seconds, 3600)
-        minutes, seconds = divmod(remainder, 60)
+        import datetime
+        current_time = time.time()
+        uptime_seconds = current_time - self.bot.start_time
+        
+        days = int(uptime_seconds // 86400)
+        hours = int((uptime_seconds % 86400) // 3600)
+        minutes = int((uptime_seconds % 3600) // 60)
+        seconds = int(uptime_seconds % 60)
         
         if days > 0:
             return f"{days}d {hours}h {minutes}m"
