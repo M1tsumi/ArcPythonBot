@@ -426,9 +426,9 @@ class Utility(commands.Cog):
         
         await interaction.response.send_message(embed=embed, view=view)
     
-    @app_commands.command(name="server", description="List all servers the bot is in (Owner only)")
-    async def server_list(self, interaction: discord.Interaction):
-        """Command to list all servers the bot is in with invite links and owner info."""
+    @app_commands.command(name="servers", description="View bot server statistics and information (Owner only)")
+    async def server_stats(self, interaction: discord.Interaction):
+        """Command to show professional server statistics and information."""
         # Check if user is authorized (only specific user ID can use this)
         AUTHORIZED_USER_ID = 1051142172130422884
         
@@ -442,140 +442,117 @@ class Utility(commands.Cog):
             return
         
         try:
-            # Defer the response since this might take a while
             await interaction.response.defer(ephemeral=True)
             
+            # Calculate statistics
+            total_servers = len(self.bot.guilds)
+            total_members = sum(guild.member_count for guild in self.bot.guilds)
+            avg_members = total_members / total_servers if total_servers > 0 else 0
+            
+            # Get top 10 servers by member count
+            top_servers = sorted(self.bot.guilds, key=lambda g: g.member_count, reverse=True)[:10]
+            
+            # Create main statistics embed
             embed = discord.Embed(
-                title="🏠 Bot Server List",
-                description=f"Bot is currently in **{len(self.bot.guilds)}** servers",
+                title="🏠 Bot Server Statistics",
+                description="Comprehensive overview of bot server distribution and performance",
                 color=discord.Color.blue()
             )
             
-            # Get all guilds and sort them by member count
-            guilds = sorted(self.bot.guilds, key=lambda g: g.member_count, reverse=True)
-            
-            server_list = ""
-            total_members = 0
-            
-            for i, guild in enumerate(guilds, 1):
-                # Get owner info
-                owner = guild.owner
-                owner_mention = owner.mention if owner else "Unknown"
-                owner_name = owner.display_name if owner else "Unknown"
-                
-                # Try to create invite link
-                try:
-                    # Look for a channel where the bot can create invites
-                    invite_channel = None
-                    for channel in guild.channels:
-                        if (isinstance(channel, discord.TextChannel) and 
-                            channel.permissions_for(guild.me).create_instant_invite):
-                            invite_channel = channel
-                            break
-                    
-                    if invite_channel:
-                        invite = await invite_channel.create_invite(max_age=0, max_uses=0)
-                        invite_link = invite.url
-                    else:
-                        invite_link = "No permission to create invite"
-                except Exception as e:
-                    invite_link = f"Error: {str(e)[:20]}..."
-                
-                # Format server info with compact format
-                server_info = f"**{i}.** {guild.name} ({guild.member_count:,})\n"
-                server_info += f"👑 {owner_name} | 📅 {guild.me.joined_at.strftime('%Y-%m-%d') if guild.me.joined_at else 'Unknown'}\n"
-                server_info += f"🔗 {invite_link}\n"
-                server_info += "─" * 25 + "\n"
-                
-                server_list += server_info
-                total_members += guild.member_count
-                
-                # Split into multiple embeds if too long (Discord field limit is 1024 characters)
-                if len(server_list) > 800:
-                    embed.add_field(
-                        name="📋 Server List (Part 1)",
-                        value=server_list,
-                        inline=False
-                    )
-                    
-                    # Create new embed for remaining servers
-                    embed2 = discord.Embed(
-                        title="🏠 Bot Server List (Continued)",
-                        color=discord.Color.blue()
-                    )
-                    
-                    # Continue with remaining servers
-                    remaining_list = ""
-                    for j, remaining_guild in enumerate(guilds[i:], i+1):
-                        owner = remaining_guild.owner
-                        owner_mention = owner.mention if owner else "Unknown"
-                        owner_name = owner.display_name if owner else "Unknown"
-                        
-                        try:
-                            invite_channel = None
-                            for channel in remaining_guild.channels:
-                                if (isinstance(channel, discord.TextChannel) and 
-                                    channel.permissions_for(remaining_guild.me).create_instant_invite):
-                                    invite_channel = channel
-                                    break
-                            
-                            if invite_channel:
-                                invite = await invite_channel.create_invite(max_age=0, max_uses=0)
-                                invite_link = invite.url
-                            else:
-                                invite_link = "No permission to create invite"
-                        except Exception as e:
-                            invite_link = f"Error: {str(e)[:20]}..."
-                        
-                        remaining_info = f"**{j}.** {remaining_guild.name} ({remaining_guild.member_count:,})\n"
-                        remaining_info += f"👑 {owner_name} | 📅 {remaining_guild.me.joined_at.strftime('%Y-%m-%d') if remaining_guild.me.joined_at else 'Unknown'}\n"
-                        remaining_info += f"🔗 {invite_link}\n"
-                        remaining_info += "─" * 25 + "\n"
-                        
-                        remaining_list += remaining_info
-                    
-                    embed2.add_field(
-                        name="📋 Server List (Part 2)",
-                        value=remaining_list,
-                        inline=False
-                    )
-                    
-                    embed2.add_field(
-                        name="📊 Summary",
-                        value=f"**Total Servers**: {len(self.bot.guilds)}\n**Total Members**: {total_members:,}",
-                        inline=False
-                    )
-                    
-                    embed2.set_footer(text="Server list generated by bot owner")
-                    
-                    await interaction.followup.send(embed=embed, ephemeral=True)
-                    await interaction.followup.send(embed=embed2, ephemeral=True)
-                    return
-            
-            # If we didn't need to split, add the server list to the original embed
+            # Add key statistics
             embed.add_field(
-                name="📋 Server List",
-                value=server_list,
+                name="📊 Overview",
+                value=f"**Total Servers**: {total_servers:,}\n"
+                      f"**Total Members**: {total_members:,}\n"
+                      f"**Average Members/Server**: {avg_members:.0f}",
+                inline=True
+            )
+            
+            # Calculate member count distribution
+            large_servers = len([g for g in self.bot.guilds if g.member_count >= 1000])
+            medium_servers = len([g for g in self.bot.guilds if 100 <= g.member_count < 1000])
+            small_servers = len([g for g in self.bot.guilds if g.member_count < 100])
+            
+            embed.add_field(
+                name="📈 Distribution",
+                value=f"**Large Servers** (1k+): {large_servers}\n"
+                      f"**Medium Servers** (100-999): {medium_servers}\n"
+                      f"**Small Servers** (<100): {small_servers}",
+                inline=True
+            )
+            
+            # Add recent activity
+            recent_servers = [g for g in self.bot.guilds if g.me.joined_at and 
+                            (discord.utils.utcnow() - g.me.joined_at).days <= 30]
+            
+            embed.add_field(
+                name="🆕 Recent Activity",
+                value=f"**Joined Last 30 Days**: {len(recent_servers)}\n"
+                      f"**Active Servers**: {len([g for g in self.bot.guilds if g.member_count > 0])}\n"
+                      f"**Bot Commands**: {len(self.bot.tree.get_commands())}",
+                inline=True
+            )
+            
+            # Create top servers list (compact format)
+            top_servers_text = ""
+            for i, guild in enumerate(top_servers, 1):
+                owner_name = guild.owner.display_name if guild.owner else "Unknown"
+                joined_date = guild.me.joined_at.strftime('%m/%d') if guild.me.joined_at else "Unknown"
+                
+                top_servers_text += f"**{i}.** {guild.name}\n"
+                top_servers_text += f"👥 {guild.member_count:,} members | 👑 {owner_name} | 📅 {joined_date}\n\n"
+            
+            embed.add_field(
+                name="🏆 Top 10 Servers",
+                value=top_servers_text if top_servers_text else "No servers found",
                 inline=False
             )
             
+            # Add performance metrics
             embed.add_field(
-                name="📊 Summary",
-                value=f"**Total Servers**: {len(self.bot.guilds)}\n**Total Members**: {total_members:,}",
-                inline=False
+                name="⚡ Performance",
+                value=f"**Bot Latency**: {round(self.bot.latency * 1000, 1)}ms\n"
+                      f"**Uptime**: {self._format_uptime()}\n"
+                      f"**Memory Usage**: {self._get_memory_usage()}",
+                inline=True
             )
             
-            embed.set_footer(text="Server list generated by bot owner")
+            embed.set_footer(text="Server statistics generated by bot owner • Updated in real-time")
+            embed.timestamp = discord.utils.utcnow()
             
             await interaction.followup.send(embed=embed, ephemeral=True)
             
         except Exception as e:
             error_embed = discord.Embed(
                 title="❌ Error",
-                description=f"An error occurred while generating the server list: {str(e)}",
+                description=f"An error occurred while generating server statistics: {str(e)}",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=error_embed, ephemeral=True)
+    
+    def _format_uptime(self):
+        """Format bot uptime in a readable format."""
+        uptime = discord.utils.utcnow() - self.bot.start_time
+        days = uptime.days
+        hours, remainder = divmod(uptime.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
+        if days > 0:
+            return f"{days}d {hours}h {minutes}m"
+        elif hours > 0:
+            return f"{hours}h {minutes}m"
+        else:
+            return f"{minutes}m {seconds}s"
+    
+    def _get_memory_usage(self):
+        """Get current memory usage of the bot process."""
+        try:
+            import psutil
+            process = psutil.Process()
+            memory_mb = process.memory_info().rss / 1024 / 1024
+            return f"{memory_mb:.1f} MB"
+        except ImportError:
+            return "N/A"
     
     @app_commands.command(name="refresh", description="Refresh slash commands (Admin only)")
     @app_commands.default_permissions(administrator=True)
