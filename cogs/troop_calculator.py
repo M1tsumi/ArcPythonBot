@@ -243,6 +243,12 @@ class TroopCalculator(commands.Cog):
     async def troop_calculator(self, interaction: discord.Interaction):
         """Main troop calculator command."""
         try:
+            # Debug: Check if troops data is available
+            troops_data = self.data_parser.get_troops_data()
+            if not troops_data:
+                await interaction.response.send_message("❌ Error: No troops data available. Please check the troops.txt file.", ephemeral=True)
+                return
+                
             view = TroopCalculatorView(self.data_parser)
             embed = view.create_calculator_embed()
             await interaction.response.send_message(embed=embed, view=view)

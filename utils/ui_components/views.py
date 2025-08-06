@@ -395,13 +395,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost",
-            value="**10 shards** - Unlock hero",
+            value="**0 shards** - Unlock hero",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**10 shards**",
+            value="**0 shards**",
             inline=False
         )
         
@@ -409,7 +409,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐ 1 Star", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="1 Star", style=discord.ButtonStyle.primary)
     async def one_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 1 star information."""
         embed = discord.Embed(
@@ -420,13 +420,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**1-5 shards** - Partial stars (1,1,1,2,3)\n**3 shards** - Complete 1 star\n**3-5 shards** - Partial stars (3,3,3,5)",
+            value="**1 shard** - 1/5 star\n**1 shard** - 2/5 star\n**1 shard** - 3/5 star\n**2 shards** - 4/5 star\n**3 shards** - Complete 1 star",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**28 shards** (10 unlock + 18 for 1 star)",
+            value="**8 shards** (0 unlock + 8 for 1 star)",
             inline=False
         )
         
@@ -434,7 +434,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐⭐ 2 Stars", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="2 Stars", style=discord.ButtonStyle.primary)
     async def two_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 2 star information."""
         embed = discord.Embed(
@@ -445,13 +445,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**8 shards** - Complete 2 stars\n**8-12 shards** - Partial stars (8,8,8,12)",
+            value="**3 shards** - 1+1/5 star\n**3 shards** - 1+2/5 star\n**3 shards** - 1+3/5 star\n**5 shards** - 1+4/5 star\n**8 shards** - Complete 2 stars",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**64 shards** (10 unlock + 18 for 1 star + 36 for 2 stars)",
+            value="**30 shards** (0 unlock + 8 for 1 star + 22 for 2 stars)",
             inline=False
         )
         
@@ -459,7 +459,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐⭐⭐ 3 Stars", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="3 Stars", style=discord.ButtonStyle.primary)
     async def three_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 3 star information."""
         embed = discord.Embed(
@@ -470,13 +470,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**20 shards** - Complete 3 stars\n**20-30 shards** - Partial stars (20,20,20,30)",
+            value="**8 shards** - 2+1/5 star\n**8 shards** - 2+2/5 star\n**8 shards** - 2+3/5 star\n**12 shards** - 2+4/5 star\n**20 shards** - Complete 3 stars",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**154 shards** (10 unlock + 18 for 1 star + 36 for 2 stars + 90 for 3 stars)",
+            value="**86 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars)",
             inline=False
         )
         
@@ -484,7 +484,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐⭐⭐⭐ 4 Stars", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="4 Stars", style=discord.ButtonStyle.primary)
     async def four_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 4 star information."""
         embed = discord.Embed(
@@ -495,13 +495,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**50 shards** - Complete 4 stars\n**50-60 shards** - Partial stars (50,50,50,60)",
+            value="**20 shards** - 3+1/5 star\n**20 shards** - 3+2/5 star\n**20 shards** - 3+3/5 star\n**30 shards** - 3+4/5 star\n**50 shards** - Complete 4 stars",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**364 shards** (10 unlock + 18 for 1 star + 36 for 2 stars + 90 for 3 stars + 210 for 4 stars)",
+            value="**226 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars)",
             inline=False
         )
         
@@ -509,7 +509,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐⭐⭐⭐⭐ 5 Stars", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="5 Stars", style=discord.ButtonStyle.primary)
     async def five_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 5 star information."""
         embed = discord.Embed(
@@ -520,13 +520,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**80 shards** - Complete 5 stars\n**80 shards** - All partial stars (80,80,80,80)",
+            value="**50 shards** - 4+1/5 star\n**50 shards** - 4+2/5 star\n**50 shards** - 4+3/5 star\n**60 shards** - 4+4/5 star\n**80 shards** - Complete 5 stars",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**764 shards** (10 unlock + 18 for 1 star + 36 for 2 stars + 90 for 3 stars + 210 for 4 stars + 400 for 5 stars)",
+            value="**516 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars)",
             inline=False
         )
         
@@ -534,7 +534,7 @@ class HeroRankupView(discord.ui.View):
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="⭐⭐⭐⭐⭐⭐ 6 Stars", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="6 Stars", style=discord.ButtonStyle.primary)
     async def six_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 6 star information."""
         embed = discord.Embed(
@@ -545,13 +545,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="**120 shards** - Complete 6 stars",
+            value="**140 shards** - Complete 6 stars",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**884 shards** (10 unlock + 18 for 1 star + 36 for 2 stars + 90 for 3 stars + 210 for 4 stars + 400 for 5 stars + 120 for 6 stars)",
+            value="**956 shards** (0 unlock + 1 for 1/5 star + 1 for 2/5 star + 1 for 3/5 star + 2 for 4/5 star + 3 for 1 star + 3 for 1+1/5 star + 3 for 1+2/5 star + 3 for 1+3/5 star + 5 for 1+4/5 star + 8 for 2 stars + 8 for 2+1/5 star + 8 for 2+2/5 star + 8 for 2+3/5 star + 12 for 2+4/5 star + 20 for 3 stars + 20 for 3+1/5 star + 20 for 3+2/5 star + 20 for 3+3/5 star + 30 for 3+4/5 star + 50 for 4 stars + 50 for 4+1/5 star + 50 for 4+2/5 star + 50 for 4+3/5 star + 60 for 4+4/5 star + 80 for 5 stars + 80 for 5+1/5 star + 80 for 5+2/5 star + 80 for 5+3/5 star + 80 for 5+4/5 star + 120 for 6 stars)",
             inline=False
         )
         
@@ -570,13 +570,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="🔓 **Unlock**: 10 shards\n⭐ **1 Star**: 18 shards\n⭐⭐ **2 Stars**: 36 shards\n⭐⭐⭐ **3 Stars**: 90 shards\n⭐⭐⭐⭐ **4 Stars**: 210 shards\n⭐⭐⭐⭐⭐ **5 Stars**: 400 shards\n⭐⭐⭐⭐⭐⭐ **6 Stars**: 120 shards",
+            value="🔓 **Unlock**: 0 shards\n⭐ **1 Star**: 8 shards\n⭐⭐ **2 Stars**: 30 shards\n⭐⭐⭐ **3 Stars**: 86 shards\n⭐⭐⭐⭐ **4 Stars**: 226 shards\n⭐⭐⭐⭐⭐ **5 Stars**: 516 shards\n⭐⭐⭐⭐⭐⭐ **6 Stars**: 956 shards",
             inline=False
         )
         
         embed.add_field(
             name="💰 Total Cost",
-            value="**884 Spirit Shards** - Total cost from unlock to 6 stars",
+            value="**956 Spirit Shards** - Total cost from unlock to 6 stars",
             inline=False
         )
         
