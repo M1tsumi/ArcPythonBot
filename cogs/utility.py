@@ -493,14 +493,32 @@ class Utility(commands.Cog):
                 inline=True
             )
             
-            # Create top servers list (compact format)
+            # Create top servers list with invite links
             top_servers_text = ""
             for i, guild in enumerate(top_servers, 1):
                 owner_name = guild.owner.display_name if guild.owner else "Unknown"
                 joined_date = guild.me.joined_at.strftime('%m/%d') if guild.me.joined_at else "Unknown"
                 
+                # Try to create invite link
+                invite_link = "No permission"
+                try:
+                    # Look for a channel where the bot can create invites
+                    invite_channel = None
+                    for channel in guild.channels:
+                        if (isinstance(channel, discord.TextChannel) and 
+                            channel.permissions_for(guild.me).create_instant_invite):
+                            invite_channel = channel
+                            break
+                    
+                    if invite_channel:
+                        invite = await invite_channel.create_invite(max_age=0, max_uses=0)
+                        invite_link = invite.url
+                except Exception as e:
+                    invite_link = "Error creating invite"
+                
                 top_servers_text += f"**{i}.** {guild.name}\n"
-                top_servers_text += f"👥 {guild.member_count:,} members | 👑 {owner_name} | 📅 {joined_date}\n\n"
+                top_servers_text += f"👥 {guild.member_count:,} members | 👑 {owner_name} | 📅 {joined_date}\n"
+                top_servers_text += f"🔗 {invite_link}\n\n"
             
             embed.add_field(
                 name="🏆 Top 10 Servers",
