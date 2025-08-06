@@ -576,37 +576,76 @@ class DataParser:
                 if line.startswith('Unit') or line.startswith('Research') or line.startswith('Food'):
                     continue
                     
-                # Split by tabs and filter out empty strings
-                parts = [part.strip() for part in line.split('\t') if part.strip()]
+                # Split by tabs and keep all parts (including empty ones)
+                parts = line.split('\t')
                 
                 if len(parts) < 8:
                     continue
                 
                 # Check if this is a tier line (starts with T1, T2, etc.)
-                if parts[0].startswith('T') and parts[0][1:].isdigit():
-                    current_tier = parts[0]
+                if parts[0].strip().startswith('T') and parts[0].strip()[1:].isdigit():
+                    current_tier = parts[0].strip()
                     continue
                 
                 # Check if this is an element line (indented under tier)
-                if parts[0] in ['Water', 'Earth', 'Fire', 'Air']:
-                    element = parts[0]
-                    unit_name = parts[1] if len(parts) > 1 and parts[1] else ''
+                if parts[0].strip() in ['Water', 'Earth', 'Fire', 'Air']:
+                    element = parts[0].strip()
                     
-                    # Recruitment costs (columns 2-6)
-                    rec_food = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
-                    rec_wood = int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 0
-                    rec_stone = int(parts[4]) if len(parts) > 4 and parts[4].isdigit() and parts[4] != '-' else 0
-                    rec_gold = int(parts[5]) if len(parts) > 5 and parts[5].isdigit() and parts[5] != '-' else 0
-                    rec_time = parts[6] if len(parts) > 6 else '0m 0s'
+                    # Determine the column offsets based on the number of parts
+                    # Some lines have the tier prefix, others don't
+                    if len(parts) >= 20:  # Lines with tier prefix (T2, T3, etc.)
+                        unit_name_col = 2
+                        food_col = 3
+                        wood_col = 4
+                        stone_col = 5
+                        gold_col = 6
+                        time_col = 7
+                    else:  # Lines without tier prefix (shifted by 1)
+                        unit_name_col = 1
+                        food_col = 2
+                        wood_col = 3
+                        stone_col = 4
+                        gold_col = 5
+                        time_col = 6
                     
-                    # Stats (columns 11-16)
-                    power = int(parts[11]) if len(parts) > 11 and parts[11].isdigit() else 0
-                    power_diff = int(parts[12]) if len(parts) > 12 and parts[12].isdigit() else 0
-                    atk = int(parts[13]) if len(parts) > 13 and parts[13].isdigit() else 0
-                    defense = int(parts[14]) if len(parts) > 14 and parts[14].isdigit() else 0
-                    health = int(parts[15]) if len(parts) > 15 and parts[15].isdigit() else 0
-                    speed = int(parts[16]) if len(parts) > 16 and parts[16].isdigit() else 0
-                    load = int(parts[17]) if len(parts) > 17 and parts[17].isdigit() else 0
+                    # For T1 units, the Research column is empty, so we use the element name
+                    # For T2-T6 units, the Research column contains the unit name
+                    unit_name = parts[unit_name_col].strip() if len(parts) > unit_name_col and parts[unit_name_col].strip() and parts[unit_name_col].strip() != element and not parts[unit_name_col].strip().isdigit() else element
+                    
+                    # Recruitment costs using dynamic column indices
+                    rec_food = int(parts[food_col].strip()) if len(parts) > food_col and parts[food_col].strip().isdigit() else 0
+                    rec_wood = int(parts[wood_col].strip()) if len(parts) > wood_col and parts[wood_col].strip().isdigit() and parts[wood_col].strip() != '-' else 0
+                    rec_stone = int(parts[stone_col].strip()) if len(parts) > stone_col and parts[stone_col].strip().isdigit() and parts[stone_col].strip() != '-' else 0
+                    rec_gold = int(parts[gold_col].strip()) if len(parts) > gold_col and parts[gold_col].strip().isdigit() and parts[gold_col].strip() != '-' else 0
+                    rec_time = parts[time_col].strip() if len(parts) > time_col and parts[time_col].strip() else '0m 0s'
+                    
+                    # Stats - need to adjust based on the number of parts
+                    # For lines with 20 parts: stats start at 13
+                    # For lines with 19 parts: stats start at 12
+                    if len(parts) >= 20:
+                        power_col = 13
+                        power_diff_col = 14
+                        atk_col = 15
+                        def_col = 16
+                        health_col = 17
+                        speed_col = 18
+                        load_col = 19
+                    else:
+                        power_col = 12
+                        power_diff_col = 13
+                        atk_col = 14
+                        def_col = 15
+                        health_col = 16
+                        speed_col = 17
+                        load_col = 18
+                    
+                    power = int(parts[power_col].strip()) if len(parts) > power_col and parts[power_col].strip().isdigit() else 0
+                    power_diff = int(parts[power_diff_col].strip()) if len(parts) > power_diff_col and parts[power_diff_col].strip().isdigit() else 0
+                    atk = int(parts[atk_col].strip()) if len(parts) > atk_col and parts[atk_col].strip().isdigit() else 0
+                    defense = int(parts[def_col].strip()) if len(parts) > def_col and parts[def_col].strip().isdigit() else 0
+                    health = int(parts[health_col].strip()) if len(parts) > health_col and parts[health_col].strip().isdigit() else 0
+                    speed = int(parts[speed_col].strip()) if len(parts) > speed_col and parts[speed_col].strip().isdigit() else 0
+                    load = int(parts[load_col].strip()) if len(parts) > load_col and parts[load_col].strip().isdigit() else 0
                     
                     if element not in troops_data:
                         troops_data[element] = {}
@@ -650,92 +689,5 @@ class DataParser:
         Returns:
             Dictionary with structure: {element: {tier: troop_data}}
         """
-        troops_file = Path("text files/troops.txt")
-        
-        if not troops_file.exists():
-            logger.warning(f"Troops file not found: {troops_file}")
-            return {}
-        
-        troops_data = {}
-        
-        try:
-            with open(troops_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            # Split content into lines and clean up
-            lines = [line.strip() for line in content.split('\n') if line.strip()]
-            logger.info(f"Loaded {len(lines)} lines from troops file")
-            
-            current_tier = None
-            
-            for i, line in enumerate(lines):
-                # Skip header lines
-                if line.startswith('Unit') or line.startswith('Research') or line.startswith('Food'):
-                    continue
-                    
-                # Split by tabs and filter out empty strings
-                parts = [part.strip() for part in line.split('\t') if part.strip()]
-                
-                if len(parts) < 8:
-                    continue
-                
-                # Check if this is a tier line (starts with T1, T2, etc.)
-                if parts[0].startswith('T') and parts[0][1:].isdigit():
-                    current_tier = parts[0]
-                    continue
-                
-                # Check if this is an element line (indented under tier)
-                if parts[0] in ['Water', 'Earth', 'Fire', 'Air']:
-                    element = parts[0]
-                    unit_name = parts[1] if len(parts) > 1 and parts[1] else ''
-                    
-                    # Recruitment costs (columns 2-6)
-                    rec_food = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
-                    rec_wood = int(parts[3]) if len(parts) > 3 and parts[3].isdigit() else 0
-                    rec_stone = int(parts[4]) if len(parts) > 4 and parts[4].isdigit() and parts[4] != '-' else 0
-                    rec_gold = int(parts[5]) if len(parts) > 5 and parts[5].isdigit() and parts[5] != '-' else 0
-                    rec_time = parts[6] if len(parts) > 6 else '0m 0s'
-                    
-                    # Stats (columns 11-16)
-                    power = int(parts[11]) if len(parts) > 11 and parts[11].isdigit() else 0
-                    power_diff = int(parts[12]) if len(parts) > 12 and parts[12].isdigit() else 0
-                    atk = int(parts[13]) if len(parts) > 13 and parts[13].isdigit() else 0
-                    defense = int(parts[14]) if len(parts) > 14 and parts[14].isdigit() else 0
-                    health = int(parts[15]) if len(parts) > 15 and parts[15].isdigit() else 0
-                    speed = int(parts[16]) if len(parts) > 16 and parts[16].isdigit() else 0
-                    load = int(parts[17]) if len(parts) > 17 and parts[17].isdigit() else 0
-                    
-                    if element not in troops_data:
-                        troops_data[element] = {}
-                    
-                    troop_data = {
-                        'tier': current_tier,
-                        'element': element,
-                        'unit_name': unit_name,
-                        'recruitment_costs': {
-                            'food': rec_food,
-                            'wood': rec_wood,
-                            'stone': rec_stone,
-                            'gold': rec_gold,
-                            'time': rec_time
-                        },
-                        'power': power,
-                        'power_diff': power_diff,
-                        'atk': atk,
-                        'def': defense,
-                        'health': health,
-                        'speed': speed,
-                        'load': load
-                    }
-                    
-                    troops_data[element][current_tier] = troop_data
-                    
-        except Exception as e:
-            logger.error(f"Error parsing troops data: {e}")
-            return {}
-        
-        logger.info(f"Successfully parsed troops data: {len(troops_data)} elements")
-        for element, tiers in troops_data.items():
-            logger.info(f"  {element}: {len(tiers)} tiers")
-        
-        return troops_data 
+        # Use the fixed version for consistency
+        return self.get_troops_data_fixed() 

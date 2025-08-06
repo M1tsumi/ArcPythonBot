@@ -481,19 +481,17 @@ class Utility(commands.Cog):
                 except Exception as e:
                     invite_link = f"Error: {str(e)[:20]}..."
                 
-                # Format server info
-                server_info = f"**{i}.** {guild.name}\n"
-                server_info += f"👑 Owner: {owner_mention} ({owner_name})\n"
-                server_info += f"👥 Members: {guild.member_count:,}\n"
-                server_info += f"🔗 Invite: {invite_link}\n"
-                server_info += f"📅 Joined: {guild.me.joined_at.strftime('%Y-%m-%d') if guild.me.joined_at else 'Unknown'}\n"
-                server_info += "─" * 40 + "\n"
+                # Format server info with compact format
+                server_info = f"**{i}.** {guild.name} ({guild.member_count:,})\n"
+                server_info += f"👑 {owner_name} | 📅 {guild.me.joined_at.strftime('%Y-%m-%d') if guild.me.joined_at else 'Unknown'}\n"
+                server_info += f"🔗 {invite_link}\n"
+                server_info += "─" * 25 + "\n"
                 
                 server_list += server_info
                 total_members += guild.member_count
                 
-                # Split into multiple embeds if too long
-                if len(server_list) > 1000:
+                # Split into multiple embeds if too long (Discord field limit is 1024 characters)
+                if len(server_list) > 800:
                     embed.add_field(
                         name="📋 Server List (Part 1)",
                         value=server_list,
@@ -529,12 +527,10 @@ class Utility(commands.Cog):
                         except Exception as e:
                             invite_link = f"Error: {str(e)[:20]}..."
                         
-                        remaining_info = f"**{j}.** {remaining_guild.name}\n"
-                        remaining_info += f"👑 Owner: {owner_mention} ({owner_name})\n"
-                        remaining_info += f"👥 Members: {remaining_guild.member_count:,}\n"
-                        remaining_info += f"🔗 Invite: {invite_link}\n"
-                        remaining_info += f"📅 Joined: {remaining_guild.me.joined_at.strftime('%Y-%m-%d') if remaining_guild.me.joined_at else 'Unknown'}\n"
-                        remaining_info += "─" * 40 + "\n"
+                        remaining_info = f"**{j}.** {remaining_guild.name} ({remaining_guild.member_count:,})\n"
+                        remaining_info += f"👑 {owner_name} | 📅 {remaining_guild.me.joined_at.strftime('%Y-%m-%d') if remaining_guild.me.joined_at else 'Unknown'}\n"
+                        remaining_info += f"🔗 {invite_link}\n"
+                        remaining_info += "─" * 25 + "\n"
                         
                         remaining_list += remaining_info
                     

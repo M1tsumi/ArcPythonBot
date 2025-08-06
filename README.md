@@ -1,12 +1,12 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.6.2-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.6.3-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.6.2 - Avatar Realms Collide Discord Bot**  
-> An interactive Discord bot for exploring character talent trees, leaderboards, rally system, and game information in the Avatar Realms Collide universe.
+> **🎮 Version 1.6.3 - Avatar Realms Collide Discord Bot**  
+> An interactive Discord bot for exploring character talent trees, leaderboards, rally system, troops calculator, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
 
@@ -87,12 +87,14 @@
 
 ### ⚔️ **Troops System**
 - **Interactive Troop Browser**: Complete troops information with `/troops` command
+- **Troops Calculator**: Calculate troop recruitment costs with `/troopcalc` command
 - **Element Selection**: Choose from Water, Earth, Fire, and Air elements
 - **Tier-based Navigation**: Browse troops by tiers T1-T6 with detailed information
 - **Professional UI**: Color-coded element buttons with emojis and visual styling
 - **Comprehensive Data**: Detailed troop stats, costs, and element-specific descriptions
 - **Strategic Information**: Element overviews and troop characteristics
 - **Enhanced Navigation**: Interactive tier selection with professional embeds
+- **Fixed Data Parsing**: Corrected troop data extraction with dynamic column mapping
 
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe

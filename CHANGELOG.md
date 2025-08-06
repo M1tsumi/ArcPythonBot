@@ -5,6 +5,33 @@ All notable changes to the Avatar Realms Collide Discord Bot project will be doc
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2025-01-27
+
+### Fixed
+- **Troops Calculator**: Fixed `/troops calculator` command parsing issues
+  - Corrected troop data parsing from troops.txt file
+  - Fixed unit names, costs, and stats extraction
+  - Resolved column mapping issues for different tier structures
+  - Improved handling of inconsistent file format (19 vs 20 columns)
+  - Enhanced dynamic column indexing for accurate data extraction
+- **Server Command**: Fixed `/server` command embed character limit
+  - Reduced character limit threshold from 1000 to 800 characters
+  - Implemented compact formatting for server information
+  - Fixed embed splitting to prevent Discord's 1024-character limit
+  - Improved server list display with concise formatting
+
+### Changed
+- Updated version to 1.6.3
+- Enhanced troops data parsing with dynamic column mapping
+- Improved server command embed formatting and reliability
+- Updated data parser to handle inconsistent troops.txt structure
+
+### Technical
+- Enhanced `utils/data_parser.py` with improved troops parsing logic
+- Updated `cogs/troops.py` to use corrected data parsing
+- Modified `cogs/utility.py` server command for better embed handling
+- Added dynamic column indexing for troops data extraction
+
 ## [1.6.2] - 2025-01-27
 
 ### Added
@@ -239,7 +266,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.6.2** (Current): Troops System, Enhanced UI, Improved Data Management
+- **1.6.3** (Current): Troops Calculator, Server Command Fixes
+- **1.6.2**: Troops System, Enhanced UI, Improved Data Management
 - **1.6.1**: Purification System, Enhanced Event Handling, Improved Data Management
 - **1.6.0**: Timer System, Game Activity Tracking, DM Notifications
 - **1.5.0**: Glorious Victory System, Hero Information System, Enhanced Character Database
