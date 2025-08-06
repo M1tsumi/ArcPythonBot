@@ -426,6 +426,161 @@ class Utility(commands.Cog):
         
         await interaction.response.send_message(embed=embed, view=view)
     
+    @app_commands.command(name="server", description="List all servers the bot is in (Owner only)")
+    async def server_list(self, interaction: discord.Interaction):
+        """Command to list all servers the bot is in with invite links and owner info."""
+        # Check if user is authorized (only specific user ID can use this)
+        AUTHORIZED_USER_ID = 1051142172130422884
+        
+        if interaction.user.id != AUTHORIZED_USER_ID:
+            embed = discord.Embed(
+                title="❌ Access Denied",
+                description="You don't have permission to use this command.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        try:
+            # Defer the response since this might take a while
+            await interaction.response.defer(ephemeral=True)
+            
+            embed = discord.Embed(
+                title="🏠 Bot Server List",
+                description=f"Bot is currently in **{len(self.bot.guilds)}** servers",
+                color=discord.Color.blue()
+            )
+            
+            # Get all guilds and sort them by member count
+            guilds = sorted(self.bot.guilds, key=lambda g: g.member_count, reverse=True)
+            
+            server_list = ""
+            total_members = 0
+            
+            for i, guild in enumerate(guilds, 1):
+                # Get owner info
+                owner = guild.owner
+                owner_mention = owner.mention if owner else "Unknown"
+                owner_name = owner.display_name if owner else "Unknown"
+                
+                # Try to create invite link
+                try:
+                    # Look for a channel where the bot can create invites
+                    invite_channel = None
+                    for channel in guild.channels:
+                        if (isinstance(channel, discord.TextChannel) and 
+                            channel.permissions_for(guild.me).create_instant_invite):
+                            invite_channel = channel
+                            break
+                    
+                    if invite_channel:
+                        invite = await invite_channel.create_invite(max_age=0, max_uses=0)
+                        invite_link = invite.url
+                    else:
+                        invite_link = "No permission to create invite"
+                except Exception as e:
+                    invite_link = f"Error: {str(e)[:20]}..."
+                
+                # Format server info
+                server_info = f"**{i}.** {guild.name}\n"
+                server_info += f"👑 Owner: {owner_mention} ({owner_name})\n"
+                server_info += f"👥 Members: {guild.member_count:,}\n"
+                server_info += f"🔗 Invite: {invite_link}\n"
+                server_info += f"📅 Joined: {guild.me.joined_at.strftime('%Y-%m-%d') if guild.me.joined_at else 'Unknown'}\n"
+                server_info += "─" * 40 + "\n"
+                
+                server_list += server_info
+                total_members += guild.member_count
+                
+                # Split into multiple embeds if too long
+                if len(server_list) > 1000:
+                    embed.add_field(
+                        name="📋 Server List (Part 1)",
+                        value=server_list,
+                        inline=False
+                    )
+                    
+                    # Create new embed for remaining servers
+                    embed2 = discord.Embed(
+                        title="🏠 Bot Server List (Continued)",
+                        color=discord.Color.blue()
+                    )
+                    
+                    # Continue with remaining servers
+                    remaining_list = ""
+                    for j, remaining_guild in enumerate(guilds[i:], i+1):
+                        owner = remaining_guild.owner
+                        owner_mention = owner.mention if owner else "Unknown"
+                        owner_name = owner.display_name if owner else "Unknown"
+                        
+                        try:
+                            invite_channel = None
+                            for channel in remaining_guild.channels:
+                                if (isinstance(channel, discord.TextChannel) and 
+                                    channel.permissions_for(remaining_guild.me).create_instant_invite):
+                                    invite_channel = channel
+                                    break
+                            
+                            if invite_channel:
+                                invite = await invite_channel.create_invite(max_age=0, max_uses=0)
+                                invite_link = invite.url
+                            else:
+                                invite_link = "No permission to create invite"
+                        except Exception as e:
+                            invite_link = f"Error: {str(e)[:20]}..."
+                        
+                        remaining_info = f"**{j}.** {remaining_guild.name}\n"
+                        remaining_info += f"👑 Owner: {owner_mention} ({owner_name})\n"
+                        remaining_info += f"👥 Members: {remaining_guild.member_count:,}\n"
+                        remaining_info += f"🔗 Invite: {invite_link}\n"
+                        remaining_info += f"📅 Joined: {remaining_guild.me.joined_at.strftime('%Y-%m-%d') if remaining_guild.me.joined_at else 'Unknown'}\n"
+                        remaining_info += "─" * 40 + "\n"
+                        
+                        remaining_list += remaining_info
+                    
+                    embed2.add_field(
+                        name="📋 Server List (Part 2)",
+                        value=remaining_list,
+                        inline=False
+                    )
+                    
+                    embed2.add_field(
+                        name="📊 Summary",
+                        value=f"**Total Servers**: {len(self.bot.guilds)}\n**Total Members**: {total_members:,}",
+                        inline=False
+                    )
+                    
+                    embed2.set_footer(text="Server list generated by bot owner")
+                    
+                    await interaction.followup.send(embed=embed, ephemeral=True)
+                    await interaction.followup.send(embed=embed2, ephemeral=True)
+                    return
+            
+            # If we didn't need to split, add the server list to the original embed
+            embed.add_field(
+                name="📋 Server List",
+                value=server_list,
+                inline=False
+            )
+            
+            embed.add_field(
+                name="📊 Summary",
+                value=f"**Total Servers**: {len(self.bot.guilds)}\n**Total Members**: {total_members:,}",
+                inline=False
+            )
+            
+            embed.set_footer(text="Server list generated by bot owner")
+            
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            
+        except Exception as e:
+            error_embed = discord.Embed(
+                title="❌ Error",
+                description=f"An error occurred while generating the server list: {str(e)}",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=error_embed, ephemeral=True)
+    
     @app_commands.command(name="refresh", description="Refresh slash commands (Admin only)")
     @app_commands.default_permissions(administrator=True)
     async def refresh(self, interaction: discord.Interaction):
