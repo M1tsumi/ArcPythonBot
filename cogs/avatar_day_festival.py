@@ -219,6 +219,12 @@ class AvatarDayFestivalView(discord.ui.View):
             inline=False
         )
         
+        embed.add_field(
+            name="📝 Information Source",
+            value="Event information gathered by **Lycaris** (@lycaris_1)",
+            inline=False
+        )
+        
         await interaction.response.edit_message(embed=embed, view=self)
 
 class AvatarDayFestival(commands.Cog):
