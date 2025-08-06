@@ -1,0 +1,26 @@
+Unit		Research	Recruitment Costs					Healing Costs					Power	Power diff	ATK	DEF	Health	Speed	Load
+			Food	Wood	Stone	Gold	Time	Food	Wood	Stone	Gold	Time							
+T1	Water		40	50	-	-	0m 10s	16	20	-	-	0m 0s	1	1	32	62	64	120	7
+	Earth		50	50	-	-	0m 10s	20	16	-	-	0m 0s	1	1	32	64	62	120	7
+	Fire		45	45	-	-	0m 10s	18	18	-	-	0m 0s	1	1	34	62	62	120	7
+	Air		50	50	-	-	0m 10s	20	20	-	-	0m 0s	1	1	32	63	63	120	7
+T2	Water	Ranger	50	50	80	-	0m 20s	20	20	32	-	0m 50s	2	1	75	76	78	120	10
+	Earth	Defender	50	50	80	-	0m 20s	20	20	32	-	0m 50s	2	1	75	78	76	120	10
+	Fire	Sergeant	90	90	-	-	0m 20s	36	36	-	-	0m 50s	2	1	78	75	76	120	10
+	Air	Apprentice	60	60	60	-	0m 20s	24	24	24	-	0m 50s	2	1	77	77	75	120	10
+T3	Water	Warrior	75	75	150	-	0m 30s	30	30	60	-	1m 40s	3	1	89	90	92	120	12
+	Earth	Guard	75	75	150	-	0m 30s	30	30	60	-	1m 40s	3	1	90	92	89	120	12
+	Fire	Centurion	150	150	-	-	0m 30s	60	60	-	-	1m 40s	3	1	92	89	90	120	12
+	Air	Friar	100	100	100		0m 30s	40	40	40	-	1m 40s	3	1	91	91	89	120	12
+T4	Water	Captain	100	100	200	10	0m 40s	40	40	80	4	3m 20s	4	1	104	105	107	120	13
+	Earth	Royal Guard	100	100	200	10	0m 40s	40	40	80	4	3m 20s	4	1	105	107	104	120	13
+	Fire	Brigadier	200	200	-	10	0m 40s	80	80	-	4	3m 20s	4	1	107	105	104	120	13
+	Air	Monk	135	135	130	10	0m 40s	54	54	52	4	3m 20s	4	1	106	106	104	120	13
+T5	Water	Guardian	125	125	250	50	0m 55s	50	50	100	20	5m 0s	6	2	116	116	120	120	14
+	Earth	Chiefguard	125	125	250	50	0m 55s	50	50	100	20	5m 0s	6	2	116	120	116	120	14
+	Fire	Noble	250	250	-	50	0m 55s	100	100	-	20	5m 0s	6	2	120	116	116	120	14
+	Air	Counselor	170	170	160	50	0m 55s	68	68	64	20	5m 0s	6	2	118	118	116	120	14
+T6	Water	Elder	350	350	700	600	1m 20s	140	140	280	240	6m 40s	10	4	129	129	133	120	16
+	Earth	General	350	350	700	600	1m 20s	140	140	280	240	6m 40s	10	4	129	133	129	120	16
+	Fire	Royalty	700	700	-	600	1m 20s	280	280	-	240	6m 40s	10	4	133	129	129	120	16
+	Air	Patriach	500	500	400	600	1m 20s	200	200	160	240	6m 40s	10	4	131	131	129	120	16

@@ -563,14 +563,17 @@ class DataParser:
         
         try:
             with open(troops_file, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                content = f.read()
                 
+            # Split content into lines and clean up
+            lines = [line.strip() for line in content.split('\n') if line.strip()]
             logger.info(f"Loaded {len(lines)} lines from troops file")
+            
             current_tier = None
             
-            for line in lines:
-                line = line.strip()
-                if not line or line.startswith('Unit') or line.startswith('Research') or line.startswith('Food'):
+            for i, line in enumerate(lines):
+                # Skip header lines
+                if line.startswith('Unit') or line.startswith('Research') or line.startswith('Food'):
                     continue
                     
                 # Split by tabs and filter out empty strings
@@ -584,10 +587,10 @@ class DataParser:
                     current_tier = parts[0]
                     continue
                 
-                # Check if this is an element line (starts with element name)
+                # Check if this is an element line (indented under tier)
                 if parts[0] in ['Water', 'Earth', 'Fire', 'Air']:
                     element = parts[0]
-                    unit_name = parts[1] if len(parts) > 1 else ''
+                    unit_name = parts[1] if len(parts) > 1 and parts[1] else ''
                     
                     # Recruitment costs (columns 2-6)
                     rec_food = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
