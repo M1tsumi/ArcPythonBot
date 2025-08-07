@@ -18,7 +18,7 @@ class EventDetailsView(discord.ui.View):
         self.event_data = event_data
         self.data_parser = data_parser
     
-    @discord.ui.button(label="Rewards", style=discord.ButtonStyle.primary, emoji="🏆")
+    @discord.ui.button(label="Rewards", style=discord.ButtonStyle.primary)
     async def show_rewards(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show detailed rewards information."""
         embed = discord.Embed(
@@ -36,10 +36,10 @@ class EventDetailsView(discord.ui.View):
                     
                     tier_text = ""
                     for reward in rewards:
-                        tier_text += f"🏆 {reward}\n"
+                        tier_text += f"• {reward}\n"
                     
                     embed.add_field(
-                        name=f"🎯 {points} Points",
+                        name=f"{points} Points",
                         value=tier_text,
                         inline=False
                     )
@@ -47,12 +47,12 @@ class EventDetailsView(discord.ui.View):
                 # Old format (simple list)
                 rewards_text = ""
                 for reward in self.event_data['rewards']:
-                    rewards_text += f"🏆 {reward}\n"
+                    rewards_text += f"• {reward}\n"
                 embed.add_field(name="Rewards", value=rewards_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="Mechanics", style=discord.ButtonStyle.secondary, emoji="⚙️")
+    @discord.ui.button(label="Mechanics", style=discord.ButtonStyle.secondary)
     async def show_mechanics(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show event mechanics."""
         embed = discord.Embed(
@@ -64,12 +64,12 @@ class EventDetailsView(discord.ui.View):
         if 'mechanics' in self.event_data and self.event_data['mechanics']:
             mechanics_text = ""
             for mechanic in self.event_data['mechanics']:
-                mechanics_text += f"⚙️ {mechanic}\n"
+                mechanics_text += f"• {mechanic}\n"
             embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="Tips", style=discord.ButtonStyle.success, emoji="💡")
+    @discord.ui.button(label="Tips", style=discord.ButtonStyle.success)
     async def show_tips(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show event tips and strategies."""
         embed = discord.Embed(
@@ -81,12 +81,12 @@ class EventDetailsView(discord.ui.View):
         if 'tips' in self.event_data and self.event_data['tips']:
             tips_text = ""
             for tip in self.event_data['tips']:
-                tips_text += f"💡 {tip}\n"
+                tips_text += f"• {tip}\n"
             embed.add_field(name="Tips", value=tips_text, inline=False)
         
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="Back", style=discord.ButtonStyle.danger, emoji="⬅️")
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.danger)
     async def go_back(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Return to main event overview."""
         embed = discord.Embed(
@@ -115,7 +115,7 @@ class EventDetailsView(discord.ui.View):
         if 'requirements' in self.event_data and self.event_data['requirements']:
             req_text = ""
             for req in self.event_data['requirements']:
-                req_text += f"📋 {req}\n"
+                req_text += f"• {req}\n"
             embed.add_field(name="Requirements", value=req_text, inline=False)
         
         # Add basic rewards info

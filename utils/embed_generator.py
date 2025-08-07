@@ -138,6 +138,118 @@ class EmbedGenerator:
         return embed
     
     @staticmethod
+    def create_ping_embed(latency: float, api_latency: float, guild_count: int, user_count: int, command_count: int) -> discord.Embed:
+        """
+        Create a clean ping embed with minimal emoji usage.
+        
+        Args:
+            latency: Response time in milliseconds
+            api_latency: Discord API latency in milliseconds
+            guild_count: Number of servers
+            user_count: Number of users
+            command_count: Number of commands
+            
+        Returns:
+            discord.Embed: Ping status embed
+        """
+        embed = discord.Embed(
+            title="Bot Status",
+            description="Bot is online and responding",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="Response Time",
+            value=f"{latency:.1f}ms",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="API Latency",
+            value=f"{api_latency}ms",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="Status",
+            value="Online",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="Servers",
+            value=f"{guild_count}",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="Users",
+            value=f"{user_count}",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="Commands",
+            value=f"{command_count}",
+            inline=True
+        )
+        
+        embed.set_footer(text="Avatar Realms Collide Bot • Developed by Quefep")
+        
+        return embed
+    
+    @staticmethod
+    def create_troop_calculator_embed(troop_data: Dict[str, Any], quantity: int, total_costs: Dict[str, int], total_time: str) -> discord.Embed:
+        """
+        Create a clean troop calculator embed with organized information.
+        
+        Args:
+            troop_data: Troop information dictionary
+            quantity: Number of troops
+            total_costs: Dictionary of total costs
+            total_time: Formatted total time string
+            
+        Returns:
+            discord.Embed: Troop calculator embed
+        """
+        embed = discord.Embed(
+            title=f"{troop_data['tier']} {troop_data['unit_name']} ({troop_data['element']})",
+            description=f"Quantity: {quantity:,}",
+            color=discord.Color.blue()
+        )
+        
+        # Troop stats
+        stats_text = f"Power: {troop_data['power']}\n"
+        stats_text += f"ATK: {troop_data['atk']}\n"
+        stats_text += f"DEF: {troop_data['def']}\n"
+        stats_text += f"Health: {troop_data['health']}\n"
+        stats_text += f"Speed: {troop_data['speed']}\n"
+        stats_text += f"Load: {troop_data['load']}"
+        
+        embed.add_field(
+            name="Troop Stats",
+            value=stats_text,
+            inline=True
+        )
+        
+        # Total costs
+        cost_text = f"Food: {total_costs['food']:,}\n"
+        cost_text += f"Wood: {total_costs['wood']:,}\n"
+        if total_costs.get('stone', 0) > 0:
+            cost_text += f"Stone: {total_costs['stone']:,}\n"
+        if total_costs.get('gold', 0) > 0:
+            cost_text += f"Gold: {total_costs['gold']:,}\n"
+        cost_text += f"Time: {total_time}"
+        
+        embed.add_field(
+            name="Total Costs",
+            value=cost_text,
+            inline=True
+        )
+        
+        return embed
+    
+    @staticmethod
     def create_character_embed(character_data: Dict[str, Any], use_cache: bool = True) -> discord.Embed:
         """
         Create an optimized embed for character information.
@@ -357,7 +469,7 @@ class EmbedGenerator:
         
         # Add requirements if available
         if 'requirements' in event_data and event_data['requirements']:
-            req_text = "\n".join([f"📋 {req}" for req in event_data['requirements']])
+            req_text = "\n".join([f"• {req}" for req in event_data['requirements']])
             embed.add_field(name="Requirements", value=req_text, inline=False)
         
         # Handle rewards with new point-based structure efficiently
@@ -368,26 +480,26 @@ class EmbedGenerator:
                     points = reward_tier.get('points', 0)
                     rewards = reward_tier.get('rewards', [])
                     
-                    tier_text = "\n".join([f"🏆 {reward}" for reward in rewards])
+                    tier_text = "\n".join([f"• {reward}" for reward in rewards])
                     
                     embed.add_field(
-                        name=f"🎯 {points} Points",
+                        name=f"{points} Points",
                         value=tier_text,
                         inline=False
                     )
             else:
                 # Old format (simple list)
-                reward_text = "\n".join([f"🏆 {reward}" for reward in event_data['rewards']])
+                reward_text = "\n".join([f"• {reward}" for reward in event_data['rewards']])
                 embed.add_field(name="Rewards", value=reward_text, inline=False)
         
         # Add mechanics if available
         if 'mechanics' in event_data and event_data['mechanics']:
-            mechanics_text = "\n".join([f"⚙️ {mechanic}" for mechanic in event_data['mechanics']])
+            mechanics_text = "\n".join([f"• {mechanic}" for mechanic in event_data['mechanics']])
             embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)
         
         # Add tips if available
         if 'tips' in event_data and event_data['tips']:
-            tips_text = "\n".join([f"💡 {tip}" for tip in event_data['tips']])
+            tips_text = "\n".join([f"• {tip}" for tip in event_data['tips']])
             embed.add_field(name="Tips", value=tips_text, inline=False)
         
         # Cache the embed
@@ -411,7 +523,7 @@ class EmbedGenerator:
             discord.Embed: Error embed
         """
         return discord.Embed(
-            title="❌ Error",
+            title="Error",
             description=message,
             color=EMBED_COLORS["error"]
         )
@@ -428,7 +540,7 @@ class EmbedGenerator:
             discord.Embed: Success embed
         """
         return discord.Embed(
-            title="✅ Success",
+            title="Success",
             description=message,
             color=EMBED_COLORS["success"]
         )
@@ -445,7 +557,7 @@ class EmbedGenerator:
             discord.Embed: Help embed
         """
         embed = discord.Embed(
-            title="🤖 Bot Commands",
+            title="Bot Commands",
             description="Here are all available commands:",
             color=EMBED_COLORS["info"]
         )

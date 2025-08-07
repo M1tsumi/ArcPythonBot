@@ -184,97 +184,55 @@ class Utility(commands.Cog):
         """Command to check bot latency and status."""
         start_time = time.time()
         
-        # Create initial embed
-        embed = discord.Embed(
-            title="🏓 Pong!",
-            description="Checking bot status and latency...",
-            color=discord.Color.blue()
-        )
-        
         # Send initial response
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message("Checking bot status...")
         
         # Calculate latency
         end_time = time.time()
         latency = (end_time - start_time) * 1000  # Convert to milliseconds
         api_latency = round(self.bot.latency * 1000, 2)  # Discord API latency
         
-        # Update embed with results
-        embed = discord.Embed(
-            title="🏓 Pong!",
-            description="Bot is online and responding!",
-            color=discord.Color.green()
+        # Create clean embed using the embed generator
+        from utils.embed_generator import EmbedGenerator
+        embed = EmbedGenerator.create_ping_embed(
+            latency=latency,
+            api_latency=api_latency,
+            guild_count=len(self.bot.guilds),
+            user_count=len(self.bot.users),
+            command_count=len(self.bot.tree.get_commands())
         )
         
-        embed.add_field(
-            name="📊 Response Time",
-            value=f"**{latency:.1f}ms**",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🌐 API Latency",
-            value=f"**{api_latency}ms**",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🆔 Bot Status",
-            value="✅ Online and Ready",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🏠 Servers",
-            value=f"**{len(self.bot.guilds)}** servers",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="👥 Users",
-            value=f"**{len(self.bot.users)}** users",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="⚡ Commands",
-            value=f"**{len(self.bot.tree.get_commands())}** slash commands",
-            inline=True
-        )
-        
-        embed.set_footer(text="Developed by Quefep • Avatar Realms Collide Bot")
-        
-        await interaction.edit_original_response(embed=embed)
+        await interaction.edit_original_response(content=None, embed=embed)
     
     @app_commands.command(name="info", description="Get comprehensive bot information and contribution details")
     async def info(self, interaction: discord.Interaction):
         """Command to provide comprehensive bot information and contribution details."""
         embed = discord.Embed(
-            title="🤖 Avatar Realms Collide Bot Information",
+            title="Avatar Realms Collide Bot Information",
             description="Unofficial community bot providing game tools and information.",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="🎮 Key Features",
+            name="Key Features",
             value="• Talent Trees & Hero Info\n• Leaderboards & Rally System\n• Event Tools & Timers\n• Town Hall & Skill Guides",
             inline=False
         )
         
         embed.add_field(
-            name="👨‍💻 Developer & Contributors",
+            name="Developer & Contributors",
             value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Kuvira (talent trees, skill priorities, town hall stats), Drummer (@priskent) & Marshmellow (@sophremacy) (troop information and costs)",
             inline=False
         )
         
         embed.add_field(
-            name="📊 Statistics",
+            name="Statistics",
             value=f"• **Servers**: {len(self.bot.guilds)}\n• **Users**: {len(self.bot.users)}\n• **Commands**: {len(self.bot.tree.get_commands())}",
             inline=False
         )
         
         embed.add_field(
-            name="🤝 Contribute",
+            name="Contribute",
             value="Share game data, images, or resources! Contact **quefep** on Discord.",
             inline=False
         )
@@ -286,8 +244,7 @@ class Utility(commands.Cog):
         dev_server_button = discord.ui.Button(
             label="Join Development Server",
             url=DEVELOPMENT_SERVER_LINK,
-            style=discord.ButtonStyle.link,
-            emoji="🔗"
+            style=discord.ButtonStyle.link
         )
         view.add_item(dev_server_button)
         
@@ -297,31 +254,31 @@ class Utility(commands.Cog):
     async def links(self, interaction: discord.Interaction):
         """Command to provide bot links and information."""
         embed = discord.Embed(
-            title="🔗 Bot Links & Information",
+            title="Bot Links & Information",
             description="Connect with the Avatar Realms Collide community!",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="📱 Join Our Discord Server",
+            name="Join Our Discord Server",
             value=f"[Join Server]({DISCORD_SERVER_LINK})",
             inline=True
         )
         
         embed.add_field(
-            name="🤖 Add Bot to Your Server",
+            name="Add Bot to Your Server",
             value=f"[Add to Server]({BOT_INVITE_LINK})",
             inline=True
         )
         
         embed.add_field(
-            name="👨‍💻 Developer",
+            name="Developer",
             value="**Developed by Quefep**",
             inline=False
         )
         
         embed.add_field(
-            name="🎮 Bot Features",
+            name="Bot Features",
             value="• Talent Tree Browser\n• Skill Priorities\n• Leaderboards\n• Town Hall Info\n• Hero Rankup Guide\n• Interactive Commands",
             inline=False
         )
@@ -334,37 +291,37 @@ class Utility(commands.Cog):
     async def help(self, interaction: discord.Interaction):
         """Command to provide help and Discord server link."""
         embed = discord.Embed(
-            title="🌟 Avatar Realms Collide Bot Help",
+            title="Avatar Realms Collide Bot Help",
             description="Welcome to the Avatar Realms Collide community bot! Here's how to get help and stay connected.",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="📱 Join Our Discord Server",
+            name="Join Our Discord Server",
             value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
             inline=False
         )
         
         embed.add_field(
-            name="🎮 Game Information Commands",
+            name="Game Information Commands",
             value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/hero_info` - Get detailed hero information\n• `/hero_rankup` - View hero rankup guide and costs\n• `/townhall` - View town hall requirements\n• `/leaderboard` - Check top players and alliances",
             inline=False
         )
         
         embed.add_field(
-            name="🎭 Event Commands",
+            name="Event Commands",
             value="• `/events` - View current and upcoming events\n• `/avatar_day_festival` - Avatar Day Festival information\n• `/festival_tasks` - View all festival tasks by day\n• `/festival_shop` - View festival exchange shop\n• `/festival_guide` - Get festival tips and strategy\n• `/festival_rewards` - View all festival rewards\n• `/balance_and_order` - Balance and Order event information\n• `/balance_tasks` - View Balance and Order tasks\n• `/balance_guide` - Get Balance and Order tips\n• `/borte_scheme` - Borte's Scheme event information\n• `/borte_mechanics` - View Borte's Scheme mechanics\n• `/borte_rewards` - View Borte's Scheme rewards\n• `/borte_guide` - Get Borte's Scheme tips",
             inline=False
         )
         
         embed.add_field(
-            name="⚔️ Rally System Commands",
+            name="Rally System Commands",
             value="• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard\n• `/leader` - Admin leaderboard management (pause/resume/clear)",
             inline=False
         )
         
         embed.add_field(
-            name="🏆 TGL Commands",
+            name="TGL Commands",
             value="• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities",
             inline=False
         )

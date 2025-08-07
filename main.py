@@ -161,17 +161,17 @@ class AvatarRealmsBot(commands.Bot):
         """Enhanced global error handler with better user experience."""
         if isinstance(error, commands.CommandNotFound):
             embed = discord.Embed(
-                title="❌ Command Not Found",
+                title="Command Not Found",
                 description=f"The command `{ctx.invoked_with}` was not found.",
                 color=discord.Color.red()
             )
             embed.add_field(
-                name="💡 Help",
+                name="Help",
                 value="Use `!help` or `/help` to see all available commands.",
                 inline=False
             )
             embed.add_field(
-                name="🔗 Quick Links",
+                name="Quick Links",
                 value="• `/info` - Bot information and contribution details\n• `/links` - Community links\n• `/help` - Full command list",
                 inline=False
             )
@@ -179,12 +179,12 @@ class AvatarRealmsBot(commands.Bot):
             
         elif isinstance(error, commands.MissingPermissions):
             embed = discord.Embed(
-                title="🚫 Permission Denied",
+                title="Permission Denied",
                 description="You don't have permission to use this command.",
                 color=discord.Color.red()
             )
             embed.add_field(
-                name="📋 Required Permissions",
+                name="Required Permissions",
                 value="• Send Messages\n• Embed Links\n• Use Slash Commands",
                 inline=False
             )
@@ -192,12 +192,12 @@ class AvatarRealmsBot(commands.Bot):
             
         elif isinstance(error, commands.MissingRequiredArgument):
             embed = discord.Embed(
-                title="⚠️ Missing Argument",
+                title="Missing Argument",
                 description=f"You're missing a required argument: `{error.param.name}`",
                 color=discord.Color.orange()
             )
             embed.add_field(
-                name="💡 Usage",
+                name="Usage",
                 value=f"Use `!help {ctx.invoked_with}` for proper usage.",
                 inline=False
             )
@@ -205,7 +205,7 @@ class AvatarRealmsBot(commands.Bot):
             
         elif isinstance(error, commands.CommandOnCooldown):
             embed = discord.Embed(
-                title="⏰ Command on Cooldown",
+                title="Command on Cooldown",
                 description=f"Please wait {error.retry_after:.1f} seconds before using this command again.",
                 color=discord.Color.orange()
             )
@@ -214,12 +214,12 @@ class AvatarRealmsBot(commands.Bot):
         else:
             self.logger.error(f"Unhandled command error: {error}")
             embed = discord.Embed(
-                title="❌ Unexpected Error",
+                title="Unexpected Error",
                 description="An unexpected error occurred. Please try again later.",
                 color=discord.Color.red()
             )
             embed.add_field(
-                name="🔗 Need Help?",
+                name="Need Help?",
                 value="Join our Discord server for support: https://discord.gg/a3tGyAwVRc",
                 inline=False
             )
@@ -227,23 +227,23 @@ class AvatarRealmsBot(commands.Bot):
 
 def main():
     """Optimized main function to run the bot."""
-    print("🚀 Starting Avatar Realms Collide Discord Bot...")
+    print("Starting Avatar Realms Collide Discord Bot...")
     print("=" * 50)
     
     # Check for .env file and create template if needed
     env_created = create_env_template()
     if env_created:
-        print("\n⚠️  Please configure your .env file before running the bot again.")
-        print("📝 Edit the .env file and replace 'your_discord_bot_token_here' with your actual token.")
+        print("\nPlease configure your .env file before running the bot again.")
+        print("Edit the .env file and replace 'your_discord_bot_token_here' with your actual token.")
         return
     
     # Check for required environment variables
     token = os.getenv('DISCORD_TOKEN')
     if not token or token == 'your_discord_bot_token_here':
-        print("❌ DISCORD_TOKEN not found or not configured!")
-        print("📝 Please edit the .env file and add your Discord bot token.")
-        print("🔗 Get your bot token from: https://discord.com/developers/applications")
-        print("\n💡 Quick setup:")
+        print("DISCORD_TOKEN not found or not configured!")
+        print("Please edit the .env file and add your Discord bot token.")
+        print("Get your bot token from: https://discord.com/developers/applications")
+        print("\nQuick setup:")
         print("1. Go to https://discord.com/developers/applications")
         print("2. Create a new application or select existing one")
         print("3. Go to 'Bot' section and copy the token")
@@ -251,8 +251,8 @@ def main():
         print("5. Run the bot again")
         return
     
-    print("✅ Discord token found!")
-    print("🤖 Starting bot with optimizations...")
+    print("Discord token found!")
+    print("Starting bot with optimizations...")
     print("=" * 50)
     
     # Create and run the bot with better error handling

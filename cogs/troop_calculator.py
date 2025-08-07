@@ -64,10 +64,10 @@ class TroopCalculatorView(View):
     @discord.ui.select(
         placeholder="Choose an element...",
         options=[
-            discord.SelectOption(label="💧 Water", value="Water", emoji="💧"),
-            discord.SelectOption(label="🌍 Earth", value="Earth", emoji="🌍"),
-            discord.SelectOption(label="🔥 Fire", value="Fire", emoji="🔥"),
-            discord.SelectOption(label="💨 Air", value="Air", emoji="💨")
+            discord.SelectOption(label="Water", value="Water"),
+            discord.SelectOption(label="Earth", value="Earth"),
+            discord.SelectOption(label="Fire", value="Fire"),
+            discord.SelectOption(label="Air", value="Air")
         ]
     )
     async def element_select(self, interaction: discord.Interaction, select: Select):
@@ -112,21 +112,21 @@ class TroopCalculatorView(View):
         embed = self.create_calculator_embed()
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="➕ Increase Quantity", style=discord.ButtonStyle.primary, emoji="➕")
+    @discord.ui.button(label="Increase Quantity", style=discord.ButtonStyle.primary)
     async def increase_quantity(self, interaction: discord.Interaction, button: Button):
         """Increase troop quantity."""
         self.quantity += 1
         embed = self.create_calculator_embed()
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="➖ Decrease Quantity", style=discord.ButtonStyle.secondary, emoji="➖")
+    @discord.ui.button(label="Decrease Quantity", style=discord.ButtonStyle.secondary)
     async def decrease_quantity(self, interaction: discord.Interaction, button: Button):
         """Decrease troop quantity."""
         self.quantity = max(self.quantity - 1, 1)
         embed = self.create_calculator_embed()
         await interaction.response.edit_message(embed=embed, view=self)
     
-    @discord.ui.button(label="🔢 Set Quantity", style=discord.ButtonStyle.success, emoji="🔢")
+    @discord.ui.button(label="Set Quantity", style=discord.ButtonStyle.success)
     async def set_quantity(self, interaction: discord.Interaction, button: Button):
         """Set custom quantity using modal."""
         await interaction.response.send_modal(TroopQuantityModal(self))
@@ -134,14 +134,14 @@ class TroopCalculatorView(View):
     def create_calculator_embed(self) -> discord.Embed:
         """Create the calculator embed."""
         embed = discord.Embed(
-            title="⚔️ Troop Calculator",
+            title="Troop Calculator",
             description="Calculate recruitment costs for troops",
             color=discord.Color.blue()
         )
         
         if not self.selected_element:
             embed.add_field(
-                name="📋 Instructions",
+                name="Instructions",
                 value="1. Select an element (Water, Earth, Fire, Air)\n"
                       "2. Choose a tier (T1-T6)\n"
                       "3. Adjust quantity as needed\n"
@@ -168,55 +168,26 @@ class TroopCalculatorView(View):
         total_stone = costs['stone'] * self.quantity
         total_gold = costs['gold'] * self.quantity
         
-        # Format costs
-        cost_text = f"**Food**: {total_food:,}\n"
-        cost_text += f"**Wood**: {total_wood:,}\n"
-        if total_stone > 0:
-            cost_text += f"**Stone**: {total_stone:,}\n"
-        if total_gold > 0:
-            cost_text += f"**Gold**: {total_gold:,}\n"
-        
         # Calculate total time
         time_per_unit = self.parse_time(costs['time'])
         total_seconds = time_per_unit * self.quantity
         total_time = self.format_time(total_seconds)
         
-        cost_text += f"**Time**: {total_time}"
+        # Use the embed generator for clean formatting
+        from utils.embed_generator import EmbedGenerator
+        total_costs = {
+            'food': total_food,
+            'wood': total_wood,
+            'stone': total_stone,
+            'gold': total_gold
+        }
         
-        embed.add_field(
-            name=f"📊 {self.selected_tier} {troop['unit_name']} ({self.selected_element})",
-            value=f"**Quantity**: {self.quantity:,}\n"
-                  f"**Power**: {troop['power']}\n"
-                  f"**ATK**: {troop['atk']}\n"
-                  f"**DEF**: {troop['def']}\n"
-                  f"**Health**: {troop['health']}\n"
-                  f"**Speed**: {troop['speed']}\n"
-                  f"**Load**: {troop['load']}",
-            inline=True
+        return EmbedGenerator.create_troop_calculator_embed(
+            troop_data=troop,
+            quantity=self.quantity,
+            total_costs=total_costs,
+            total_time=total_time
         )
-        
-        embed.add_field(
-            name="💰 Total Costs",
-            value=cost_text,
-            inline=True
-        )
-        
-        # Add per-unit costs
-        per_unit_text = f"**Food**: {costs['food']:,}\n"
-        per_unit_text += f"**Wood**: {costs['wood']:,}\n"
-        if costs['stone'] > 0:
-            per_unit_text += f"**Stone**: {costs['stone']:,}\n"
-        if costs['gold'] > 0:
-            per_unit_text += f"**Gold**: {costs['gold']:,}\n"
-        per_unit_text += f"**Time**: {costs['time']}"
-        
-        embed.add_field(
-            name="📈 Per Unit Costs",
-            value=per_unit_text,
-            inline=True
-        )
-        
-        return embed
     
     def parse_time(self, time_str: str) -> int:
         """Parse time string to seconds."""
@@ -308,35 +279,20 @@ class TroopCalculator(commands.Cog):
             total_seconds = time_per_unit * quantity
             total_time = self.format_time(total_seconds)
             
-            embed = discord.Embed(
-                title=f"⚔️ Quick Calculation: {tier} {troop['unit_name']} ({element})",
-                description=f"**Quantity**: {quantity:,}",
-                color=discord.Color.green()
-            )
+            # Use the embed generator for clean formatting
+            from utils.embed_generator import EmbedGenerator
+            total_costs = {
+                'food': total_food,
+                'wood': total_wood,
+                'stone': total_stone,
+                'gold': total_gold
+            }
             
-            cost_text = f"**Food**: {total_food:,}\n"
-            cost_text += f"**Wood**: {total_wood:,}\n"
-            if total_stone > 0:
-                cost_text += f"**Stone**: {total_stone:,}\n"
-            if total_gold > 0:
-                cost_text += f"**Gold**: {total_gold:,}\n"
-            cost_text += f"**Time**: {total_time}"
-            
-            embed.add_field(
-                name="💰 Total Costs",
-                value=cost_text,
-                inline=False
-            )
-            
-            embed.add_field(
-                name="📊 Troop Stats",
-                value=f"**Power**: {troop['power']}\n"
-                      f"**ATK**: {troop['atk']}\n"
-                      f"**DEF**: {troop['def']}\n"
-                      f"**Health**: {troop['health']}\n"
-                      f"**Speed**: {troop['speed']}\n"
-                      f"**Load**: {troop['load']}",
-                inline=True
+            embed = EmbedGenerator.create_troop_calculator_embed(
+                troop_data=troop,
+                quantity=quantity,
+                total_costs=total_costs,
+                total_time=total_time
             )
             
             await interaction.response.send_message(embed=embed)
