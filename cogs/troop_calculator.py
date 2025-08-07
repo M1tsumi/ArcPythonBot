@@ -16,10 +16,10 @@ class TroopQuantityModal(discord.ui.Modal, title="Set Troop Quantity"):
     """Modal for setting troop quantity like townhall level input."""
     
     quantity_input = discord.ui.TextInput(
-        label="Enter Quantity (1-10000)",
+        label="Enter Quantity",
         placeholder="e.g., 100",
         min_length=1,
-        max_length=5,
+        max_length=10,
         required=True
     )
     
@@ -31,14 +31,14 @@ class TroopQuantityModal(discord.ui.Modal, title="Set Troop Quantity"):
         """Handle quantity submission."""
         try:
             quantity = int(self.quantity_input.value)
-            if 1 <= quantity <= 10000:
+            if quantity >= 1:
                 self.calculator_view.quantity = quantity
                 embed = self.calculator_view.create_calculator_embed()
                 await interaction.response.edit_message(embed=embed, view=self.calculator_view)
             else:
                 embed = discord.Embed(
                     title="❌ Invalid Quantity",
-                    description="Please enter a quantity between 1 and 10,000.",
+                    description="Please enter a quantity of 1 or greater.",
                     color=discord.Color.red()
                 )
                 await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -115,7 +115,7 @@ class TroopCalculatorView(View):
     @discord.ui.button(label="➕ Increase Quantity", style=discord.ButtonStyle.primary, emoji="➕")
     async def increase_quantity(self, interaction: discord.Interaction, button: Button):
         """Increase troop quantity."""
-        self.quantity = min(self.quantity + 1, 10000)
+        self.quantity += 1
         embed = self.create_calculator_embed()
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -280,8 +280,8 @@ class TroopCalculator(commands.Cog):
     ):
         """Quick calculation without interactive UI."""
         try:
-            if quantity < 1 or quantity > 10000:
-                await interaction.response.send_message("❌ Quantity must be between 1 and 10,000!", ephemeral=True)
+            if quantity < 1:
+                await interaction.response.send_message("❌ Quantity must be 1 or greater!", ephemeral=True)
                 return
             
             troops_data = self.data_parser.get_troops_data_fixed()
