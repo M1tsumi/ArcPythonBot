@@ -9,6 +9,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from utils.ui_components import LeaderboardView
+from utils.embed_generator import EmbedGenerator
 
 class Leaderboards(commands.Cog):
     """Leaderboards command cog."""
@@ -56,8 +57,8 @@ class Leaderboards(commands.Cog):
         """Interactive command to view leaderboards."""
         # Check if leaderboards are paused
         if self.leaderboard_state.get("paused", False):
-            embed = discord.Embed(
-                title="⏸️ Leaderboards Paused",
+            embed = EmbedGenerator.create_embed(
+                title="Leaderboards Paused",
                 description="Leaderboards are currently paused due to the Glorious Victory event not being active.",
                 color=discord.Color.orange()
             )
@@ -83,12 +84,12 @@ class Leaderboards(commands.Cog):
                     inline=False
                 )
             
-            embed.set_footer(text="Use /leader resume to reactivate leaderboards when events are active")
+            embed = EmbedGenerator.finalize_embed(embed)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
-        embed = discord.Embed(
-            title="🏆 Leaderboard Rankings",
+        embed = EmbedGenerator.create_embed(
+            title="Leaderboard Rankings",
             description="Track top performers in Avatar Realms Collide",
             color=discord.Color.gold()
         )
@@ -105,7 +106,7 @@ class Leaderboards(commands.Cog):
             inline=True
         )
         
-        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose a leaderboard to view")
+        embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
         
         view = LeaderboardView()
         await interaction.response.send_message(embed=embed, view=view)
@@ -124,11 +125,7 @@ class Leaderboards(commands.Cog):
         """Admin command for leaderboard management."""
         # Check for administrator permissions
         if not interaction.user.guild_permissions.administrator:
-            embed = discord.Embed(
-                title="❌ Permission Denied",
-                description="You need administrator permissions to manage leaderboards.",
-                color=discord.Color.red()
-            )
+            embed = EmbedGenerator.create_error_embed("You need administrator permissions to manage leaderboards.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -150,8 +147,8 @@ class Leaderboards(commands.Cog):
         
         self.save_leaderboard_state()
         
-        embed = discord.Embed(
-            title="⏸️ Leaderboards Paused",
+        embed = EmbedGenerator.create_embed(
+            title="Leaderboards Paused",
             description="Leaderboard functionality has been paused successfully.",
             color=discord.Color.orange()
         )
@@ -175,7 +172,7 @@ class Leaderboards(commands.Cog):
                 inline=False
             )
         
-        embed.set_footer(text="Use /leader resume to reactivate when events are active")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def resume_leaderboards(self, interaction: discord.Interaction):
@@ -187,8 +184,8 @@ class Leaderboards(commands.Cog):
         
         self.save_leaderboard_state()
         
-        embed = discord.Embed(
-            title="▶️ Leaderboards Resumed",
+        embed = EmbedGenerator.create_embed(
+            title="Leaderboards Resumed",
             description="Leaderboard functionality has been reactivated successfully.",
             color=discord.Color.green()
         )
@@ -205,7 +202,7 @@ class Leaderboards(commands.Cog):
             inline=True
         )
         
-        embed.set_footer(text="Leaderboards are now accessible to all users")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def clear_leaderboards(self, interaction: discord.Interaction):
@@ -219,8 +216,8 @@ class Leaderboards(commands.Cog):
         }
         self.save_leaderboard_state()
         
-        embed = discord.Embed(
-            title="🗑️ Leaderboards Cleared",
+        embed = EmbedGenerator.create_embed(
+            title="Leaderboards Cleared",
             description="Leaderboard data and state have been cleared successfully.",
             color=discord.Color.red()
         )
@@ -243,7 +240,7 @@ class Leaderboards(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Leaderboards are now active and ready for use")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
 async def setup(bot):

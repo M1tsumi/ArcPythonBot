@@ -4,7 +4,7 @@ Optimized embed generator utility for creating consistent Discord embeds.
 
 import discord
 from typing import Optional, List, Dict, Any
-from config.settings import EMBED_COLORS
+from config.settings import EMBED_COLORS, BOT_NAME
 from pathlib import Path
 import time
 
@@ -127,6 +127,10 @@ class EmbedGenerator:
             
         if timestamp:
             embed.timestamp = discord.utils.utcnow()
+
+        # Apply standardized footer if none provided
+        if not embed.footer or not embed.footer.text:
+            embed.set_footer(text=f"{BOT_NAME}")
         
         # Cache the embed if enabled
         if use_cache:
@@ -135,6 +139,22 @@ class EmbedGenerator:
                 'timestamp': time.time()
             }
             
+        return embed
+
+    @staticmethod
+    def finalize_embed(embed: discord.Embed, *, default_footer: Optional[str] = None, ensure_timestamp: bool = True) -> discord.Embed:
+        """Apply consistent professional styling to an existing embed.
+
+        - Ensures a footer is set (uses BOT_NAME or provided default_footer)
+        - Ensures a timestamp is present if ensure_timestamp is True
+        """
+        if ensure_timestamp and not embed.timestamp:
+            embed.timestamp = discord.utils.utcnow()
+
+        footer_text = (embed.footer.text if embed.footer else None)
+        if not footer_text:
+            embed.set_footer(text=default_footer or BOT_NAME)
+
         return embed
     
     @staticmethod

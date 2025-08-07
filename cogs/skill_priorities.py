@@ -8,6 +8,7 @@ from discord import app_commands
 from discord.ext import commands
 from utils.data_parser import DataParser
 from utils.ui_components import SkillPriorityElementDropdown
+from utils.embed_generator import EmbedGenerator
 
 class SkillPriorities(commands.Cog):
     """Skill Priorities command cog."""
@@ -29,9 +30,9 @@ class SkillPriorities(commands.Cog):
         characters_without_skills = all_character_names - characters_with_skills
         
         # Create main embed
-        embed = discord.Embed(
-            title="🎯 Hero Skill Priorities",
-            description="Choose your element to view skill priorities for heroes",
+        embed = EmbedGenerator.create_embed(
+            title="Hero Skill Priorities",
+            description="Choose an element to view skill priorities for heroes.",
             color=discord.Color.purple()
         )
         
@@ -51,7 +52,7 @@ class SkillPriorities(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose your element below")
+        embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
         
         # Create view with element selection dropdown
         view = discord.ui.View(timeout=60)

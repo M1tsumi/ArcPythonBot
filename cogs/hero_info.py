@@ -7,6 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from typing import Dict, List, Optional
+from utils.embed_generator import EmbedGenerator
 
 class HeroInfoSystem(commands.Cog):
     """Hero Information command cog."""
@@ -164,6 +165,7 @@ class HeroInfoSystem(commands.Cog):
         }
     
     @app_commands.command(name="hero_info", description="Hero information and unlock methods")
+    @app_commands.checks.cooldown(1, 5.0)
     @app_commands.describe(
         type="Information type to view"
     )
@@ -192,9 +194,9 @@ class HeroInfoSystem(commands.Cog):
     
     async def show_hero_overview(self, interaction: discord.Interaction):
         """Show hero information overview."""
-        embed = discord.Embed(
-            title="🏆 Hero Information & Unlock Methods",
-            description="Complete guide to all heroes and how to obtain their shards",
+        embed = EmbedGenerator.create_embed(
+            title="Hero Information",
+            description="Overview of heroes and unlock methods. All heroes require 10 shards to unlock.",
             color=discord.Color.gold()
         )
         
@@ -205,31 +207,44 @@ class HeroInfoSystem(commands.Cog):
         future_count = len(self.hero_data["future"])
         
         embed.add_field(
-            name="📊 Hero Statistics",
-            value=f"• **🟠 Legendary Heroes**: {legendary_count}\n• **🟣 Epic Heroes**: {epic_count}\n• **🔵 Rare Heroes**: {rare_count}\n• **⚪ Future Heroes**: {future_count}",
+            name="Hero Counts",
+            value=(
+                f"Legendary: {legendary_count}\n"
+                f"Epic: {epic_count}\n"
+                f"Rare: {rare_count}\n"
+                f"Future: {future_count}"
+            ),
             inline=False
         )
         
         embed.add_field(
-            name="🎯 Quick Commands",
-            value="• `/hero_info legendary` - Legendary heroes\n• `/hero_info epic` - Epic heroes\n• `/hero_info rare` - Rare heroes\n• `/hero_info future` - Future heroes\n• `/hero_info sources` - Unlock methods",
+            name="Quick Commands",
+            value=(
+                "`/hero_info legendary` • `/hero_info epic` • `/hero_info rare` • `/hero_info future`\n"
+                "`/hero_info sources` for unlock methods"
+            ),
             inline=False
         )
+
+        embed.add_field(name="Unlock Requirement", value="10 shards (all heroes)", inline=False)
         
         embed.add_field(
-            name="💡 Tips",
-            value="• Focus on starter heroes first (Sokka, Katara, Toph, Zuko, Tenzin)\n• Legendary heroes require specific events and sources\n• Daily Deals and The Greatest Leader are key for legendaries\n• Use `/hero_search <name>` to find specific heroes",
+            name="Tips",
+            value=(
+                "Start with accessible heroes (Sokka, Katara, Toph, Zuko, Tenzin).\n"
+                "Legendaries usually come from events or shops.\n"
+                "Use `/hero_search <name>` for specifics."
+            ),
             inline=False
         )
-        
-        embed.set_footer(text="Use specific commands for detailed information about each rarity tier!")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def show_legendary_heroes(self, interaction: discord.Interaction):
         """Show legendary heroes information."""
-        embed = discord.Embed(
-            title="🟠 Legendary Heroes",
-            description="The most powerful heroes in the game",
+        embed = EmbedGenerator.create_embed(
+            title="Legendary Heroes",
+            description="Top-tier heroes. Unlock requirement: 10 shards.",
             color=discord.Color.orange()
         )
         
@@ -238,26 +253,22 @@ class HeroInfoSystem(commands.Cog):
             sources = ", ".join(hero_info["sources"])
             heroes_text += f"• **{hero_name}**: {sources}\n"
         
-        embed.add_field(
-            name="🏆 Legendary Heroes & Sources",
-            value=heroes_text,
-            inline=False
-        )
+        embed.add_field(name="Heroes & Sources", value=heroes_text, inline=False)
         
         embed.add_field(
-            name="💡 Legendary Tips",
-            value="• **Hall of Avatars**: Aang, Korra\n• **Daily Deals**: Most legendaries\n• **The Greatest Leader**: Event rewards\n• **Wheel of Fate**: King Bumi, Lin Beifong, Painted Lady Katara\n• **VIP/Top Up**: Azula, premium sources",
+            name="Notes",
+            value=(
+                "Common sources: Hall of Avatars, Wheel of Fate, event shops, Daily Deals."),
             inline=False
         )
-        
-        embed.set_footer(text="Legendary heroes are the most powerful but hardest to obtain!")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def show_epic_heroes(self, interaction: discord.Interaction):
         """Show epic heroes information."""
-        embed = discord.Embed(
-            title="🟣 Epic Heroes",
-            description="Strong heroes with various unlock methods",
+        embed = EmbedGenerator.create_embed(
+            title="Epic Heroes",
+            description="Strong heroes with various unlock methods. Unlock requirement: 10 shards.",
             color=discord.Color.purple()
         )
         
@@ -266,26 +277,21 @@ class HeroInfoSystem(commands.Cog):
             sources = ", ".join(hero_info["sources"])
             heroes_text += f"• **{hero_name}**: {sources}\n"
         
-        embed.add_field(
-            name="⚔️ Epic Heroes & Sources",
-            value=heroes_text,
-            inline=False
-        )
+        embed.add_field(name="Heroes & Sources", value=heroes_text, inline=False)
         
         embed.add_field(
-            name="💡 Epic Tips",
-            value="• **Starter Heroes**: Sokka (first), Katara (Water), Toph (Earth), Zuko (Fire), Tenzin (Air)\n• **Scrolls**: Most epics available through scrolls\n• **Avatar Day Exchange**: Katara, Tenzin, Toph, Zuko\n• **Events**: Borte's Scheme, Rookie Leader Event",
+            name="Notes",
+            value="Many epics are available via scrolls and exchanges; starter options are solid early picks.",
             inline=False
         )
-        
-        embed.set_footer(text="Epic heroes are great for building strong teams!")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def show_rare_heroes(self, interaction: discord.Interaction):
         """Show rare heroes information."""
-        embed = discord.Embed(
-            title="🔵 Rare Heroes",
-            description="Solid heroes available through Silver Scrolls",
+        embed = EmbedGenerator.create_embed(
+            title="Rare Heroes",
+            description="Accessible heroes typically via Silver Scrolls. Unlock requirement: 10 shards.",
             color=discord.Color.blue()
         )
         
@@ -294,26 +300,17 @@ class HeroInfoSystem(commands.Cog):
             sources = ", ".join(hero_info["sources"])
             heroes_text += f"• **{hero_name}**: {sources}\n"
         
-        embed.add_field(
-            name="📚 Rare Heroes & Sources",
-            value=heroes_text,
-            inline=False
-        )
+        embed.add_field(name="Heroes & Sources", value=heroes_text, inline=False)
         
-        embed.add_field(
-            name="💡 Rare Tips",
-            value="• **Silver Scrolls**: All rare heroes available\n• **Easy to Obtain**: Great for new players\n• **Good Support**: Useful for team composition\n• **Affordable**: Lower resource requirements",
-            inline=False
-        )
-        
-        embed.set_footer(text="Rare heroes are perfect for new players and team building!")
+        embed.add_field(name="Notes", value="Cost-effective choices for early progression.", inline=False)
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def show_future_heroes(self, interaction: discord.Interaction):
         """Show future heroes information."""
-        embed = discord.Embed(
-            title="⚪ Future Heroes",
-            description="Confirmed heroes coming in future updates",
+        embed = EmbedGenerator.create_embed(
+            title="Future Heroes",
+            description="Confirmed heroes coming in future updates.",
             color=discord.Color.light_grey()
         )
         
@@ -322,26 +319,17 @@ class HeroInfoSystem(commands.Cog):
             sources = ", ".join(hero_info["sources"])
             heroes_text += f"• **{hero_name}**: {sources}\n"
         
-        embed.add_field(
-            name="🔮 Future Heroes",
-            value=heroes_text,
-            inline=False
-        )
+        embed.add_field(name="Planned", value=heroes_text, inline=False)
         
-        embed.add_field(
-            name="💡 Future Tips",
-            value="• **Confirmed**: These heroes are officially announced\n• **Save Resources**: Prepare for their release\n• **Stay Updated**: Follow official announcements\n• **Plan Ahead**: Consider team compositions",
-            inline=False
-        )
-        
-        embed.set_footer(text="Future heroes are confirmed but not yet available!")
+        embed.add_field(name="Notes", value="Plan resources and teams ahead of release.", inline=False)
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     async def show_unlock_sources(self, interaction: discord.Interaction):
         """Show all unlock sources and methods."""
-        embed = discord.Embed(
-            title="🎯 Hero Unlock Sources",
-            description="Complete guide to all hero unlock methods",
+        embed = EmbedGenerator.create_embed(
+            title="Hero Unlock Sources",
+            description="Overview of unlock methods. All heroes require 10 shards to unlock.",
             color=discord.Color.green()
         )
         
@@ -369,10 +357,11 @@ class HeroInfoSystem(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Focus on available sources for your target heroes!")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     @app_commands.command(name="hero_search", description="Search for specific hero information")
+    @app_commands.checks.cooldown(1, 5.0)
     @app_commands.describe(
         hero_name="Name of the hero to search for"
     )
@@ -421,51 +410,28 @@ class HeroInfoSystem(commands.Cog):
             "future": discord.Color.light_grey()
         }
         
-        embed = discord.Embed(
-            title=f"🏆 {found_hero}",
+        embed = EmbedGenerator.create_embed(
+            title=f"{found_hero}",
             description=hero_info["description"],
             color=rarity_colors.get(found_rarity, discord.Color.default())
         )
         
-        embed.add_field(
-            name="📊 Rarity",
-            value=f"**{found_rarity.title()}**",
-            inline=True
-        )
+        embed.add_field(name="Rarity", value=f"{found_rarity.title()}", inline=True)
         
-        embed.add_field(
-            name="🎯 Unlock Sources",
-            value=", ".join(hero_info["sources"]),
-            inline=False
-        )
+        embed.add_field(name="Unlock Sources", value=", ".join(hero_info["sources"]), inline=False)
+        embed.add_field(name="Unlock Requirement", value="10 shards", inline=True)
         
         # Add rarity-specific tips
         if found_rarity == "legendary":
-            embed.add_field(
-                name="💡 Legendary Tips",
-                value="• Focus on Daily Deals and events\n• Save resources for these heroes\n• Consider VIP/Top Up for Azula\n• Hall of Avatars for Aang/Korra",
-                inline=False
-            )
+            embed.add_field(name="Notes", value="Commonly via events or shops.", inline=False)
         elif found_rarity == "epic":
-            embed.add_field(
-                name="💡 Epic Tips",
-                value="• Available through scrolls and events\n• Good balance of power and accessibility\n• Great for team building\n• Focus on starter heroes first",
-                inline=False
-            )
+            embed.add_field(name="Notes", value="Often available via scrolls and exchanges.", inline=False)
         elif found_rarity == "rare":
-            embed.add_field(
-                name="💡 Rare Tips",
-                value="• Easy to obtain through Silver Scrolls\n• Perfect for new players\n• Good support heroes\n• Affordable resource requirements",
-                inline=False
-            )
+            embed.add_field(name="Notes", value="Accessible and cost-effective.", inline=False)
         elif found_rarity == "future":
-            embed.add_field(
-                name="💡 Future Tips",
-                value="• Not yet available in the game\n• Save resources for their release\n• Stay updated on announcements\n• Plan team compositions ahead",
-                inline=False
-            )
+            embed.add_field(name="Notes", value="Not yet available; plan ahead.", inline=False)
         
-        embed.set_footer(text=f"Use `/hero_info {found_rarity}` to see all {found_rarity} heroes!")
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
 async def setup(bot):

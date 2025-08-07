@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.6.4-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.6.4 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.7.0 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, troops calculator, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -71,7 +71,7 @@
 
 ### 🦸 **Hero Information System**
 - **Complete Hero Guide**: Comprehensive information about all heroes
-- **Unlock Methods**: Detailed guide on how to obtain hero shards
+- **Unlock Methods**: Detailed guide on how to obtain hero shards (all heroes require 10 shards to unlock)
 - **Rarity Classification**: Legendary, Epic, Rare, and Future heroes
 - **Source Tracking**: All unlock sources and methods
 - **Hero Search**: Search for specific hero information
@@ -96,6 +96,9 @@
 - **Enhanced Navigation**: Interactive tier selection with professional embeds
 - **Fixed Data Parsing**: Corrected troop data extraction with dynamic column mapping
 
+### 📊 **Tier List** (New)
+- **/tierlist**: Displays the community hero tier list image. Place the image at `assets/images/leaderboards/hero-tierlist.webp` (PNG/JPG also supported).
+
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
 - **Element Classification**: Proper categorization by bending elements
@@ -104,6 +107,8 @@
 - **Unlock Information**: Complete guide to obtaining hero shards
 
 ### ⚡ **Performance Optimizations**
+### 📅 **Event Calendar Disclaimer** (New)
+- Event dates/times are a Work In Progress and may be incorrect. This disclaimer is shown in event listings and details.
 - **Embed Caching**: 5-minute cache for frequently used embeds
 - **Optimized Operations**: Faster string processing and field generation
 - **Enhanced Logging**: Structured output with timing information
@@ -143,6 +148,8 @@
 ## 📖 Usage
 
 ### Discord Commands
+#### `/tierlist`
+Show the community hero tier list image (if present on disk).
 
 #### `/talent_trees`
 Browse character talent trees by element:
@@ -202,6 +209,7 @@ The Greatest Leader event tools:
 
 | Command | Description | Usage |
 |---------|-------------|-------|
+| `/tierlist` | Show community hero tier list | Sends image embed if file exists |
 | `/talent_trees` | Interactive talent tree browser | Select element → Choose character → View trees |
 | `/leaderboard` | View top leaders and alliances | Choose leaderboard type → View rankings |
 | `/rally` | Create and manage rallies | Level → Time limit → Join/Leave system |
@@ -222,11 +230,11 @@ The Greatest Leader event tools:
 | `/leader` | Admin leaderboard management | Pause/resume/clear leaderboards |
 | `/tgl` | The Greatest Leader event information | Event details, stages, rewards |
 | `/tgl_calc` | Calculate TGL points for activities | Point calculation tool |
-| `/events` | List current and upcoming events | View all available events |
-| `/event_details` | Get detailed information about specific events | Event mechanics, tips, rewards |
-| `/upcoming` | Show upcoming events only | Future event information |
-| `/event_search` | Search for events by name or description | Find specific events |
-| `/event_rewards` | Show rewards for a specific event | Detailed reward breakdown |
+| `/events` | List current and upcoming events | View all available events (dates/times WIP) |
+| `/event_details` | Get detailed information about specific events | Event mechanics, tips, rewards (dates/times WIP) |
+| `/upcoming` | Show upcoming events only | Future event information (dates/times WIP) |
+| `/event_search` | Search for events by name or description | Find specific events (dates/times WIP) |
+| `/event_rewards` | Show rewards for a specific event | Detailed reward breakdown (dates/times WIP) |
 
 ## 👥 Character Database
 

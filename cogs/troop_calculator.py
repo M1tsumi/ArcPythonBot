@@ -11,6 +11,7 @@ import asyncio
 from typing import Dict, List, Optional, Tuple
 from utils.data_parser import DataParser
 import re
+from utils.embed_generator import EmbedGenerator
 
 class TroopQuantityModal(discord.ui.Modal, title="Set Troop Quantity"):
     """Modal for setting troop quantity like townhall level input."""
@@ -133,9 +134,9 @@ class TroopCalculatorView(View):
     
     def create_calculator_embed(self) -> discord.Embed:
         """Create the calculator embed."""
-        embed = discord.Embed(
+        embed = EmbedGenerator.create_embed(
             title="Troop Calculator",
-            description="Calculate recruitment costs for troops",
+            description="Calculate recruitment costs for troops.",
             color=discord.Color.blue()
         )
         
@@ -148,7 +149,7 @@ class TroopCalculatorView(View):
                       "4. View calculated costs below",
                 inline=False
             )
-            return embed
+            return EmbedGenerator.finalize_embed(embed)
         
         if not self.selected_tier:
             embed.add_field(
@@ -156,7 +157,7 @@ class TroopCalculatorView(View):
                 value="Please select a tier to continue...",
                 inline=False
             )
-            return embed
+            return EmbedGenerator.finalize_embed(embed)
         
         # Get troop data
         troop = self.troops_data[self.selected_element][self.selected_tier]
@@ -182,12 +183,13 @@ class TroopCalculatorView(View):
             'gold': total_gold
         }
         
-        return EmbedGenerator.create_troop_calculator_embed(
+        embed = EmbedGenerator.create_troop_calculator_embed(
             troop_data=troop,
             quantity=self.quantity,
             total_costs=total_costs,
             total_time=total_time
         )
+        return EmbedGenerator.finalize_embed(embed)
     
     def parse_time(self, time_str: str) -> int:
         """Parse time string to seconds."""

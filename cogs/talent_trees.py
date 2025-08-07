@@ -8,6 +8,7 @@ from discord import app_commands
 from discord.ext import commands
 from utils.data_parser import DataParser
 from utils.ui_components import ElementSelectDropdown
+from utils.embed_generator import EmbedGenerator
 
 class TalentTrees(commands.Cog):
     """Talent Trees command cog."""
@@ -20,8 +21,8 @@ class TalentTrees(commands.Cog):
     @app_commands.command(name="talent_trees", description="Interactive talent tree browser")
     async def talent_trees(self, interaction: discord.Interaction):
         """Interactive command to browse talent trees by element."""
-        embed = discord.Embed(
-            title="🌟 Welcome to the Talent Tree Browser",
+        embed = EmbedGenerator.create_embed(
+            title="Talent Tree Browser",
             description="Choose your element to discover characters and their talent trees.",
             color=discord.Color.from_rgb(52, 152, 219)
         )
@@ -38,7 +39,7 @@ class TalentTrees(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Pick your element to begin your journey")
+        embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
         
         view = discord.ui.View(timeout=60)
         view.add_item(ElementSelectDropdown(self.data_parser))

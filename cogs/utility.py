@@ -8,6 +8,7 @@ from discord import app_commands
 from discord.ext import commands
 from config.settings import DISCORD_SERVER_LINK, BOT_INVITE_LINK, DEVELOPMENT_SERVER_LINK
 import time
+from utils.embed_generator import EmbedGenerator
 
 class Utility(commands.Cog):
     """Utility command cog."""
@@ -17,13 +18,14 @@ class Utility(commands.Cog):
         self.logger = bot.logger
     
     @commands.command(name="ping", description="Check bot latency and status")
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def ping_prefix(self, ctx):
         """Traditional prefix command to check bot latency and status."""
         start_time = time.time()
         
         # Create initial embed
-        embed = discord.Embed(
-            title="🏓 Pong!",
+        embed = EmbedGenerator.create_embed(
+            title="Pong!",
             description="Checking bot status and latency...",
             color=discord.Color.blue()
         )
@@ -37,9 +39,9 @@ class Utility(commands.Cog):
         api_latency = round(self.bot.latency * 1000, 2)  # Discord API latency
         
         # Update embed with results
-        embed = discord.Embed(
-            title="🏓 Pong!",
-            description="Bot is online and responding!",
+        embed = EmbedGenerator.create_embed(
+            title="Pong!",
+            description="Bot is online and responding.",
             color=discord.Color.green()
         )
         
@@ -79,16 +81,16 @@ class Utility(commands.Cog):
             inline=True
         )
         
-        embed.set_footer(text="Developed by Quefep • Avatar Realms Collide Bot")
-        
+        embed = EmbedGenerator.finalize_embed(embed)
         await message.edit(embed=embed)
     
     @commands.command(name="help", description="Get help and command information")
+    @commands.cooldown(1, 10, commands.BucketType.channel)
     async def help_prefix(self, ctx):
         """Traditional prefix command to provide help and command information."""
-        embed = discord.Embed(
-            title="🌟 Avatar Realms Collide Bot Help",
-            description="Welcome to the Avatar Realms Collide community bot! Here are all available commands organized by category.",
+        embed = EmbedGenerator.create_embed(
+            title="Help",
+            description="Available commands organized by category.",
             color=discord.Color.blue()
         )
         
@@ -128,15 +130,15 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Developed by Quefep • Use /help for slash commands • Join our Discord for the best experience!")
-        
+        embed = EmbedGenerator.finalize_embed(embed)
         await ctx.send(embed=embed)
     
     @commands.command(name="info", description="Get comprehensive bot information and contribution details")
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def info_prefix(self, ctx):
         """Traditional prefix command to provide comprehensive bot information and contribution details."""
-        embed = discord.Embed(
-            title="🤖 Avatar Realms Collide Bot Information",
+        embed = EmbedGenerator.create_embed(
+            title="Bot Information",
             description="Unofficial community bot providing game tools and information.",
             color=discord.Color.blue()
         )
@@ -165,7 +167,7 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Unofficial fan-made bot • Join our Discord!")
+        embed = EmbedGenerator.finalize_embed(embed)
         
         # Create view with development server button
         view = discord.ui.View(timeout=None)
@@ -180,6 +182,7 @@ class Utility(commands.Cog):
         await ctx.send(embed=embed, view=view)
     
     @app_commands.command(name="ping", description="Check bot latency and status")
+    @app_commands.checks.cooldown(1, 5.0)
     async def ping(self, interaction: discord.Interaction):
         """Command to check bot latency and status."""
         start_time = time.time()
@@ -201,14 +204,15 @@ class Utility(commands.Cog):
             user_count=len(self.bot.users),
             command_count=len(self.bot.tree.get_commands())
         )
-        
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.edit_original_response(content=None, embed=embed)
     
     @app_commands.command(name="info", description="Get comprehensive bot information and contribution details")
+    @app_commands.checks.cooldown(1, 10.0)
     async def info(self, interaction: discord.Interaction):
         """Command to provide comprehensive bot information and contribution details."""
-        embed = discord.Embed(
-            title="Avatar Realms Collide Bot Information",
+        embed = EmbedGenerator.create_embed(
+            title="Bot Information",
             description="Unofficial community bot providing game tools and information.",
             color=discord.Color.blue()
         )
@@ -237,7 +241,7 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Unofficial fan-made bot • Join our Discord!")
+        embed = EmbedGenerator.finalize_embed(embed)
         
         # Create view with development server button
         view = discord.ui.View(timeout=None)
@@ -251,11 +255,12 @@ class Utility(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
     
     @app_commands.command(name="links", description="Get bot links and information")
+    @app_commands.checks.cooldown(1, 10.0)
     async def links(self, interaction: discord.Interaction):
         """Command to provide bot links and information."""
-        embed = discord.Embed(
-            title="Bot Links & Information",
-            description="Connect with the Avatar Realms Collide community!",
+        embed = EmbedGenerator.create_embed(
+            title="Links & Information",
+            description="Connect with the Avatar Realms Collide community.",
             color=discord.Color.blue()
         )
         
@@ -283,16 +288,17 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Join our Discord for more information and updates!")
+        embed = EmbedGenerator.finalize_embed(embed)
         
         await interaction.response.send_message(embed=embed)
     
     @app_commands.command(name="help", description="Get help and join our Discord server")
+    @app_commands.checks.cooldown(1, 10.0)
     async def help(self, interaction: discord.Interaction):
         """Command to provide help and Discord server link."""
-        embed = discord.Embed(
-            title="Avatar Realms Collide Bot Help",
-            description="Welcome to the Avatar Realms Collide community bot! Here's how to get help and stay connected.",
+        embed = EmbedGenerator.create_embed(
+            title="Help",
+            description="How to get help and stay connected.",
             color=discord.Color.blue()
         )
         
@@ -338,16 +344,16 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Developed by Quefep • Join our Discord for the best experience!")
-        
+        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
     
     @app_commands.command(name="addtoserver", description="Add the bot to your server")
+    @app_commands.checks.cooldown(1, 30.0)
     async def addtoserver(self, interaction: discord.Interaction):
         """Command to add the bot to a server with an embed and button."""
-        embed = discord.Embed(
-            title="🤖 Add Avatar Realms Collide Bot to Your Server",
-            description="Enhance your server with powerful game tools and community features!",
+        embed = EmbedGenerator.create_embed(
+            title="Add Bot to Your Server",
+            description="Enhance your server with powerful game tools and community features.",
             color=discord.Color.green()
         )
         
@@ -369,7 +375,7 @@ class Utility(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Developed by Quefep • Unofficial fan-made bot")
+        embed = EmbedGenerator.finalize_embed(embed)
         
         # Create view with invite button
         view = discord.ui.View(timeout=None)

@@ -69,6 +69,7 @@ class AvatarRealmsBot(commands.Bot):
         super().__init__(
             command_prefix='!',
             intents=intents,
+            allowed_mentions=discord.AllowedMentions.none(),
             help_command=None,  # We'll create a custom help command
             description="Avatar Realms Collide Community Bot"
         )
@@ -102,7 +103,8 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.balance_and_order',
             'cogs.borte_scheme',
             'cogs.troops',
-            'cogs.troop_calculator'
+            'cogs.troop_calculator',
+            'cogs.tier_list'
         ]
         
         for cog in cog_files:
@@ -156,6 +158,38 @@ class AvatarRealmsBot(commands.Bot):
             name="Master all four elements!"
         )
         await self.change_presence(activity=activity)
+
+    async def on_app_command_error(self, interaction: discord.Interaction, error: Exception):
+        """Global error handler for slash commands with professional embeds and reduced spam."""
+        from discord import app_commands
+        from utils.embed_generator import EmbedGenerator
+        try:
+            if isinstance(error, app_commands.CommandOnCooldown):
+                embed = EmbedGenerator.create_embed(
+                    title="Command on Cooldown",
+                    description=f"Please wait {error.retry_after:.1f}s before using this command again.",
+                    color=discord.Color.orange()
+                )
+                embed = EmbedGenerator.finalize_embed(embed)
+                if interaction.response.is_done():
+                    await interaction.followup.send(embed=embed, ephemeral=True)
+                else:
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                return
+
+            embed = EmbedGenerator.create_embed(
+                title="Unexpected Error",
+                description="An unexpected error occurred. Please try again later.",
+                color=discord.Color.red()
+            )
+            embed = EmbedGenerator.finalize_embed(embed)
+            if interaction.response.is_done():
+                await interaction.followup.send(embed=embed, ephemeral=True)
+            else:
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception:
+            # As a last resort, avoid raising
+            pass
     
     async def on_command_error(self, ctx, error):
         """Enhanced global error handler with better user experience."""

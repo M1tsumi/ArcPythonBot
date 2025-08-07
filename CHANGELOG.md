@@ -1,4 +1,25 @@
 # Changelog
+## [1.7.0] - 2025-08-07
+
+### Added
+- Tier List: New `/tierlist` command that displays the community hero tier list image (place at `assets/images/leaderboards/hero-tierlist.webp`).
+
+### Changed
+- Professionalized embeds across multiple cogs using centralized `EmbedGenerator.finalize_embed` (standard footer + timestamp).
+- Anti-spam: Added sensible cooldowns to frequently used commands (prefix and slash).
+- Event Calendar: Added WIP disclaimer to indicate event dates/times may be incorrect.
+- Hero Info: Cleaned up formatting, added “All heroes require 10 shards to unlock” to overview, rarities, and search results.
+
+### Security/Hardening
+- Set `allowed_mentions=none` to prevent unsolicited pings.
+- Global slash command error handling with professional ephemerals for cooldowns/unexpected errors.
+
+### Technical
+- New cog: `cogs/tier_list.py`.
+- Registered new cog in `main.py`.
+- Standardized event embeds and messages in `cogs/events.py`.
+- Version bumped to 1.7.0.
+
 
 All notable changes to the Avatar Realms Collide Discord Bot project will be documented in this file.
 
