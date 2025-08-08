@@ -94,17 +94,8 @@ class Leaderboards(commands.Cog):
             color=discord.Color.gold()
         )
         
-        embed.add_field(
-            name="👑 Individual Rankings",
-            value="**Top 10 Leaders**",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🤝 Alliance Rankings",
-            value="**Top 10 Alliances**",
-            inline=True
-        )
+        embed.add_field(name="👑 Individual Rankings", value="Top 10 Leaders", inline=True)
+        embed.add_field(name="🤝 Alliance Rankings", value="Top 10 Alliances", inline=True)
         
         embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
         

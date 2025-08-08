@@ -4,9 +4,10 @@ Contains interactive view components with buttons and layouts.
 """
 
 import discord
-from typing import List, Dict
+from typing import List, Dict, Optional
 from pathlib import Path
 from utils.data_parser import DataParser
+import re
 
 class CharacterSelectView(discord.ui.View):
     """View for selecting characters with buttons."""
@@ -258,73 +259,207 @@ class LeaderboardView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=60)
     
-    @discord.ui.button(label="👑 Top 10 Leaders", style=discord.ButtonStyle.primary, emoji="👑")
-    async def top_leaders_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Show top 10 leaders leaderboard."""
+    # ---------- Internal helpers for text-based, paginated leaderboards ----------
+    def _read_rank_file(self, file_path: Path) -> Dict[str, Optional[List[str]]]:
+        """
+        Read a rankings text file and return header, date (if present), and entries.
+        Entries are lines that begin with a rank number like "1." or " 1.".
+        """
+        result: Dict[str, Optional[List[str]]]= {"header": None, "date": None, "entries": []}
+        if not file_path.exists():
+            return result
         try:
-            file_path = Path("assets/images/leaderboards/top-leaders.webp")
-            if not file_path.exists():
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
+            lines = [line.rstrip() for line in content.splitlines()]
+            if not lines:
+                return result
+            # First non-empty line as header
+            for line in lines:
+                if line.strip():
+                    result["header"] = line.strip()
+                    # Extract date-like token (MM/DD/YYYY or M/D/YYYY) if present
+                    m = re.search(r"(\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b)", line)
+                    result["date"] = m.group(1) if m else None
+                    break
+            # Collect ranked entries
+            entry_pattern = re.compile(r"^\s*\d+\.")
+            entries: List[str] = []
+            for line in lines:
+                if entry_pattern.match(line):
+                    # Normalize dashes for better readability
+                    normalized = line.replace("–", "—").replace("-", "-")
+                    entries.append(normalized.strip())
+            result["entries"] = entries
+            return result
+        except Exception:
+            return result
+    
+    def _chunk_entries(self, entries: List[str], page_size: int = 20) -> List[List[str]]:
+        return [entries[i:i+page_size] for i in range(0, len(entries), page_size)]
+    
+    def _build_page_embed(
+        self,
+        title: str,
+        header: Optional[str],
+        entries_page: List[str],
+        color: discord.Color,
+        page_index: int,
+        total_pages: int,
+        footer_note: Optional[str] = None,
+        updated_date: Optional[str] = None,
+    ) -> discord.Embed:
+        description_lines: List[str] = []
+        if header:
+            description_lines.append(header)
+            description_lines.append("")
+        if entries_page:
+            # Use a code block to align monospaced lines for readability
+            block = "\n".join(entries_page)
+            description_lines.append(f"```\n{block}\n```")
+        else:
+            description_lines.append("No entries found.")
+        embed = discord.Embed(title=title, description="\n".join(description_lines), color=color)
+        page_text = f"Page {page_index+1}/{total_pages}"
+        footer_parts: List[str] = []
+        if footer_note:
+            footer_parts.append(footer_note)
+        if updated_date:
+            footer_parts.append(f"Updated {updated_date}")
+        footer_parts.append(page_text)
+        embed.set_footer(text=" • ".join(footer_parts))
+        return embed
+
+    # ---------- Public builders to reuse in commands ----------
+    def build_leader_paginator(self) -> "LeaderboardView._Paginator":
+        txt_path = Path("text files/leader-ranks.txt")
+        data = self._read_rank_file(txt_path)
+        entries = data.get("entries") or []
+        pages = self._chunk_entries(entries, page_size=20)
+        return self._Paginator(
+            self,
+            title="👑 Leader Rankings",
+            header=data.get("header"),
+            pages=pages,
+            color=discord.Color.gold(),
+            footer_note="Information Provided and Processed by Kuvira (@archfiends)",
+            updated_date=data.get("date"),
+        )
+
+    def build_alliance_paginator(self) -> "LeaderboardView._Paginator":
+        txt_path = Path("text files/alliance-ranks.txt")
+        data = self._read_rank_file(txt_path)
+        entries = data.get("entries") or []
+        pages = self._chunk_entries(entries, page_size=20)
+        return self._Paginator(
+            self,
+            title="🤝 Alliance Rankings",
+            header=data.get("header"),
+            pages=pages,
+            color=discord.Color.blue(),
+            footer_note="Information Provided and Processed by Kuvira (@archfiends)",
+            updated_date=data.get("date"),
+        )
+    
+    class _Paginator(discord.ui.View):
+        def __init__(
+            self,
+            parent: 'LeaderboardView',
+            title: str,
+            header: Optional[str],
+            pages: List[List[str]],
+            color: discord.Color,
+            footer_note: Optional[str] = None,
+            updated_date: Optional[str] = None,
+        ):
+            super().__init__(timeout=180)
+            self.parent = parent
+            self.title = title
+            self.header = header
+            self.pages = pages
+            self.color = color
+            self.footer_note = footer_note
+            self.updated_date = updated_date
+            self.index = 0
+        
+        def current_embed(self) -> discord.Embed:
+            return self.parent._build_page_embed(
+                self.title,
+                self.header,
+                self.pages[self.index] if self.pages else [],
+                self.color,
+                self.index,
+                len(self.pages) if self.pages else 1,
+                self.footer_note,
+                self.updated_date,
+            )
+        
+        @discord.ui.button(label="Prev", style=discord.ButtonStyle.secondary, emoji="⬅️")
+        async def prev(self, interaction: discord.Interaction, button: discord.ui.Button):
+            if not self.pages:
+                await interaction.response.defer()
+                return
+            self.index = (self.index - 1) % len(self.pages)
+            await interaction.response.edit_message(embed=self.current_embed(), view=self)
+        
+        @discord.ui.button(label="Next", style=discord.ButtonStyle.secondary, emoji="➡️")
+        async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
+            if not self.pages:
+                await interaction.response.defer()
+                return
+            self.index = (self.index + 1) % len(self.pages)
+            await interaction.response.edit_message(embed=self.current_embed(), view=self)
+        
+        @discord.ui.button(label="Close", style=discord.ButtonStyle.danger, emoji="🗑️")
+        async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.edit_message(view=None)
+    
+    @discord.ui.button(label="👑 Leaders", style=discord.ButtonStyle.primary, emoji="👑")
+    async def top_leaders_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show leaders leaderboard from text with pagination."""
+        try:
+            paginator = self.build_leader_paginator()
+            if not paginator.pages:
                 embed = discord.Embed(
-                    title="❌ Leaderboard Not Found",
-                    description="The top leaders leaderboard is currently unavailable.",
-                    color=discord.Color.dark_red()
+                    title="❌ Leaderboard Not Available",
+                    description=(
+                        "Could not find any ranked entries. Ensure the file exists at\n"
+                        "`text files/leader-ranks.txt` and contains lines starting with ranks like '1.'"
+                    ),
+                    color=discord.Color.dark_red(),
                 )
                 await interaction.response.edit_message(embed=embed, view=None)
                 return
-            
-            embed = discord.Embed(
-                title="👑 Top 10 Leaders",
-                description="Most powerful players in Avatar Realms Collide",
-                color=discord.Color.gold()
-            )
-            
-            file = discord.File(file_path, filename="top-leaders.webp")
-            embed.set_image(url="attachment://top-leaders.webp")
-            embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Updated regularly")
-            
-            await interaction.response.edit_message(embed=embed, view=None)
-            await interaction.followup.send(file=file)
-            
-        except Exception as e:
+            await interaction.response.edit_message(embed=paginator.current_embed(), view=paginator)
+        except Exception:
             embed = discord.Embed(
                 title="❌ Error Loading Leaderboard",
-                description="Sorry! There was an issue loading the leaderboard. Please try again later.",
-                color=discord.Color.dark_red()
+                description="There was an unexpected error reading the leader rankings file.",
+                color=discord.Color.dark_red(),
             )
             await interaction.response.edit_message(embed=embed, view=None)
     
-    @discord.ui.button(label="🤝 Top 10 Alliances", style=discord.ButtonStyle.primary, emoji="🤝")
+    @discord.ui.button(label="🤝 Alliances", style=discord.ButtonStyle.primary, emoji="🤝")
     async def top_alliances_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Show top 10 alliances leaderboard."""
+        """Show alliances leaderboard from text with pagination."""
         try:
-            file_path = Path("assets/images/leaderboards/top-alliances.webp")
-            if not file_path.exists():
+            paginator = self.build_alliance_paginator()
+            if not paginator.pages:
                 embed = discord.Embed(
-                    title="❌ Leaderboard Not Found",
-                    description="The top alliances leaderboard is currently unavailable.",
-                    color=discord.Color.dark_red()
+                    title="❌ Leaderboard Not Available",
+                    description=(
+                        "Could not find any ranked entries. Ensure the file exists at\n"
+                        "`text files/alliance-ranks.txt` and contains lines starting with ranks like '1.'"
+                    ),
+                    color=discord.Color.dark_red(),
                 )
                 await interaction.response.edit_message(embed=embed, view=None)
                 return
-            
-            embed = discord.Embed(
-                title="🤝 Top 10 Alliances",
-                description="Strongest alliances in Avatar Realms Collide",
-                color=discord.Color.blue()
-            )
-            
-            file = discord.File(file_path, filename="top-alliances.webp")
-            embed.set_image(url="attachment://top-alliances.webp")
-            embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Updated regularly")
-            
-            await interaction.response.edit_message(embed=embed, view=None)
-            await interaction.followup.send(file=file)
-            
-        except Exception as e:
+            await interaction.response.edit_message(embed=paginator.current_embed(), view=paginator)
+        except Exception:
             embed = discord.Embed(
                 title="❌ Error Loading Leaderboard",
-                description="Sorry! There was an issue loading the leaderboard. Please try again later.",
-                color=discord.Color.dark_red()
+                description="There was an unexpected error reading the alliance rankings file.",
+                color=discord.Color.dark_red(),
             )
             await interaction.response.edit_message(embed=embed, view=None)
 
