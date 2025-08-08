@@ -19,7 +19,7 @@ We welcome contributions in the following areas:
 
 1. **Fork the Repository**
    ```bash
-   git clone https://github.com/yourusername/ArcPythonBot.git
+   git clone https://github.com/Mitsum1/ArcPythonBot.git
    cd ArcPythonBot
    ```
 

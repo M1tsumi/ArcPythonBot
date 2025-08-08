@@ -9,6 +9,8 @@ instructions.md
 # Game data files (prevent from being pushed to GitHub)
 *.txt
 !text files/troops.txt
+!text files/leader-ranks.txt
+!text files/alliance-ranks.txt
 gloriousvictory.txt
 heroinfo.txt
 tgl.txt

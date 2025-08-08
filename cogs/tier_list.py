@@ -5,6 +5,7 @@ Shows the current community tier list image.
 
 import os
 from pathlib import Path
+from typing import Optional
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -26,7 +27,7 @@ class TierList(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
 
-    def _find_tierlist_file(self) -> Path | None:
+    def _find_tierlist_file(self) -> Optional[Path]:
         for p in TIERLIST_DEFAULT_PATHS:
             if p.exists() and p.is_file():
                 return p
