@@ -151,7 +151,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="👨‍💻 Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Kuvira (talent trees, skill priorities, town hall stats)",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Deng (@2rk) (leaderboards), Kuvira (talent trees, skill priorities, town hall stats)",
             inline=False
         )
         
@@ -225,7 +225,7 @@ class Utility(commands.Cog):
         
         embed.add_field(
             name="Developer & Contributors",
-            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Kuvira (talent trees, skill priorities, town hall stats), Drummer (@priskent) & Marshmellow (@sophremacy) (troop information and costs)",
+            value="**Developed by Quefep**\n**Contributors**: Lycaris (comprehensive event overview), PrincessBell & Samkee (event details), Deng (@2rk) (leaderboards), Kuvira (talent trees, skill priorities, town hall stats), Drummer (@priskent) & Marshmellow (@sophremacy) (troop information and costs)",
             inline=False
         )
         

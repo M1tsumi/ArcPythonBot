@@ -111,7 +111,7 @@ class TownHallModal(discord.ui.Modal, title="Town Hall Level"):
                 inline=False
             )
             
-            embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Town Hall requirements")
+            embed.set_footer(text="Provided by Deng (@2rk) • Town Hall requirements")
             
             await interaction.response.send_message(embed=embed)
             

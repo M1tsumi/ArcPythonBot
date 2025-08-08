@@ -457,6 +457,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Contributors** who help improve this bot
 - **[Lycaris](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe)** for the comprehensive Avatar Realms Collide Event Overview
 - **PrincessBell** and **Samkee** for providing event details
+- **Deng (@2rk)** for leaderboard data contributions and improvements
 - **Kuvira** for contributing talent trees, skill priorities, and town hall statistics to the bot's development
 - **Drummer (@priskent)** and **Marshmellow (@sophremacy)** for providing troop information and costs data
 

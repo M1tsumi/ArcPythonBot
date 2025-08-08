@@ -52,7 +52,7 @@ class SkillPriorities(commands.Cog):
             inline=False
         )
         
-        embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
+        embed = EmbedGenerator.finalize_embed(embed, default_footer="Provided by Deng (@2rk)")
         
         # Create view with element selection dropdown
         view = discord.ui.View(timeout=60)

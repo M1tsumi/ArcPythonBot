@@ -36,7 +36,7 @@ class TownHall(commands.Cog):
             inline=False
         )
         
-        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Click the button below")
+        embed.set_footer(text="Provided by Deng (@2rk) • Click the button below")
         
         # Create view with modal button
         view = discord.ui.View(timeout=60)
