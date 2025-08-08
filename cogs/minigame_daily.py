@@ -11,7 +11,7 @@ import random
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 import discord
 from discord import app_commands
@@ -23,6 +23,11 @@ from utils.embed_generator import EmbedGenerator
 # ---------- Storage helpers ----------
 
 MINIGAME_ROOT = Path("data") / "minigame" / "servers"
+TRIVIA_FILE = Path("text files/trivia-questions.txt")
+TRIVIA_QUESTIONS_PER_SESSION = 5
+TRIVIA_XP_PER_CORRECT = 50
+TRIVIA_BASIC_SCROLL_CHANCE = 0.10  # 10%
+TRIVIA_EPIC_SCROLL_CHANCE = 0.02   # 2%
 
 
 def ensure_server_storage(guild_id: int) -> Path:
@@ -78,6 +83,12 @@ def load_player(guild_id: int, user_id: int) -> Dict[str, Any]:
         "stats": {
             "daily_uses": 0,
             "last_daily_at": None,
+            "trivia": {
+                "correct_total": 0,
+                "incorrect_total": 0,
+                "ace_attempts": 0,
+                "sessions_played": 0,
+            },
         },
     }
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -116,6 +127,88 @@ def apply_xp_and_level(player: Dict[str, Any], gained_xp: int) -> Dict[str, Any]
             break
 
     return {"leveled_up": leveled_up, "xp_to_next": xp_needed_for_next_level(player.get("level", 1)) - player.get("xp", 0)}
+
+
+# ---------- Trivia helpers ----------
+
+def _split_blocks_by_blank_lines(text: str) -> List[List[str]]:
+    blocks: List[List[str]] = []
+    current: List[str] = []
+    for line in text.splitlines():
+        if line.strip() == "" or line.strip() == "---":
+            if current:
+                blocks.append(current)
+                current = []
+        else:
+            current.append(line.rstrip())
+    if current:
+        blocks.append(current)
+    return blocks
+
+
+def parse_trivia_questions() -> List[Dict[str, Any]]:
+    """Parse trivia questions from TRIVIA_FILE.
+
+    Expected block format (per question):
+      Q: <question text>
+      A: <option A>
+      B: <option B>
+      C: <option C>
+      D: <option D>
+      Answer: A|B|C|D
+
+    Alternative single-line format:
+      Question|OptionA|OptionB|OptionC|OptionD|A
+    """
+    if not TRIVIA_FILE.exists():
+        return []
+
+    try:
+        content = TRIVIA_FILE.read_text(encoding="utf-8", errors="ignore")
+    except Exception:
+        return []
+
+    questions: List[Dict[str, Any]] = []
+    for block in _split_blocks_by_blank_lines(content):
+        # Try key-value format
+        q_text: Optional[str] = None
+        options: Dict[str, str] = {}
+        answer_letter: Optional[str] = None
+        for raw in block:
+            line = raw.strip()
+            if line.lower().startswith("q:") or line.lower().startswith("question:"):
+                q_text = line.split(":", 1)[1].strip()
+            elif len(line) > 2 and line[1] == ":" and line[0].upper() in ["A", "B", "C", "D"]:
+                options[line[0].upper()] = line.split(":", 1)[1].strip()
+            elif line.lower().startswith("answer:"):
+                ans = line.split(":", 1)[1].strip().upper()
+                if ans in ["A", "B", "C", "D"]:
+                    answer_letter = ans
+
+        if q_text and len(options) == 4 and answer_letter:
+            opts_in_order = [options.get("A", ""), options.get("B", ""), options.get("C", ""), options.get("D", "")]
+            questions.append({
+                "question": q_text,
+                "options": opts_in_order,
+                "answer_index": {"A": 0, "B": 1, "C": 2, "D": 3}[answer_letter],
+            })
+            continue
+
+        # Try pipe format
+        if len(block) == 1 and "|" in block[0]:
+            parts = [p.strip() for p in block[0].split("|")]
+            if len(parts) == 6:
+                q_text = parts[0]
+                opts_in_order = parts[1:5]
+                ans_letter = parts[5].upper()
+                if ans_letter in ["A", "B", "C", "D"]:
+                    questions.append({
+                        "question": q_text,
+                        "options": opts_in_order,
+                        "answer_index": {"A": 0, "B": 1, "C": 2, "D": 3}[ans_letter],
+                    })
+
+    return questions
 
 
 # ---------- UI: Verification View ----------
@@ -401,6 +494,21 @@ class MinigameDaily(commands.Cog):
                 return
             await interaction.response.edit_message(view=None)
 
+        @discord.ui.button(label="Trivia", style=discord.ButtonStyle.primary, emoji="🧠")
+        async def trivia(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            # Start a trivia session in DMs
+            player = load_player(self.guild_id, self.user_id)
+            try:
+                dm = await interaction.user.create_dm()  # type: ignore[union-attr]
+            except Exception:
+                await interaction.response.send_message("I couldn't open your DMs. Please enable DMs from this server and try again.", ephemeral=True)
+                return
+
+            await interaction.response.send_message("Opened a DM with you for a 5-question Trivia!", ephemeral=True)
+            await self.parent.run_trivia_session(dm, interaction.user, self.guild_id, self.user_id)
+
     class RollChoiceView(discord.ui.View):
         def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
             super().__init__(timeout=180)
@@ -521,6 +629,146 @@ class MinigameDaily(commands.Cog):
         embed = self.build_play_embed(player)
         view = self.PlayView(self, guild_id, user_id)
         await interaction.response.send_message(embed=embed, view=view)
+
+    # ---------- Trivia game loop ----------
+
+    async def run_trivia_session(self, dm_channel: discord.DMChannel, user: discord.User | discord.Member, guild_id: int, user_id: int):
+        questions = parse_trivia_questions()
+        if not questions:
+            await dm_channel.send("No trivia questions are configured yet. Please ask an admin to populate 'text files/trivia-questions.txt'.")
+            return
+
+        # Choose 5 questions at random (or fewer if not enough)
+        session_questions = random.sample(questions, k=min(TRIVIA_QUESTIONS_PER_SESSION, len(questions)))
+        correct_count = 0
+        incorrect_count = 0
+
+        for index, q in enumerate(session_questions, start=1):
+            embed = EmbedGenerator.create_embed(
+                title=f"Trivia Question {index}/{len(session_questions)}",
+                description=q["question"],
+                color=discord.Color.blue(),
+                fields=[
+                    {"name": "A", "value": q["options"][0], "inline": False},
+                    {"name": "B", "value": q["options"][1], "inline": False},
+                    {"name": "C", "value": q["options"][2], "inline": False},
+                    {"name": "D", "value": q["options"][3], "inline": False},
+                ],
+            )
+            embed = EmbedGenerator.finalize_embed(embed)
+
+            view = self._build_trivia_question_view(correct_index=q["answer_index"], user_id=user_id)
+            await dm_channel.send(embed=embed, view=view)
+
+            # Wait for the view to complete (button disables on answer)
+            try:
+                await view.wait()
+            except Exception:
+                pass
+
+            if view.answer_correct is True:
+                correct_count += 1
+            elif view.answer_correct is False:
+                incorrect_count += 1
+            else:
+                # If no answer, count as incorrect
+                incorrect_count += 1
+
+        # Tally results and reward
+        player = load_player(guild_id, user_id)
+        player_stats = player.setdefault("stats", {}).setdefault("trivia", {})
+        # Maintain totals
+        player_stats["correct_total"] = int(player_stats.get("correct_total", 0)) + correct_count
+        player_stats["incorrect_total"] = int(player_stats.get("incorrect_total", 0)) + incorrect_count
+        player_stats["sessions_played"] = int(player_stats.get("sessions_played", 0)) + 1
+        if incorrect_count == 0 and correct_count > 0:
+            player_stats["ace_attempts"] = int(player_stats.get("ace_attempts", 0)) + 1
+
+        # XP: per correct
+        gained_xp = TRIVIA_XP_PER_CORRECT * correct_count
+        level_result = apply_xp_and_level(player, gained_xp)
+
+        # Low-chance scroll drops
+        drops: List[str] = []
+        if random.random() < TRIVIA_BASIC_SCROLL_CHANCE:
+            player.setdefault("scrolls", {}).setdefault("basic", 0)
+            player["scrolls"]["basic"] += 1
+            drops.append("Basic Scroll 📜")
+        if random.random() < TRIVIA_EPIC_SCROLL_CHANCE:
+            player.setdefault("scrolls", {}).setdefault("epic", 0)
+            player["scrolls"]["epic"] += 1
+            drops.append("Epic Scroll 🟣📜")
+
+        save_player(guild_id, user_id, player)
+
+        # Summary embed to DM
+        summary_lines = [
+            f"Correct: **{correct_count}**",
+            f"Incorrect: **{incorrect_count}**",
+            f"XP gained: **{gained_xp}**",
+        ]
+        if drops:
+            summary_lines.append("Drops: " + ", ".join(drops))
+        else:
+            summary_lines.append("Drops: None")
+
+        summary = EmbedGenerator.create_embed(
+            title="Trivia Results",
+            description="\n".join(summary_lines),
+            color=discord.Color.green(),
+        )
+        summary = EmbedGenerator.finalize_embed(summary)
+        await dm_channel.send(embed=summary)
+
+        # Also update the original Play panel in guild with refreshed stats if desired (skipped here)
+
+    class _TriviaQuestionView(discord.ui.View):
+        def __init__(self, correct_index: int, user_id: int):
+            super().__init__(timeout=60)
+            self.correct_index = correct_index
+            self.user_id = user_id
+            self.answer_correct: Optional[bool] = None
+
+        async def _check_user(self, interaction: discord.Interaction) -> bool:
+            if interaction.user is None or interaction.user.id != self.user_id:
+                await interaction.response.send_message("This question is not for you.", ephemeral=True)
+                return False
+            return True
+
+        async def _handle_answer(self, interaction: discord.Interaction, choice_index: int):
+            if not await self._check_user(interaction):
+                return
+            is_correct = (choice_index == self.correct_index)
+            self.answer_correct = is_correct
+            # Disable all buttons
+            for item in self.children:
+                if isinstance(item, discord.ui.Button):
+                    item.disabled = True
+            if is_correct:
+                await interaction.response.edit_message(content="✅ Correct!", view=self)
+            else:
+                await interaction.response.edit_message(content="❌ Incorrect.", view=self)
+
+            self.stop()
+
+        @discord.ui.button(label="A", style=discord.ButtonStyle.secondary)
+        async def a(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            await self._handle_answer(interaction, 0)
+
+        @discord.ui.button(label="B", style=discord.ButtonStyle.secondary)
+        async def b(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            await self._handle_answer(interaction, 1)
+
+        @discord.ui.button(label="C", style=discord.ButtonStyle.secondary)
+        async def c(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            await self._handle_answer(interaction, 2)
+
+        @discord.ui.button(label="D", style=discord.ButtonStyle.secondary)
+        async def d(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            await self._handle_answer(interaction, 3)
+
+    def _build_trivia_question_view(self, correct_index: int, user_id: int) -> "MinigameDaily._TriviaQuestionView":
+        return self._TriviaQuestionView(correct_index, user_id)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MinigameDaily(bot))
