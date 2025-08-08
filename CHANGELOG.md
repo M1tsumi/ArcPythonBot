@@ -1,4 +1,23 @@
 # Changelog
+## [1.7.1] - 2025-08-08
+
+### Fixed
+- `/tierlist` command reliability: correctly detects and displays the tier list image when present at
+  `assets/images/leaderboards/hero-tierlist.webp` (WebP/PNG/JPG supported).
+
+### Changed
+- Leaderboard system (text-file mode) robustness and UX improvements:
+  - Preserves the header line's date as the "checked" date; no automatic date changes.
+  - Parses ranked lines starting with `1.` format; ignores non-ranked lines.
+  - Normalizes dash characters for consistent display in embeds.
+  - Paginated embeds (20 entries per page) with Prev/Next and Close controls; monospaced alignment for readability.
+  - Clear, actionable error messages when files are missing or incorrectly formatted.
+
+### Docs
+- README updated: expanded Leaderboard System details and noted the `/tierlist` fix in 1.7.1.
+
+### Notes
+- Rank files' header dates reflect when rankings were checked; they are not updated automatically.
 ## [1.7.0] - 2025-08-07
 
 ### Added

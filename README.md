@@ -1,11 +1,11 @@
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.7.1-blue.svg)](https://github.com/yourusername/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.7.0 - Avatar Realms Collide Discord Bot**  
+> **🎮 Version 1.7.1 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, troops calculator, and game information in the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
@@ -29,10 +29,13 @@
 - **Professional UI**: Clean, minimalist embeds with personalized messaging
 
 ### 🏆 **Leaderboard System**
-- **Top 10 Leaders**: View the most powerful players
-- **Top 10 Alliances**: Check the strongest alliances
-- **Real-time Updates**: Regularly updated leaderboard data
-- **Interactive Buttons**: Easy navigation between different rankings
+- **Two Sources**: Pulls from text files for long-form rankings and internal state for live snapshots
+  - Text files: `text files/leader-ranks.txt` and `text files/alliance-ranks.txt`
+  - Expected format: first non-empty line as a header (may include date), followed by lines starting with ranked numbers like `1.`
+  - Header date is preserved to indicate the day rankings were checked
+- **Pagination**: Monospaced, 20-rows-per-page embeds with Prev/Next navigation for long leaderboards
+- **Interactive Buttons**: Instant switch between 👑 Leaders and 🤝 Alliances
+- **Graceful Errors**: Clear guidance when files are missing or incorrectly formatted
 - **Admin Controls**: Pause/resume/clear leaderboards during non-event periods
 - **Event-Aware**: Automatic pause when Glorious Victory event is not active
 
@@ -96,8 +99,9 @@
 - **Enhanced Navigation**: Interactive tier selection with professional embeds
 - **Fixed Data Parsing**: Corrected troop data extraction with dynamic column mapping
 
-### 📊 **Tier List** (New)
+### 📊 **Tier List**
 - **/tierlist**: Displays the community hero tier list image. Place the image at `assets/images/leaderboards/hero-tierlist.webp` (PNG/JPG also supported).
+- **Fixed in 1.7.1**: Command reliability improved; correctly detects and displays the tier list image when present.
 
 ### 👥 **Character Database**
 - **25+ Characters**: Comprehensive roster from the Avatar universe
@@ -329,7 +333,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.6.2 (Current)
+### Version 1.7.1 (Current)
 - ✅ Interactive talent tree browser
 - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
