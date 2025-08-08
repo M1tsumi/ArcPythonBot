@@ -70,6 +70,11 @@ def load_player(guild_id: int, user_id: int) -> Dict[str, Any]:
         "xp": 0,
         "level": 1,
         "scrolls": {"basic": 0, "epic": 0},
+        "inventory": {
+            "basic_hero_shards": 0,
+            "epic_hero_shards": 0,
+            "skill_points": 0,
+        },
         "stats": {
             "daily_uses": 0,
             "last_daily_at": None,
@@ -305,10 +310,217 @@ class MinigameDaily(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
 
         if interaction.response.is_done():
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed)
         else:
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message(embed=embed)
 
+
+    # ---------- /play command and interactive game loop ----------
+
+    def build_play_embed(self, player: Dict[str, Any]) -> discord.Embed:
+        level = int(player.get("level", 1))
+        current_xp = int(player.get("xp", 0))
+        max_xp = xp_needed_for_next_level(level)
+        scrolls = player.get("scrolls", {})
+        inv = player.get("inventory", {})
+
+        fields = [
+            {"name": "Your Level", "value": f"Level {level}", "inline": True},
+            {"name": "XP", "value": f"{current_xp} / {max_xp}", "inline": True},
+            {
+                "name": "Scrolls",
+                "value": f"Basic: **{scrolls.get('basic', 0)}**\nEpic: **{scrolls.get('epic', 0)}**",
+                "inline": True,
+            },
+            {
+                "name": "Inventory",
+                "value": (
+                    f"Basic Hero Shards: **{inv.get('basic_hero_shards', 0)}**\n"
+                    f"Epic Hero Shards: **{inv.get('epic_hero_shards', 0)}**\n"
+                    f"Skill Points: **{inv.get('skill_points', 0)}**"
+                ),
+                "inline": False,
+            },
+        ]
+
+        embed = EmbedGenerator.create_embed(
+            title="Minigame — Play",
+            description="Use your scrolls to roll rewards. This is a standalone Minigame (not affiliated with Avatar Realms Collide).",
+            color=discord.Color.blurple(),
+            fields=fields,
+        )
+        return EmbedGenerator.finalize_embed(embed)
+
+    class PlayView(discord.ui.View):
+        def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
+            super().__init__(timeout=300)
+            self.parent = parent
+            self.guild_id = guild_id
+            self.user_id = user_id
+
+        async def interaction_guard(self, interaction: discord.Interaction) -> bool:
+            if interaction.user is None or interaction.user.id != self.user_id:
+                await interaction.response.send_message("Only the requesting player can use these controls.", ephemeral=True)
+                return False
+            return True
+
+        @discord.ui.button(label="Roll", style=discord.ButtonStyle.success, emoji="🎲")
+        async def roll(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            # Show scroll choice view
+            player = load_player(self.guild_id, self.user_id)
+            choice_embed = EmbedGenerator.create_embed(
+                title="Choose Scroll to Roll",
+                description="Pick which scroll to use for your roll.",
+                color=discord.Color.green(),
+                fields=[
+                    {
+                        "name": "Availability",
+                        "value": (
+                            f"Basic: **{player.get('scrolls', {}).get('basic', 0)}**\n"
+                            f"Epic: **{player.get('scrolls', {}).get('epic', 0)}**"
+                        ),
+                        "inline": False,
+                    }
+                ],
+            )
+            choice_embed = EmbedGenerator.finalize_embed(choice_embed)
+            await interaction.response.edit_message(embed=choice_embed, view=self.parent.RollChoiceView(self.parent, self.guild_id, self.user_id))
+
+        @discord.ui.button(label="Refresh", style=discord.ButtonStyle.secondary, emoji="🔄")
+        async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            player = load_player(self.guild_id, self.user_id)
+            await interaction.response.edit_message(embed=self.parent.build_play_embed(player), view=self)
+
+        @discord.ui.button(label="Close", style=discord.ButtonStyle.danger, emoji="🗑️")
+        async def close(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            await interaction.response.edit_message(view=None)
+
+    class RollChoiceView(discord.ui.View):
+        def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
+            super().__init__(timeout=180)
+            self.parent = parent
+            self.guild_id = guild_id
+            self.user_id = user_id
+
+        async def interaction_guard(self, interaction: discord.Interaction) -> bool:
+            if interaction.user is None or interaction.user.id != self.user_id:
+                await interaction.response.send_message("Only the requesting player can use these controls.", ephemeral=True)
+                return False
+            return True
+
+        @discord.ui.button(label="Use Basic Scroll", style=discord.ButtonStyle.primary, emoji="📜")
+        async def use_basic(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            player = load_player(self.guild_id, self.user_id)
+            if player.get("scrolls", {}).get("basic", 0) <= 0:
+                await interaction.response.send_message("You have no Basic Scrolls.", ephemeral=True)
+                return
+
+            # Consume one Basic scroll
+            player["scrolls"]["basic"] = player["scrolls"].get("basic", 0) - 1
+
+            # Rewards: one of five choices
+            reward_type = random.choice(["xp", "basic3", "basic5", "epic1", "skill1"])
+            reward_text: str
+            if reward_type == "xp":
+                gained = random.randint(100, 500)
+                self.parent._apply_xp(player, gained)
+                reward_text = f"Gained **{gained} XP**!"
+            elif reward_type == "basic3":
+                player["inventory"]["basic_hero_shards"] = player["inventory"].get("basic_hero_shards", 0) + 3
+                reward_text = "Received **3 Basic Hero Shards**!"
+            elif reward_type == "basic5":
+                player["inventory"]["basic_hero_shards"] = player["inventory"].get("basic_hero_shards", 0) + 5
+                reward_text = "Received **5 Basic Hero Shards**!"
+            elif reward_type == "epic1":
+                player["inventory"]["epic_hero_shards"] = player["inventory"].get("epic_hero_shards", 0) + 1
+                reward_text = "Received **1 Epic Hero Shard**!"
+            else:  # skill1
+                player["inventory"]["skill_points"] = player["inventory"].get("skill_points", 0) + 1
+                reward_text = "Received **1 Skill Point**!"
+
+            save_player(self.guild_id, self.user_id, player)
+
+            # Show summary and return to play view
+            summary_embed = EmbedGenerator.create_embed(
+                title="Roll Result (Basic)",
+                description=reward_text,
+                color=discord.Color.gold(),
+            )
+            summary_embed = EmbedGenerator.finalize_embed(summary_embed)
+
+            view = self.parent.PlayView(self.parent, self.guild_id, self.user_id)
+            await interaction.response.edit_message(embed=self.parent.build_play_embed(player), view=view)
+            # Send a separate message with the reward text (public)
+            await interaction.followup.send(embed=summary_embed)
+
+        @discord.ui.button(label="Use Epic Scroll", style=discord.ButtonStyle.primary, emoji="🟣")
+        async def use_epic(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            player = load_player(self.guild_id, self.user_id)
+            if player.get("scrolls", {}).get("epic", 0) <= 0:
+                await interaction.response.send_message("You have no Epic Scrolls.", ephemeral=True)
+                return
+
+            # Placeholder: Epic rolls to be defined later
+            await interaction.response.send_message("Epic Scroll rewards are coming soon!", ephemeral=True)
+
+        @discord.ui.button(label="Back", style=discord.ButtonStyle.secondary, emoji="⬅️")
+        async def back(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
+            if not await self.interaction_guard(interaction):
+                return
+            player = load_player(self.guild_id, self.user_id)
+            await interaction.response.edit_message(embed=self.parent.build_play_embed(player), view=self.parent.PlayView(self.parent, self.guild_id, self.user_id))
+
+    def _apply_xp(self, player: Dict[str, Any], gained: int) -> None:
+        apply_xp_and_level(player, gained)
+
+    @app_commands.command(name="play", description="Minigame: Open the game panel to view stats and roll scrolls")
+    @app_commands.checks.cooldown(1, 3.0)
+    async def play(self, interaction: discord.Interaction):
+        if interaction.guild is None:
+            embed = EmbedGenerator.create_embed(
+                title="Guild Only",
+                description="This minigame can only be used inside a server.",
+                color=discord.Color.red(),
+            )
+            embed = EmbedGenerator.finalize_embed(embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        guild_id = interaction.guild.id
+        user_id = interaction.user.id if interaction.user else 0
+
+        ensure_server_storage(guild_id)
+        player = load_player(guild_id, user_id)
+
+        if not player.get("verified"):
+            disclaimer = (
+                "⚠️ This is a community-run Minigame and is not affiliated with Avatar Realms Collide.\n\n"
+                "By pressing the button below, you confirm you are not using bots or automation for this Minigame."
+                " If any form of botting is detected, your Minigame Account Data may be reset."
+            )
+            embed = EmbedGenerator.create_embed(
+                title="Minigame Verification Required",
+                description=disclaimer,
+                color=discord.Color.orange(),
+            )
+            embed = EmbedGenerator.finalize_embed(embed)
+            view = VerificationView(guild_id=guild_id, user_id=user_id)
+            await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+            return
+
+        embed = self.build_play_embed(player)
+        view = self.PlayView(self, guild_id, user_id)
+        await interaction.response.send_message(embed=embed, view=view)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MinigameDaily(bot))
