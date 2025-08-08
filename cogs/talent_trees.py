@@ -39,7 +39,7 @@ class TalentTrees(commands.Cog):
             inline=False
         )
         
-        embed = EmbedGenerator.finalize_embed(embed, default_footer="Provided by Deng (@2rk)")
+        embed = EmbedGenerator.finalize_embed(embed, default_footer="Information provided by Kuvira (@archfiends)")
         
         view = discord.ui.View(timeout=60)
         view.add_item(ElementSelectDropdown(self.data_parser))

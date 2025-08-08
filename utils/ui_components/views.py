@@ -90,7 +90,7 @@ class CharacterSelectView(discord.ui.View):
                 inline=True
             )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Your talent trees are ready below")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Your talent trees are ready below")
         
         # Send the embed first
         await interaction.response.edit_message(embed=embed, view=None)
@@ -164,7 +164,7 @@ class CharacterSelectView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Pick your element to begin your journey")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Pick your element to begin your journey")
         
         view = discord.ui.View(timeout=60)
         from .dropdowns import ElementSelectDropdown
@@ -239,7 +239,7 @@ class SkillPriorityHeroView(discord.ui.View):
                 inline=False
             )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Skill priorities for optimal progression")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Skill priorities for optimal progression")
         
         await interaction.response.edit_message(embed=embed, view=None)
     
@@ -540,7 +540,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -565,7 +565,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -590,7 +590,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -615,7 +615,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -640,7 +640,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -665,7 +665,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     
@@ -690,7 +690,7 @@ class HeroRankupView(discord.ui.View):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk)")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
         await interaction.response.edit_message(embed=embed, view=self)
     

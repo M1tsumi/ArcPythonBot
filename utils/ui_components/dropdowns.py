@@ -66,7 +66,7 @@ class ElementSelectDropdown(discord.ui.Select):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Choose your champion below")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose your champion below")
         
         # Create character selection view
         from .views import CharacterSelectView
@@ -158,7 +158,7 @@ class SkillPriorityElementDropdown(discord.ui.Select):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Choose your hero below")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Choose your hero below")
         
         # Create hero selection view with just the hero names
         hero_names = [hero['name'] for hero in sorted_heroes]
@@ -247,6 +247,6 @@ class TownHallDropdown(discord.ui.Select):
             inline=False
         )
         
-        embed.set_footer(text="Provided by Deng (@2rk) • Town Hall requirements")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Town Hall requirements")
         
         await interaction.response.edit_message(embed=embed, view=None) 
