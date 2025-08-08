@@ -4,7 +4,6 @@
     <img alt="Add Bot to Server" src="https://img.shields.io/badge/Add%20Bot%20to%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white">
   </a>
   <br>
-  <a href="https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=274877910016&scope=bot%20applications.commands">Direct invite link (fallback)</a>
 </p>
 
 # 🌟 Avatar Realms Collide Discord Bot
