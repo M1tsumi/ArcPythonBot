@@ -90,6 +90,7 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.town_hall',
             'cogs.hero_rankup',
             'cogs.utility',
+            'cogs.statistics',
             'cogs.events',
             'cogs.moderation',
             'cogs.game_info',

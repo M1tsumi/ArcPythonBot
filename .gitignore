@@ -73,3 +73,6 @@ logs/
 
 # Bot webhook scripts (keep private)
 bot_added_webhook.py 
+
+# Runtime analytics (do not commit)
+data/usage_stats.json
