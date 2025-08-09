@@ -1469,7 +1469,7 @@ class AvatarPlaySystem(commands.Cog):
             "games_played": 1,
             "questions_answered": total_questions,
             "correct_answers": session.correct_answers,
-            "xp_gained": xp_result["total_gained"],
+            "xp_gained": xp_result["gained_xp"],
             "best_streak": session.streak,
             "perfect_games": 1 if is_perfect else 0
         }
