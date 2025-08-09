@@ -9,6 +9,7 @@ from discord.ext import commands, tasks
 from typing import Dict, List, Optional
 import asyncio
 import time
+import re
 from datetime import datetime, timedelta
 
 class TimerSystem(commands.Cog):
@@ -88,36 +89,40 @@ class TimerSystem(commands.Cog):
             self.logger.error(f"Failed to send timer notification to user {user_id}: {e}")
     
     def _parse_duration(self, duration_str: str) -> Optional[int]:
-        """Parse duration string to seconds."""
+        """Parse duration string to seconds with proper handling."""
         try:
             duration_str = duration_str.lower().strip()
             total_seconds = 0
             
-            # Parse hours
-            if 'h' in duration_str or 'hour' in duration_str:
-                if 'h' in duration_str:
-                    hours = int(duration_str.split('h')[0])
-                else:
-                    hours = int(duration_str.split('hour')[0])
+            # Use regex to properly extract time components
+            # This handles formats like: 1h35m5s, 1h 35m 5s, 2h30m, 45m, 30s, etc.
+            
+            # Parse hours - look for number followed by 'h' or 'hour'
+            hour_match = re.search(r'(\d+)\s*(?:h|hour)', duration_str)
+            if hour_match:
+                hours = int(hour_match.group(1))
                 total_seconds += hours * 3600
-                duration_str = duration_str.replace(f'{hours}h', '').replace(f'{hours}hour', '').replace('s', '')
             
-            # Parse minutes
-            if 'm' in duration_str or 'min' in duration_str:
-                if 'm' in duration_str and 'min' not in duration_str:
-                    minutes = int(duration_str.split('m')[0])
-                else:
-                    minutes = int(duration_str.split('min')[0])
+            # Parse minutes - look for number followed by 'm' (but not 'min')
+            # Or look for number followed by 'min'
+            min_match = re.search(r'(\d+)\s*(?:min|m(?!in))', duration_str)
+            if min_match:
+                minutes = int(min_match.group(1))
                 total_seconds += minutes * 60
-                duration_str = duration_str.replace(f'{minutes}m', '').replace(f'{minutes}min', '').replace('s', '')
             
-            # Parse seconds
-            if duration_str.strip() and duration_str.strip().isdigit():
-                total_seconds += int(duration_str.strip())
+            # Parse seconds - look for number followed by 's' (but not part of other units)
+            sec_match = re.search(r'(\d+)\s*s(?!e)', duration_str)
+            if sec_match:
+                seconds = int(sec_match.group(1))
+                total_seconds += seconds
+            
+            # If no units found, try to parse as just seconds
+            if total_seconds == 0 and duration_str.strip().isdigit():
+                total_seconds = int(duration_str.strip())
             
             return total_seconds if total_seconds > 0 else None
             
-        except (ValueError, IndexError):
+        except (ValueError, IndexError, AttributeError):
             return None
     
     def _format_duration(self, seconds: int) -> str:
@@ -132,6 +137,15 @@ class TimerSystem(commands.Cog):
             return f"{minutes}m {secs}s"
         else:
             return f"{secs}s"
+    
+    def _test_parse_duration(self, test_input: str) -> str:
+        """Debug method to test duration parsing."""
+        seconds = self._parse_duration(test_input)
+        if seconds:
+            formatted = self._format_duration(seconds)
+            return f"Input: '{test_input}' → Parsed: {seconds}s → Formatted: '{formatted}'"
+        else:
+            return f"Input: '{test_input}' → Failed to parse"
     
     @app_commands.command(name="timer", description="Set a timer for game activities")
     @app_commands.describe(
@@ -160,7 +174,7 @@ class TimerSystem(commands.Cog):
         if not seconds:
             embed = discord.Embed(
                 title="❌ Invalid Duration",
-                description="Please provide a valid duration format.\n\n**Examples:**\n• `2h 30m` - 2 hours 30 minutes\n• `45m` - 45 minutes\n• `1h 15m 30s` - 1 hour 15 minutes 30 seconds\n• `30s` - 30 seconds",
+                description="Please provide a valid duration format.\n\n**Examples:**\n• `1h 35m 5s` - 1 hour 35 minutes 5 seconds\n• `2h 30m` - 2 hours 30 minutes\n• `45m` - 45 minutes\n• `1h15m30s` - (no spaces also works)\n• `30s` - 30 seconds",
                 color=discord.Color.red()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -217,6 +231,12 @@ class TimerSystem(commands.Cog):
         embed.add_field(
             name="Duration",
             value=self._format_duration(seconds),
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🔍 Debug Info",
+            value=f"Parsed: **{seconds}** seconds\nInput: `{duration}`",
             inline=True
         )
         
@@ -390,11 +410,13 @@ class TimerSystem(commands.Cog):
         embed.add_field(
             name="⏱️ Duration Format",
             value="**Examples:**\n"
+                  "• `1h 35m 5s` - 1 hour 35 minutes 5 seconds\n"
                   "• `2h 30m` - 2 hours 30 minutes\n"
                   "• `45m` - 45 minutes\n"
-                  "• `1h 15m 30s` - 1 hour 15 minutes 30 seconds\n"
+                  "• `1h15m30s` - 1 hour 15 minutes 30 seconds (no spaces)\n"
                   "• `30s` - 30 seconds\n"
-                  "• `2h` - 2 hours",
+                  "• `2h` - 2 hours\n"
+                  "• `90min` - 90 minutes",
             inline=False
         )
         
@@ -418,6 +440,55 @@ class TimerSystem(commands.Cog):
         )
         
         embed.set_footer(text="Timer notifications are sent via DM")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+    
+    @app_commands.command(name="test_timer_parse", description="🔧 Test timer duration parsing (debug)")
+    @app_commands.describe(test_duration="Duration string to test parsing")
+    async def test_timer_parse(self, interaction: discord.Interaction, test_duration: str):
+        """Debug command to test timer parsing."""
+        
+        # Test the parsing
+        seconds = self._parse_duration(test_duration)
+        
+        embed = discord.Embed(
+            title="🔧 Timer Parse Test",
+            description=f"Testing duration parsing for: `{test_duration}`",
+            color=discord.Color.blue() if seconds else discord.Color.red()
+        )
+        
+        if seconds:
+            formatted = self._format_duration(seconds)
+            embed.add_field(
+                name="✅ Parse Result",
+                value=f"**{seconds}** total seconds\n**{formatted}** formatted",
+                inline=False
+            )
+            
+            # Calculate what the end time would be
+            end_time = time.time() + seconds
+            embed.add_field(
+                name="🕒 Completion Time",
+                value=f"<t:{int(end_time)}:R>\n<t:{int(end_time)}:F>",
+                inline=False
+            )
+            
+            # Break down the calculation
+            hours = seconds // 3600
+            minutes = (seconds % 3600) // 60
+            secs = seconds % 60
+            
+            embed.add_field(
+                name="🔢 Breakdown",
+                value=f"Hours: **{hours}** ({hours * 3600}s)\nMinutes: **{minutes}** ({minutes * 60}s)\nSeconds: **{secs}**",
+                inline=False
+            )
+        else:
+            embed.add_field(
+                name="❌ Parse Failed",
+                value="The duration string could not be parsed.\n\nTry formats like: `1h 35m 5s`, `2h 30m`, `45m`",
+                inline=False
+            )
+        
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot):
