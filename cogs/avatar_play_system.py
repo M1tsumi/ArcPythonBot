@@ -1204,69 +1204,97 @@ class AvatarPlaySystem(commands.Cog):
         # Dynamic colors based on progress and streaks
         if session.streak >= 5:
             color = discord.Color.gold()  # Gold for hot streak
-            streak_emoji = "🔥"
         elif session.streak >= 3:
             color = discord.Color.orange()  # Orange for good streak
-            streak_emoji = "⚡"
         else:
             color = discord.Color.blue()  # Blue for normal
-            streak_emoji = "📝"
         
-        # Enhanced title with dynamic elements
-        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        # Clean title
+        title = f"Question {question_num}/{total_questions}"
         if session.streak >= 3:
-            title_parts.append(f"• {session.streak} STREAK!")
+            title += f" • {session.streak} Streak!"
         
         embed = EmbedGenerator.create_embed(
-            title=" ".join(title_parts),
-            description=f"🎯 **{question_data['question']}**",
+            title=title,
+            description=f"**{question_data['question']}**",
             color=color
         )
         
-        # Enhanced options with styled formatting
-        option_emojis = ["🇦", "🇧", "🇨"]
-        option_styles = ["🔸", "🔹", "🔶"]
+        # Clean options formatting
+        option_letters = ["A", "B", "C", "D"]
         
-        for i, option in enumerate(question_data["options"][:3]):
+        for i, option in enumerate(question_data["options"][:4]):
             embed.add_field(
-                name=f"{option_emojis[i]} Option {chr(65+i)}",
-                value=f"{option_styles[i]} **{option}**",
+                name=f"{option_letters[i]})",
+                value=option,
                 inline=False
             )
         
-        # Dynamic progress section with achievements
-        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        # Progress section
+        progress_value = f"**{session.mode.title()}** Mode"
         if session.streak > 0:
-            progress_value += f"\n🔥 **{session.streak}** Question Streak"
-        else:
-            progress_value += f"\n📍 Build your streak!"
-        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+            progress_value += f"\n**{session.streak}** Question Streak"
+        progress_value += f"\n**{session.correct_answers}**/{max(question_num-1, 0)} Correct"
         
         embed.add_field(
-            name="📊 Performance",
+            name="📊 Progress",
             value=progress_value,
             inline=True
         )
         
-        # Enhanced timer with urgency indicators
-        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
-        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
-        
+        # Timer section
         embed.add_field(
-            name=f"{time_emoji} Timer",
-            value=f"{timer_style}\n⏰ **{session.time_per_question}** seconds",
+            name="⏱️ Time Limit",
+            value=f"**{session.time_per_question}** seconds",
             inline=True
         )
         
-        # Enhanced category and difficulty display with visual elements
-        category_emoji = "🌟" if question_data.get("category") == "Avatar & Airbending" else "💧" if "Water" in question_data.get("category", "") else "🌍" if "Earth" in question_data.get("category", "") else "🔥" if "Fire" in question_data.get("category", "") else "✨"
-        difficulty_color = "🟢" if question_data.get("difficulty", "normal") == "easy" else "🟡" if question_data.get("difficulty", "normal") == "normal" else "🟠" if question_data.get("difficulty", "normal") == "hard" else "🔴"
+        # Category and difficulty
+        category = question_data.get("category", "General")
+        difficulty = question_data.get("difficulty", "normal")
+        
+        # Simplified category mapping
+        category_display = {
+            "Characters": "Heroes & Villains",
+            "Locations": "Four Nations", 
+            "Elements": "Bending Arts",
+            "History": "Ancient Wisdom",
+            "Culture": "Traditions",
+            "General": "Avatar Lore"
+        }.get(category, category)
+        
+        difficulty_display = {
+            "easy": "Novice",
+            "normal": "Adept", 
+            "hard": "Master",
+            "expert": "Avatar"
+        }.get(difficulty, difficulty.title())
         
         embed.add_field(
-            name="📖 Question Info",
-            value=f"{category_emoji} **{question_data.get('category', 'General Knowledge')}**\n{difficulty_color} **{question_data.get('difficulty', 'normal').title()}** Difficulty",
+            name="📚 Category",
+            value=f"{category_display}\n{difficulty_display} Level",
             inline=True
         )
+        
+        # Motivational footer - reduced emoji usage
+        if session.streak >= 5:
+            footer_text = f"Amazing! {session.streak} questions in a row! Keep it up, Avatar!"
+        elif session.streak >= 3:
+            footer_text = f"Great streak! You're {5-session.streak} away from being on fire!"
+        elif session.correct_answers > 0:
+            footer_text = f"You've got this! {session.correct_answers} correct so far!"
+        else:
+            footer_text = "Every master was once a beginner. Choose wisely!"
+        
+        embed.set_footer(text=footer_text)
+        
+        # Streak bonus indicator - simplified
+        if session.streak >= 3:
+            embed.add_field(
+                name="🔥 Streak Bonus",
+                value=f"**+{session.streak}0% XP** for this question!",
+                inline=False
+            )
         
         embed = EmbedGenerator.finalize_embed(embed)
         
