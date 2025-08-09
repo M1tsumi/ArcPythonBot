@@ -1719,51 +1719,89 @@ class AvatarPlaySystem(commands.Cog):
         """Unified trivia leaderboard that consolidates all trivia data sources."""
         from cogs.minigame_daily import MINIGAME_ROOT, ensure_server_storage
         
-        # Defer the response immediately to prevent timeout
-        await interaction.response.defer()
+        try:
+            # Try to defer the response immediately to prevent timeout
+            await interaction.response.defer()
+        except discord.NotFound:
+            # Interaction already expired, try to respond anyway
+            try:
+                await interaction.response.send_message("⚠️ Interaction timed out, but processing your request...", ephemeral=True)
+            except:
+                # If we can't respond at all, log and return
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to respond to trivia leaderboard interaction - interaction expired")
+                return
+        except Exception as e:
+            # Other error with defer
+            try:
+                await interaction.response.send_message(f"❌ Error processing request: {str(e)}", ephemeral=True)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error(f"Trivia leaderboard error: {e}")
+                return
         
         scope_value = scope.value
         if scope_value not in ("global", "server"):
-            await interaction.followup.send("Invalid scope. Use global or server.", ephemeral=True)
+            try:
+                await interaction.followup.send("Invalid scope. Use global or server.", ephemeral=True)
+            except:
+                return
             return
 
         if interaction.guild is None and scope_value == "server":
-            await interaction.followup.send("Server leaderboard must be used in a server.", ephemeral=True)
+            try:
+                await interaction.followup.send("Server leaderboard must be used in a server.", ephemeral=True)
+            except:
+                return
             return
 
         # Consolidate data from BOTH Avatar Play and Minigame systems
         consolidated_data = {}  # user_id -> {correct: int, sessions: int, games: int}
         
-        # Performance tracking
+        # Performance tracking and debugging
         files_processed = 0
         start_time = asyncio.get_event_loop().time()
+        debug_info = []
         
         if scope_value == "server":
             guild_id = interaction.guild.id
+            debug_info.append(f"Server scope for guild: {guild_id}")
             
-            # 1. Get Avatar Play System data
-            avatar_play_dir = PLAY_DATA_ROOT / str(guild_id) / "players"
-            if avatar_play_dir.exists():
-                for file in avatar_play_dir.glob("*.json"):
-                    try:
-                        data = json.loads(file.read_text(encoding="utf-8"))
-                        user_id = int(data.get("user_id", 0))
-                        stats = data.get("stats", {})
-                        correct = int(stats.get("correct_answers", 0))
-                        games = int(stats.get("games_played", 0))
-                        questions = int(stats.get("questions_answered", 0))
-                        
-                        if user_id not in consolidated_data:
-                            consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
-                        consolidated_data[user_id]["correct"] += correct
-                        consolidated_data[user_id]["sessions"] += games  # games = sessions
-                        consolidated_data[user_id]["games"] += games
-                        files_processed += 1
-                    except Exception:
-                        continue
+            # 1. Get Avatar Play System data (check both possible locations)
+            avatar_play_dir_new = PLAY_DATA_ROOT / str(guild_id) / "players"
+            avatar_play_dir_old = Path("data") / "avatar_play" / "servers" / str(guild_id) / "players"
+            
+            debug_info.append(f"Avatar Play path (new): {avatar_play_dir_new}")
+            debug_info.append(f"Avatar Play (new) exists: {avatar_play_dir_new.exists()}")
+            debug_info.append(f"Avatar Play path (old): {avatar_play_dir_old}")
+            debug_info.append(f"Avatar Play (old) exists: {avatar_play_dir_old.exists()}")
+            
+            # Check both locations
+            for avatar_play_dir in [avatar_play_dir_new, avatar_play_dir_old]:
+                if avatar_play_dir.exists():
+                    for file in avatar_play_dir.glob("*.json"):
+                        try:
+                            data = json.loads(file.read_text(encoding="utf-8"))
+                            user_id = int(data.get("user_id", 0))
+                            stats = data.get("stats", {})
+                            correct = int(stats.get("correct_answers", 0))
+                            games = int(stats.get("games_played", 0))
+                            questions = int(stats.get("questions_answered", 0))
+                            
+                            if user_id not in consolidated_data:
+                                consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                            consolidated_data[user_id]["correct"] += correct
+                            consolidated_data[user_id]["sessions"] += games  # games = sessions
+                            consolidated_data[user_id]["games"] += games
+                            files_processed += 1
+                        except Exception:
+                            continue
             
             # 2. Get Minigame System data (if any)
             minigame_dir = ensure_server_storage(guild_id) / "players"
+            debug_info.append(f"Minigame path: {minigame_dir}")
+            debug_info.append(f"Minigame exists: {minigame_dir.exists()}")
+            
             if minigame_dir.exists():
                 for file in minigame_dir.glob("*.json"):
                     try:
@@ -1783,27 +1821,37 @@ class AvatarPlaySystem(commands.Cog):
                         continue
                         
         else:  # global scope
-            # 1. Get Avatar Play System data from all servers
-            if PLAY_DATA_ROOT.exists():
-                for server_dir in PLAY_DATA_ROOT.glob("*/"):
-                    players_dir = server_dir / "players"
-                    if players_dir.exists():
-                        for file in players_dir.glob("*.json"):
-                            try:
-                                data = json.loads(file.read_text(encoding="utf-8"))
-                                user_id = int(data.get("user_id", 0))
-                                stats = data.get("stats", {})
-                                correct = int(stats.get("correct_answers", 0))
-                                games = int(stats.get("games_played", 0))
-                                
-                                if user_id not in consolidated_data:
-                                    consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
-                                consolidated_data[user_id]["correct"] += correct
-                                consolidated_data[user_id]["sessions"] += games
-                                consolidated_data[user_id]["games"] += games
-                                files_processed += 1
-                            except Exception:
-                                continue
+            debug_info.append("Global scope")
+            debug_info.append(f"Avatar Play root: {PLAY_DATA_ROOT}")
+            debug_info.append(f"Avatar Play root exists: {PLAY_DATA_ROOT.exists()}")
+            debug_info.append(f"Minigame root: {MINIGAME_ROOT}")
+            debug_info.append(f"Minigame root exists: {MINIGAME_ROOT.exists()}")
+            
+            # 1. Get Avatar Play System data from all servers (check both locations)
+            avatar_play_roots = [PLAY_DATA_ROOT, Path("data") / "avatar_play" / "servers"]
+            
+            for avatar_play_root in avatar_play_roots:
+                debug_info.append(f"Checking avatar play root: {avatar_play_root} (exists: {avatar_play_root.exists()})")
+                if avatar_play_root.exists():
+                    for server_dir in avatar_play_root.glob("*/"):
+                        players_dir = server_dir / "players"
+                        if players_dir.exists():
+                            for file in players_dir.glob("*.json"):
+                                try:
+                                    data = json.loads(file.read_text(encoding="utf-8"))
+                                    user_id = int(data.get("user_id", 0))
+                                    stats = data.get("stats", {})
+                                    correct = int(stats.get("correct_answers", 0))
+                                    games = int(stats.get("games_played", 0))
+                                    
+                                    if user_id not in consolidated_data:
+                                        consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                                    consolidated_data[user_id]["correct"] += correct
+                                    consolidated_data[user_id]["sessions"] += games
+                                    consolidated_data[user_id]["games"] += games
+                                    files_processed += 1
+                                except Exception:
+                                    continue
             
             # 2. Get Minigame System data from all servers
             if MINIGAME_ROOT.exists():
@@ -1828,7 +1876,32 @@ class AvatarPlaySystem(commands.Cog):
                                 continue
 
         if not consolidated_data:
-            await interaction.followup.send("No trivia data available yet.", ephemeral=True)
+            # Send debug information when no data is found
+            debug_text = "\n".join(debug_info)
+            error_embed = EmbedGenerator.create_embed(
+                title="🔍 No Trivia Data Found",
+                description="No trivia data available yet. Debug information:",
+                color=discord.Color.orange()
+            )
+            error_embed.add_field(
+                name="🛠️ Debug Info",
+                value=f"```\n{debug_text}\n```",
+                inline=False
+            )
+            error_embed.add_field(
+                name="💡 Possible Solutions",
+                value="• Use `/play` to generate trivia data\n• Check if you're in the right server\n• Try `/trivia_leaderboard global` instead",
+                inline=False
+            )
+            error_embed = EmbedGenerator.finalize_embed(error_embed)
+            
+            try:
+                await interaction.followup.send(embed=error_embed, ephemeral=True)
+            except:
+                try:
+                    await interaction.response.send_message("No trivia data available yet. Use `/play` to start playing!", ephemeral=True)
+                except:
+                    pass
             return
 
         # Convert to sorted list: (user_id, correct_answers, sessions)
@@ -1877,7 +1950,21 @@ class AvatarPlaySystem(commands.Cog):
         embed.set_footer(text=f"Processed {files_processed} files in {processing_time}ms | Unified leaderboard system")
         
         embed = EmbedGenerator.finalize_embed(embed)
-        await interaction.followup.send(embed=embed)
+        
+        try:
+            await interaction.followup.send(embed=embed)
+        except discord.NotFound:
+            # Interaction expired, try one more time with response
+            try:
+                await interaction.response.send_message(embed=embed)
+            except:
+                # Give up gracefully
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to send trivia leaderboard - all interaction methods failed")
+        except Exception as e:
+            # Other error
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error sending trivia leaderboard: {e}")
 
 
 async def setup(bot: commands.Bot):
