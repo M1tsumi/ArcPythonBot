@@ -1,4 +1,4 @@
-"""
+﻿"""
 TGL (The Greatest Leader) command module for Avatar Realms Collide Discord Bot.
 Provides organized and concise TGL event information and tools.
 """
@@ -149,212 +149,6 @@ class TGLSystem(commands.Cog):
                 }
             }
         }
-
-class TGLOverviewView(discord.ui.View):
-    """Discord Components v2 view for TGL overview with daily stage dropdown."""
-    
-    def __init__(self, cog: "TGLSystem"):
-        super().__init__(timeout=300)
-        self.cog = cog
-        self._setup_daily_stage_dropdown()
-    
-    def _setup_daily_stage_dropdown(self):
-        """Setup the daily stages dropdown."""
-        options = [
-            discord.SelectOption(
-                label="📋 Overview",
-                value="overview",
-                description="Main event overview and information",
-                emoji="📋",
-                default=True
-            ),
-            discord.SelectOption(
-                label="Day 1: Resource Gathering & Research",
-                value="stage_1",
-                description="Gather resources and increase research power",
-                emoji="⛏️"
-            ),
-            discord.SelectOption(
-                label="Day 2: Bender Recruitment",
-                value="stage_2", 
-                description="Recruit benders from Tier 1 to Tier 6",
-                emoji="👥"
-            ),
-            discord.SelectOption(
-                label="Day 3: Hero Growth",
-                value="stage_3",
-                description="Use scrolls and spirit shards/badges",
-                emoji="⚡"
-            ),
-            discord.SelectOption(
-                label="Day 4: Shattered Skulls & Construction",
-                value="stage_4",
-                description="Clear skulls and build fortress levels",
-                emoji="🏗️"
-            ),
-            discord.SelectOption(
-                label="Day 5: Power Increase",
-                value="stage_5",
-                description="Final day - maximize power gains",
-                emoji="💪"
-            )
-        ]
-        
-        select = discord.ui.Select(
-            placeholder="🎯 Select a daily stage to view details...",
-            options=options,
-            custom_id="daily_stage_select"
-        )
-        select.callback = self._daily_stage_callback
-        self.add_item(select)
-    
-    async def _daily_stage_callback(self, interaction: discord.Interaction):
-        """Handle daily stage selection."""
-        stage_value = interaction.data['values'][0]
-        
-        if stage_value == "overview":
-            # Show main overview
-            embed = self._create_overview_embed()
-            
-            # Update dropdown to show overview as selected
-            for item in self.children:
-                if isinstance(item, discord.ui.Select):
-                    for option in item.options:
-                        option.default = (option.value == "overview")
-            
-            await interaction.response.edit_message(embed=embed, view=self)
-        else:
-            # Show specific stage
-            stage_num = int(stage_value.split('_')[1])
-            embed = await self._create_stage_embed(stage_num)
-            
-            # Update dropdown to show selected stage
-            for item in self.children:
-                if isinstance(item, discord.ui.Select):
-                    for option in item.options:
-                        option.default = (option.value == stage_value)
-            
-            await interaction.response.edit_message(embed=embed, view=self)
-    
-    def _create_overview_embed(self) -> discord.Embed:
-        """Create the main overview embed."""
-        embed = EmbedGenerator.create_embed(
-            title="🏆 The Greatest Leader Event - Interactive Overview",
-            description="🎯 **Prove you are the greatest leader in the world!**\nUse the dropdown below to explore each daily stage.",
-            color=discord.Color.gold()
-        )
-        
-        embed.add_field(
-            name="⏰ Event Details",
-            value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Type**: Single Server → Cross Server",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🎮 Event Types",
-            value="• **Single Server**: Compete within your server\n• **Cross Server**: Compete across multiple servers\n• **Higher Rewards**: Cross-server events",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="📋 Daily Stages",
-            value="🔸 **Day 1**: Resource Gathering & Research\n🔸 **Day 2**: Bender Recruitment\n🔸 **Day 3**: Hero Growth\n🔸 **Day 4**: Shattered Skulls & Construction\n🔸 **Day 5**: Power Increase",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="🎯 Quick Commands",
-            value="• `/tgl single_server` - Single server details\n• `/tgl cross_server` - Cross server details\n• `/tgl rewards` - Ranking rewards\n• `/tgl tips` - Event strategies\n• `/tgl_calc` - Points calculator",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="💡 Pro Tip",
-            value="📱 **Use the dropdown above** to explore detailed information about each daily stage and plan your strategy!",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="📝 Information Source",
-            value="Event information gathered by **Lycaris** (@lycaris_1)",
-            inline=False
-        )
-        
-        embed.set_footer(text="🎯 Select a daily stage from the dropdown to view detailed tasks and points!")
-        return EmbedGenerator.finalize_embed(embed)
-    
-    async def _create_stage_embed(self, stage_num: int) -> discord.Embed:
-        """Create a detailed stage embed."""
-        stage_key = f"stage_{stage_num}"
-        
-        # Use single_server data as the base (same for both types)
-        stage_data = self.cog.tgl_data["single_server"]["stages"][stage_key]
-        
-        # Stage-specific emojis and colors
-        stage_info = {
-            1: {"emoji": "⛏️", "color": discord.Color.green()},
-            2: {"emoji": "👥", "color": discord.Color.blue()},
-            3: {"emoji": "⚡", "color": discord.Color.purple()},
-            4: {"emoji": "🏗️", "color": discord.Color.orange()},
-            5: {"emoji": "💪", "color": discord.Color.red()}
-        }
-        
-        info = stage_info[stage_num]
-        
-        embed = EmbedGenerator.create_embed(
-            title=f"{info['emoji']} Day {stage_num}: {stage_data['name']}",
-            description=f"**Stage {stage_num} of 5** - Detailed tasks and point values",
-            color=info['color']
-        )
-        
-        # Create task list with better formatting
-        tasks_text = ""
-        total_possible_points = 0
-        
-        for task, points in stage_data['tasks'].items():
-            if task == "Lucky Ticket":
-                tasks_text += f"🎟️ **{task}**: {points:,} points *(Special)*\n"
-            else:
-                tasks_text += f"• **{task}**: {points:,} points\n"
-                if task != "Lucky Ticket":
-                    total_possible_points += points
-        
-        embed.add_field(
-            name="📋 Tasks & Points",
-            value=tasks_text,
-            inline=False
-        )
-        
-        # Add strategic tips based on stage
-        tips = {
-            1: "🎯 Focus on research power increases for maximum points!\nResource gathering has lower points but is easier to complete.",
-            2: "🎯 Higher tier benders give significantly more points!\nTier 6 benders are worth 350 points vs 25 for Tier 1.",
-            3: "🎯 Legendary items give massive points (50,000 each)!\nSilver/Golden scrolls are more affordable options.",
-            4: "🎯 Higher level skulls and fortress levels give more points!\nSkull levels 26-30 give 3,000 points each.",
-            5: "🎯 Construction power only counts while online!\nHero power is excluded from this final day."
-        }
-        
-        embed.add_field(
-            name="💡 Strategy Tips",
-            value=tips[stage_num],
-            inline=False
-        )
-        
-        # Add point summary
-        embed.add_field(
-            name="📊 Point Summary",
-            value=f"Regular tasks: **{total_possible_points:,}** points\nLucky Ticket: **150,000** points *(if available)*",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🔄 Navigation",
-            value="Use the dropdown above to explore other daily stages!",
-            inline=True
-        )
-        
-        embed.set_footer(text=f"Day {stage_num}/5 • Use /tgl_calc to calculate your potential points!")
-        return EmbedGenerator.finalize_embed(embed)
     
     @app_commands.command(name="tgl", description="The Greatest Leader event information")
     @app_commands.describe(
@@ -393,20 +187,20 @@ class TGLOverviewView(discord.ui.View):
             await self.show_specific_stage(interaction, "single_server", stage)
         else:
             embed = discord.Embed(
-                title="🏆 TGL Single Server",
+                title="ðŸ† TGL Single Server",
                 description="Single server event details",
                 color=discord.Color.blue()
             )
             
             embed.add_field(
-                name="📊 Event Structure",
-                value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Scope**: Single Server Only",
+                name="ðŸ“Š Event Structure",
+                value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Scope**: Single Server Only",
                 inline=False
             )
             
             embed.add_field(
-            name="🎯 Available Commands",
-            value="• `/tgl single_server 1` - Resource Gathering\n• `/tgl single_server 2` - Bender Recruitment\n• `/tgl single_server 3` - Hero Growth\n• `/tgl single_server 4` - Shattered Skulls\n• `/tgl single_server 5` - Power Increase",
+            name="ðŸŽ¯ Available Commands",
+            value="â€¢ `/tgl single_server 1` - Resource Gathering\nâ€¢ `/tgl single_server 2` - Bender Recruitment\nâ€¢ `/tgl single_server 3` - Hero Growth\nâ€¢ `/tgl single_server 4` - Shattered Skulls\nâ€¢ `/tgl single_server 5` - Power Increase",
             inline=False
         )
             
@@ -419,20 +213,20 @@ class TGLOverviewView(discord.ui.View):
             await self.show_specific_stage(interaction, "cross_server", stage)
         else:
             embed = discord.Embed(
-                title="🏆 TGL Cross Server",
+                title="ðŸ† TGL Cross Server",
                 description="Cross server event details",
                 color=discord.Color.purple()
             )
             
             embed.add_field(
-                name="📊 Event Structure",
-                value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Scope**: Multiple Servers",
+                name="ðŸ“Š Event Structure",
+                value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Scope**: Multiple Servers",
                 inline=False
             )
             
             embed.add_field(
-                name="🎯 Available Commands",
-                value="• `/tgl cross_server 1` - Resource Gathering\n• `/tgl cross_server 2` - Bender Recruitment\n• `/tgl cross_server 3` - Hero Growth\n• `/tgl cross_server 4` - Shattered Skulls\n• `/tgl cross_server 5` - Power Increase",
+                name="ðŸŽ¯ Available Commands",
+                value="â€¢ `/tgl cross_server 1` - Resource Gathering\nâ€¢ `/tgl cross_server 2` - Bender Recruitment\nâ€¢ `/tgl cross_server 3` - Hero Growth\nâ€¢ `/tgl cross_server 4` - Shattered Skulls\nâ€¢ `/tgl cross_server 5` - Power Increase",
                 inline=False
             )
             
@@ -445,7 +239,7 @@ class TGLOverviewView(discord.ui.View):
         stage_data = self.tgl_data[event_type]["stages"][stage_key]
         
         embed = discord.Embed(
-            title=f"🏆 TGL {event_type.replace('_', ' ').title()} - Stage {stage}",
+            title=f"ðŸ† TGL {event_type.replace('_', ' ').title()} - Stage {stage}",
             description=f"**{stage_data['name']}**",
             color=discord.Color.gold()
         )
@@ -453,39 +247,39 @@ class TGLOverviewView(discord.ui.View):
         # Create task list
         tasks_text = ""
         for task, points in stage_data['tasks'].items():
-            tasks_text += f"• **{task}**: {points:,} points\n"
+            tasks_text += f"â€¢ **{task}**: {points:,} points\n"
         
         embed.add_field(
-            name="📋 Tasks & Points",
+            name="ðŸ“‹ Tasks & Points",
             value=tasks_text,
             inline=False
         )
         
-        embed.set_footer(text=f"Stage {stage} of 5 • {event_type.replace('_', ' ').title()}")
+        embed.set_footer(text=f"Stage {stage} of 5 â€¢ {event_type.replace('_', ' ').title()}")
         await interaction.response.send_message(embed=embed)
     
     async def show_tgl_rewards(self, interaction: discord.Interaction):
         """Show TGL ranking rewards."""
         embed = discord.Embed(
-            title="🏆 TGL Ranking Rewards",
+            title="ðŸ† TGL Ranking Rewards",
             description="Daily and Overall rewards",
             color=discord.Color.gold()
         )
         
         embed.add_field(
-            name="📅 Daily Rewards (Top 3)",
-            value="• **1st**: 10-20x Hero Shard, 500x Gem, Resources\n• **2nd**: 5-10x Hero Shard, 300x Gem, Resources\n• **3rd**: 2-5x Hero Shard, 200x Gem, Resources",
+            name="ðŸ“… Daily Rewards (Top 3)",
+            value="â€¢ **1st**: 10-20x Hero Shard, 500x Gem, Resources\nâ€¢ **2nd**: 5-10x Hero Shard, 300x Gem, Resources\nâ€¢ **3rd**: 2-5x Hero Shard, 200x Gem, Resources",
             inline=False
         )
         
         embed.add_field(
-            name="🏆 Overall Rewards (Top 3)",
-            value="• **1st**: 200-250x Hero Shard, 2,000-2,500x Gem\n• **2nd**: 150-200x Hero Shard, 1,500-2,000x Gem\n• **3rd**: 100-150x Hero Shard, 1,000-1,500x Gem",
+            name="ðŸ† Overall Rewards (Top 3)",
+            value="â€¢ **1st**: 200-250x Hero Shard, 2,000-2,500x Gem\nâ€¢ **2nd**: 150-200x Hero Shard, 1,500-2,000x Gem\nâ€¢ **3rd**: 100-150x Hero Shard, 1,000-1,500x Gem",
             inline=False
         )
         
         embed.add_field(
-            name="💎 Hero Shards",
+            name="ðŸ’Ž Hero Shards",
             value="Rotates between: Aang, Amon, Korra, Kyoshi, Yangchen, Roku",
             inline=False
         )
@@ -496,26 +290,26 @@ class TGLOverviewView(discord.ui.View):
     async def show_tgl_tips(self, interaction: discord.Interaction):
         """Show TGL event tips and strategies."""
         embed = discord.Embed(
-            title="💡 TGL Event Tips",
+            title="ðŸ’¡ TGL Event Tips",
             description="Strategies for The Greatest Leader event",
             color=discord.Color.green()
         )
         
         embed.add_field(
-            name="🎯 General Strategy",
-            value="• Focus on high-point activities\n• Use Lucky Tickets strategically\n• Plan resource gathering efficiently\n• Coordinate with alliance members",
+            name="ðŸŽ¯ General Strategy",
+            value="â€¢ Focus on high-point activities\nâ€¢ Use Lucky Tickets strategically\nâ€¢ Plan resource gathering efficiently\nâ€¢ Coordinate with alliance members",
             inline=False
         )
         
         embed.add_field(
-            name="📊 Point Optimization",
-            value="• **Day 1**: Focus on research power increases\n• **Day 2**: Recruit higher tier benders\n• **Day 3**: Use scrolls and shards strategically\n• **Day 4**: Target higher level skulls and fortresses\n• **Day 5**: Maximize construction power gains",
+            name="ðŸ“Š Point Optimization",
+            value="â€¢ **Day 1**: Focus on research power increases\nâ€¢ **Day 2**: Recruit higher tier benders\nâ€¢ **Day 3**: Use scrolls and shards strategically\nâ€¢ **Day 4**: Target higher level skulls and fortresses\nâ€¢ **Day 5**: Maximize construction power gains",
             inline=False
         )
         
         embed.add_field(
-            name="⚡ Quick Tips",
-            value="• Construction power only counts while online\n• Hero power is excluded from final day\n• Cross-server events have better rewards\n• Coordinate with your alliance for maximum efficiency",
+            name="âš¡ Quick Tips",
+            value="â€¢ Construction power only counts while online\nâ€¢ Hero power is excluded from final day\nâ€¢ Cross-server events have better rewards\nâ€¢ Coordinate with your alliance for maximum efficiency",
             inline=False
         )
         
@@ -578,7 +372,7 @@ class TGLOverviewView(discord.ui.View):
         }
         
         if activity not in point_values:
-            await interaction.response.send_message("❌ Invalid activity selected.", ephemeral=True)
+            await interaction.response.send_message("âŒ Invalid activity selected.", ephemeral=True)
             return
         
         points_per = point_values[activity]
@@ -610,20 +404,226 @@ class TGLOverviewView(discord.ui.View):
         }
         
         embed = discord.Embed(
-            title="🧮 TGL Points Calculator",
+            title="ðŸ§® TGL Points Calculator",
             description=f"Calculating points for {activity_names[activity]}",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="📊 Calculation",
-            value=f"• **Activity**: {activity_names[activity]}\n• **Quantity**: {quantity:,}\n• **Points Per**: {points_per:,}\n• **Total Points**: {total_points:,}",
+            name="ðŸ“Š Calculation",
+            value=f"â€¢ **Activity**: {activity_names[activity]}\nâ€¢ **Quantity**: {quantity:,}\nâ€¢ **Points Per**: {points_per:,}\nâ€¢ **Total Points**: {total_points:,}",
             inline=False
         )
         
         embed.set_footer(text="Use this to plan your TGL strategy!")
         await interaction.response.send_message(embed=embed)
 
+class TGLOverviewView(discord.ui.View):
+    """Discord Components v2 view for TGL overview with daily stage dropdown."""
+    
+    def __init__(self, cog: "TGLSystem"):
+        super().__init__(timeout=300)
+        self.cog = cog
+        self._setup_daily_stage_dropdown()
+    
+    def _setup_daily_stage_dropdown(self):
+        """Setup the daily stages dropdown."""
+        options = [
+            discord.SelectOption(
+                label="ðŸ“‹ Overview",
+                value="overview",
+                description="Main event overview and information",
+                emoji="ðŸ“‹",
+                default=True
+            ),
+            discord.SelectOption(
+                label="Day 1: Resource Gathering & Research",
+                value="stage_1",
+                description="Gather resources and increase research power",
+                emoji="â›ï¸"
+            ),
+            discord.SelectOption(
+                label="Day 2: Bender Recruitment",
+                value="stage_2", 
+                description="Recruit benders from Tier 1 to Tier 6",
+                emoji="ðŸ‘¥"
+            ),
+            discord.SelectOption(
+                label="Day 3: Hero Growth",
+                value="stage_3",
+                description="Use scrolls and spirit shards/badges",
+                emoji="âš¡"
+            ),
+            discord.SelectOption(
+                label="Day 4: Shattered Skulls & Construction",
+                value="stage_4",
+                description="Clear skulls and build fortress levels",
+                emoji="ðŸ—ï¸"
+            ),
+            discord.SelectOption(
+                label="Day 5: Power Increase",
+                value="stage_5",
+                description="Final day - maximize power gains",
+                emoji="ðŸ’ª"
+            )
+        ]
+        
+        select = discord.ui.Select(
+            placeholder="ðŸŽ¯ Select a daily stage to view details...",
+            options=options,
+            custom_id="daily_stage_select"
+        )
+        select.callback = self._daily_stage_callback
+        self.add_item(select)
+    
+    async def _daily_stage_callback(self, interaction: discord.Interaction):
+        """Handle daily stage selection."""
+        stage_value = interaction.data['values'][0]
+        
+        if stage_value == "overview":
+            # Show main overview
+            embed = self._create_overview_embed()
+            
+            # Update dropdown to show overview as selected
+            for item in self.children:
+                if isinstance(item, discord.ui.Select):
+                    for option in item.options:
+                        option.default = (option.value == "overview")
+            
+            await interaction.response.edit_message(embed=embed, view=self)
+        else:
+            # Show specific stage
+            stage_num = int(stage_value.split('_')[1])
+            embed = await self._create_stage_embed(stage_num)
+            
+            # Update dropdown to show selected stage
+            for item in self.children:
+                if isinstance(item, discord.ui.Select):
+                    for option in item.options:
+                        option.default = (option.value == stage_value)
+            
+            await interaction.response.edit_message(embed=embed, view=self)
+    
+    def _create_overview_embed(self) -> discord.Embed:
+        """Create the main overview embed."""
+        embed = EmbedGenerator.create_embed(
+            title="ðŸ† The Greatest Leader Event - Interactive Overview",
+            description="ðŸŽ¯ **Prove you are the greatest leader in the world!**\nUse the dropdown below to explore each daily stage.",
+            color=discord.Color.gold()
+        )
+        
+        embed.add_field(
+            name="â° Event Details",
+            value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Type**: Single Server â†’ Cross Server",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="ðŸŽ® Event Types",
+            value="â€¢ **Single Server**: Compete within your server\nâ€¢ **Cross Server**: Compete across multiple servers\nâ€¢ **Higher Rewards**: Cross-server events",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="ðŸ“‹ Daily Stages",
+            value="ðŸ”¸ **Day 1**: Resource Gathering & Research\nðŸ”¸ **Day 2**: Bender Recruitment\nðŸ”¸ **Day 3**: Hero Growth\nðŸ”¸ **Day 4**: Shattered Skulls & Construction\nðŸ”¸ **Day 5**: Power Increase",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="ðŸŽ¯ Quick Commands",
+            value="â€¢ `/tgl single_server` - Single server details\nâ€¢ `/tgl cross_server` - Cross server details\nâ€¢ `/tgl rewards` - Ranking rewards\nâ€¢ `/tgl tips` - Event strategies\nâ€¢ `/tgl_calc` - Points calculator",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="ðŸ’¡ Pro Tip",
+            value="ðŸ“± **Use the dropdown above** to explore detailed information about each daily stage and plan your strategy!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="ðŸ“ Information Source",
+            value="Event information gathered by **Lycaris** (@lycaris_1)",
+            inline=False
+        )
+        
+        embed.set_footer(text="ðŸŽ¯ Select a daily stage from the dropdown to view detailed tasks and points!")
+        return EmbedGenerator.finalize_embed(embed)
+    
+    async def _create_stage_embed(self, stage_num: int) -> discord.Embed:
+        """Create a detailed stage embed."""
+        stage_key = f"stage_{stage_num}"
+        
+        # Use single_server data as the base (same for both types)
+        stage_data = self.cog.tgl_data["single_server"]["stages"][stage_key]
+        
+        # Stage-specific emojis and colors
+        stage_info = {
+            1: {"emoji": "â›ï¸", "color": discord.Color.green()},
+            2: {"emoji": "ðŸ‘¥", "color": discord.Color.blue()},
+            3: {"emoji": "âš¡", "color": discord.Color.purple()},
+            4: {"emoji": "ðŸ—ï¸", "color": discord.Color.orange()},
+            5: {"emoji": "ðŸ’ª", "color": discord.Color.red()}
+        }
+        
+        info = stage_info[stage_num]
+        
+        embed = EmbedGenerator.create_embed(
+            title=f"{info['emoji']} Day {stage_num}: {stage_data['name']}",
+            description=f"**Stage {stage_num} of 5** - Detailed tasks and point values",
+            color=info['color']
+        )
+        
+        # Create task list with better formatting
+        tasks_text = ""
+        total_possible_points = 0
+        
+        for task, points in stage_data['tasks'].items():
+            if task == "Lucky Ticket":
+                tasks_text += f"ðŸŽŸï¸ **{task}**: {points:,} points *(Special)*\n"
+            else:
+                tasks_text += f"â€¢ **{task}**: {points:,} points\n"
+                if task != "Lucky Ticket":
+                    total_possible_points += points
+        
+        embed.add_field(
+            name="ðŸ“‹ Tasks & Points",
+            value=tasks_text,
+            inline=False
+        )
+        
+        # Add strategic tips based on stage
+        tips = {
+            1: "ðŸŽ¯ Focus on research power increases for maximum points!\nResource gathering has lower points but is easier to complete.",
+            2: "ðŸŽ¯ Higher tier benders give significantly more points!\nTier 6 benders are worth 350 points vs 25 for Tier 1.",
+            3: "ðŸŽ¯ Legendary items give massive points (50,000 each)!\nSilver/Golden scrolls are more affordable options.",
+            4: "ðŸŽ¯ Higher level skulls and fortress levels give more points!\nSkull levels 26-30 give 3,000 points each.",
+            5: "ðŸŽ¯ Construction power only counts while online!\nHero power is excluded from this final day."
+        }
+        
+        embed.add_field(
+            name="ðŸ’¡ Strategy Tips",
+            value=tips[stage_num],
+            inline=False
+        )
+        
+        # Add point summary
+        embed.add_field(
+            name="ðŸ“Š Point Summary",
+            value=f"Regular tasks: **{total_possible_points:,}** points\nLucky Ticket: **150,000** points *(if available)*",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="ðŸ”„ Navigation",
+            value="Use the dropdown above to explore other daily stages!",
+            inline=True
+        )
+        
+        embed.set_footer(text=f"Day {stage_num}/5 â€¢ Use /tgl_calc to calculate your potential points!")
+        return EmbedGenerator.finalize_embed(embed)
+
 async def setup(bot):
     """Setup function to add the cog to the bot."""
-    await bot.add_cog(TGLSystem(bot)) 
+    await bot.add_cog(TGLSystem(bot))
