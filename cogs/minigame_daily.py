@@ -789,6 +789,11 @@ class MinigameDaily(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    # Convenience top-level command for validation in case group isn't visible yet
+    @app_commands.command(name="trivia_validate", description="Validate trivia file and preview a question")
+    async def trivia_validate_root(self, interaction: discord.Interaction):
+        await self.trivia_validate.callback(self, interaction)  # reuse same logic
+
     # ---------- Trivia game loop ----------
 
     async def run_trivia_session(self, dm_channel: discord.DMChannel, user: discord.User | discord.Member, guild_id: int, user_id: int):
