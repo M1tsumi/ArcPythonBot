@@ -618,41 +618,79 @@ class PlayModeSelectView(discord.ui.View):
 
 
 class TriviaGameView(discord.ui.View):
-    """Interactive trivia game view with enhanced features."""
+    """Professional interactive trivia game view with proper timer management."""
     
     def __init__(self, cog: "AvatarPlaySystem", session: GameSession):
-        super().__init__(timeout=session.time_per_question + 5)
+        super().__init__(timeout=session.time_per_question + 10)  # Extra buffer for safety
         self.cog = cog
         self.session = session
         self.answered = False
         self.countdown_task = None
+        self.timer_active = False
+        self.start_time = asyncio.get_event_loop().time()
+        
+        # Cancel any existing timers for this user to prevent stacking
+        self._cleanup_existing_timers()
         self.start_countdown()
     
-    def start_countdown(self):
-        """Start the countdown timer."""
-        if self.countdown_task:
-            self.countdown_task.cancel()
-        self.countdown_task = asyncio.create_task(self._countdown())
+    def _cleanup_existing_timers(self):
+        """Clean up any existing timers for this user to prevent stacking."""
+        user_id = self.session.player_id
+        if user_id in self.cog.active_sessions:
+            old_session = self.cog.active_sessions[user_id]
+            # Cancel any active view timers
+            if hasattr(old_session, 'view') and old_session.view and hasattr(old_session.view, 'countdown_task'):
+                if old_session.view.countdown_task and not old_session.view.countdown_task.done():
+                    old_session.view.countdown_task.cancel()
     
-    async def _countdown(self):
-        """Countdown timer task."""
+    def start_countdown(self):
+        """Start the professional countdown timer with proper cleanup."""
+        # Cancel any existing countdown to prevent multiple timers
+        if self.countdown_task and not self.countdown_task.done():
+            self.countdown_task.cancel()
+        
+        if not self.timer_active:
+            self.timer_active = True
+            self.countdown_task = asyncio.create_task(self._professional_countdown())
+    
+    async def _professional_countdown(self):
+        """Professional countdown timer with precise timing and no stacking."""
         try:
-            for remaining in range(self.session.time_per_question, 0, -1):
-                if self.answered:
-                    break
-                await asyncio.sleep(1)
+            time_limit = self.session.time_per_question
             
-            # Time's up
-            if not self.answered:
+            for remaining in range(time_limit, 0, -1):
+                # Check if game was already answered or cancelled
+                if self.answered or not self.timer_active:
+                    return
+                
+                # Use precise timing to prevent drift
+                next_update = self.start_time + (time_limit - remaining + 1)
+                current_time = asyncio.get_event_loop().time()
+                sleep_duration = max(0, next_update - current_time)
+                
+                if sleep_duration > 0:
+                    await asyncio.sleep(sleep_duration)
+            
+            # Time's up - handle timeout only if still active
+            if not self.answered and self.timer_active:
                 await self._handle_timeout()
+                
         except asyncio.CancelledError:
-            pass
+            # Timer was properly cancelled
+            self.timer_active = False
+        except Exception as e:
+            # Log error and clean up
+            if self.cog.logger:
+                self.cog.logger.error(f"Timer error in trivia game: {e}")
+            self.timer_active = False
     
     async def _handle_timeout(self):
-        """Handle timeout scenario."""
-        self.answered = True
-        self.session.streak = 0
-        await self.cog.process_answer(None, self.session, timeout=True)
+        """Handle timeout scenario with proper cleanup."""
+        if not self.answered:  # Double-check to prevent race conditions
+            self.answered = True
+            self.timer_active = False
+            self.session.streak = 0
+            await self.cog.process_answer(None, self.session, timeout=True)
     
     @discord.ui.button(label="A", style=discord.ButtonStyle.secondary, emoji="🇦")
     async def answer_a(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -671,7 +709,7 @@ class TriviaGameView(discord.ui.View):
         await self._process_answer(interaction, 3)
     
     async def _process_answer(self, interaction: discord.Interaction, choice: int):
-        """Process player's answer."""
+        """Process player's answer with proper timer cleanup."""
         if interaction.user.id != self.session.player_id:
             await interaction.response.send_message("This is not your game!", ephemeral=True)
             return
@@ -680,8 +718,12 @@ class TriviaGameView(discord.ui.View):
             await interaction.response.send_message("You already answered this question!", ephemeral=True)
             return
         
+        # Mark as answered and stop all timers
         self.answered = True
-        if self.countdown_task:
+        self.timer_active = False
+        
+        # Properly cancel the countdown task
+        if self.countdown_task and not self.countdown_task.done():
             self.countdown_task.cancel()
         
         await self.cog.process_answer(interaction, self.session, choice)
@@ -708,6 +750,84 @@ class AvatarPlaySystem(commands.Cog):
             merged[user_id][1] += sessions
         
         return [(user_id, data[0], data[1]) for user_id, data in merged.items()]
+    
+    @app_commands.command(name="map", description="🗺️ View the complete Avatar world map")
+    async def map_command(self, interaction: discord.Interaction):
+        """Display the Avatar world map with detailed information."""
+        try:
+            map_path = Path("assets/images/map/map.webp")
+            
+            if not map_path.exists():
+                await interaction.response.send_message("❌ Map file not found!", ephemeral=True)
+                return
+            
+            # Create detailed map embed
+            embed = EmbedGenerator.create_embed(
+                title="🗺️ Avatar World Map",
+                description="**The Complete Avatar Universe**\n\nExplore the vast world where the Avatar's journey unfolds across two legendary series!",
+                color=discord.Color.from_rgb(70, 130, 180)  # Steel blue for map
+            )
+            
+            embed.add_field(
+                name="🌍 Four Nations Overview",
+                value=(
+                    "🔥 **Fire Nation** - Advanced technology and military might\n"
+                    "🌊 **Water Tribes** - Southern and Northern polar regions\n" 
+                    "🗻 **Earth Kingdom** - Vast territories and strong defenses\n"
+                    "💨 **Air Nomads** - Four temples in mountain peaks"
+                ),
+                inline=False
+            )
+            
+            embed.add_field(
+                name="🏙️ Key Locations",
+                value=(
+                    "🏛️ **Ba Sing Se** - Impenetrable Earth Kingdom capital\n"
+                    "🌺 **Republic City** - Modern multicultural metropolis\n"
+                    "❄️ **Northern Water Tribe** - Fortress city of ice\n"
+                    "🔥 **Fire Nation Capital** - Industrial powerhouse\n"
+                    "⛰️ **Air Temples** - Sacred spiritual sanctuaries"
+                ),
+                inline=True
+            )
+            
+            embed.add_field(
+                name="🎯 Trivia Coverage",
+                value=(
+                    "📍 **All Locations** included in Avatar trivia\n"
+                    "🏰 **Cities, temples, and landmarks**\n"
+                    "🗺️ **Geography and culture questions**\n"
+                    "⚔️ **Historical battles and events**\n"
+                    "👥 **Characters from every region**"
+                ),
+                inline=True
+            )
+            
+            embed.add_field(
+                name="🎮 Avatar Play Integration",
+                value=(
+                    "Use `/play` to test your knowledge of:\n"
+                    "• **Regional specialties** and customs\n"
+                    "• **Geographic relationships** between locations\n"
+                    "• **Cultural differences** across nations\n"
+                    "• **Historical significance** of landmarks"
+                ),
+                inline=False
+            )
+            
+            embed.set_footer(text="🎯 Master the geography to excel in Avatar trivia! | Use /play to start your journey")
+            embed = EmbedGenerator.finalize_embed(embed)
+            
+            # Send map with embed
+            with open(map_path, 'rb') as map_file:
+                discord_file = discord.File(map_file, filename="avatar_world_map.webp")
+                embed.set_image(url="attachment://avatar_world_map.webp")
+                await interaction.response.send_message(embed=embed, file=discord_file)
+                
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error in map command: {e}")
+            await interaction.response.send_message("❌ Error loading the map. Please try again later.", ephemeral=True)
     
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
@@ -872,50 +992,120 @@ class AvatarPlaySystem(commands.Cog):
         await self._show_question(interaction, session)
     
     async def _show_question(self, interaction: discord.Interaction, session: GameSession):
-        """Display current question."""
+        """Display current question with enhanced engaging details."""
         question_data = session.questions[session.current_question]
         question_num = session.current_question + 1
         total_questions = len(session.questions)
         
+        # Dynamic colors based on progress and streaks
+        if session.streak >= 5:
+            color = discord.Color.gold()  # Gold for hot streak
+            streak_emoji = "🔥"
+        elif session.streak >= 3:
+            color = discord.Color.orange()  # Orange for good streak
+            streak_emoji = "⚡"
+        else:
+            color = discord.Color.blue()  # Blue for normal
+            streak_emoji = "📝"
+        
+        # Enhanced title with dynamic elements
+        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        if session.streak >= 3:
+            title_parts.append(f"• {session.streak} STREAK!")
+        
         embed = EmbedGenerator.create_embed(
-            title=f"🧠 Question {question_num}/{total_questions}",
-            description=f"**{question_data['question']}**",
-            color=discord.Color.green()
+            title=" ".join(title_parts),
+            description=f"🎯 **{question_data['question']}**",
+            color=color
         )
         
-        # Add options as fields
-        option_letters = ["A", "B", "C", "D"]
+        # Enhanced options with styled formatting
+        option_emojis = ["🇦", "🇧", "🇨", "🇩"]
+        option_styles = ["🔸", "🔹", "🔶", "🔷"]
+        
         for i, option in enumerate(question_data["options"][:4]):
             embed.add_field(
-                name=f"{option_letters[i]}) ",
-                value=option,
+                name=f"{option_emojis[i]} Option {chr(65+i)}",
+                value=f"{option_styles[i]} **{option}**",
                 inline=False
             )
         
-        # Add progress info
+        # Dynamic progress section with achievements
+        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        if session.streak > 0:
+            progress_value += f"\n🔥 **{session.streak}** Question Streak"
+        else:
+            progress_value += f"\n📍 Build your streak!"
+        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+        
         embed.add_field(
-            name="📊 Progress",
-            value=f"Mode: **{session.mode.title()}**\nStreak: **{session.streak}**\nCorrect: **{session.correct_answers}**",
+            name="📊 Performance",
+            value=progress_value,
             inline=True
         )
         
+        # Enhanced timer with urgency indicators
+        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
+        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
+        
         embed.add_field(
-            name="⏱️ Time Limit",
-            value=f"**{session.time_per_question}** seconds",
+            name=f"{time_emoji} Time Challenge",
+            value=f"**{session.time_per_question}** seconds\n{timer_style}",
             inline=True
         )
         
-        # Add category and difficulty
+        # Enhanced category with lore elements
         category = question_data.get("category", "General")
         difficulty = question_data.get("difficulty", "normal")
+        
+        # Map categories to Avatar elements
+        category_elements = {
+            "Characters": "👥 Heroes & Villains",
+            "Locations": "🗺️ Four Nations",
+            "Elements": "🔥💧🗻💨 Bending Arts",
+            "History": "📜 Ancient Wisdom",
+            "Culture": "🏮 Traditions",
+            "General": "🌟 Avatar Lore"
+        }
+        
+        difficulty_indicators = {
+            "easy": "🟢 Novice Level",
+            "normal": "🟡 Adept Level", 
+            "hard": "🟠 Master Level",
+            "expert": "🔴 Avatar Level"
+        }
+        
         embed.add_field(
-            name="🏷️ Info",
-            value=f"Category: **{category}**\nDifficulty: **{difficulty.title()}**",
+            name="🏷️ Challenge Details",
+            value=f"{category_elements.get(category, f'🌟 {category}')}\n{difficulty_indicators.get(difficulty, f'⚪ {difficulty.title()}')}",
             inline=True
         )
         
+        # Add motivational footer based on performance
+        if session.streak >= 5:
+            footer_text = f"🔥 ON FIRE! {session.streak} questions in a row! Keep it up, Avatar!"
+        elif session.streak >= 3:
+            footer_text = f"⚡ Great streak! You're {5-session.streak} away from being on fire!"
+        elif session.correct_answers > 0:
+            footer_text = f"💪 You've got this! {session.correct_answers} correct so far!"
+        else:
+            footer_text = "🎯 Every master was once a beginner. Choose wisely!"
+        
+        embed.set_footer(text=footer_text)
+        
+        # Add streak bonus indicator
+        if session.streak >= 3:
+            embed.add_field(
+                name="🎁 Streak Bonus Active!",
+                value=f"🔥 **+{session.streak}0% XP** for this question!\nKeep the streak alive for massive rewards!",
+                inline=False
+            )
+        
         embed = EmbedGenerator.finalize_embed(embed)
+        
+        # Create enhanced view with session reference
         view = TriviaGameView(self, session)
+        session.view = view  # Store reference for timer cleanup
         
         if interaction.response.is_done():
             await interaction.edit_original_response(embed=embed, view=view)
@@ -928,11 +1118,13 @@ class AvatarPlaySystem(commands.Cog):
         correct_answer = question_data["answer_index"]
         is_correct = choice == correct_answer if choice is not None else False
         
-        # Update session stats
+        # Update session stats with streak tracking
         if is_correct:
             session.correct_answers += 1
             session.streak += 1
         else:
+            # Track previous streak for better feedback
+            session.previous_streak = session.streak if hasattr(session, 'streak') else 0
             session.streak = 0
         
         # Show result
@@ -953,19 +1145,61 @@ class AvatarPlaySystem(commands.Cog):
             await self._finish_game(interaction, session)
     
     def _create_answer_result_embed(self, question_data: Dict[str, Any], choice: Optional[int], is_correct: bool, timeout: bool, session: GameSession) -> discord.Embed:
-        """Create embed showing answer result."""
+        """Create engaging embed showing answer result with Avatar flair."""
+        # Dynamic responses based on streaks and performance
         if timeout:
             title = "⏰ Time's Up!"
             color = discord.Color.orange()
-            description = "You ran out of time!"
+            timeout_messages = [
+                "Even Avatar Aang needed time to master the elements!",
+                "Like Toph in her first earthbending lesson, timing is everything!",
+                "The spirits are patient, but time waits for no one!",
+                "Master Iroh would say: 'Slow down and think carefully next time.'"
+            ]
+            description = f"🏃‍♂️ **{random.choice(timeout_messages)}**"
         elif is_correct:
-            title = "✅ Correct!"
-            color = discord.Color.green()
-            description = "Well done!"
+            if session.streak >= 10:
+                title = "🔥 LEGENDARY STREAK! ✅"
+                color = discord.Color.gold()
+                description = f"**🏆 AVATAR STATE ACTIVATED! {session.streak} in a row!**\n\nYou're channeling the wisdom of all past Avatars!"
+            elif session.streak >= 5:
+                title = "🔥 ON FIRE! ✅"
+                color = discord.Color.gold()
+                description = f"**⚡ {session.streak} QUESTION STREAK!**\n\nYour knowledge burns bright like the eternal flame!"
+            elif session.streak >= 3:
+                title = "⚡ GREAT STREAK! ✅"
+                color = discord.Color.orange()
+                description = f"**🌟 {session.streak} in a row!**\n\nYou're mastering the Avatar lore like a true scholar!"
+            else:
+                title = "✅ Correct!"
+                color = discord.Color.green()
+                correct_messages = [
+                    "Wise choice, young Avatar!",
+                    "Your knowledge shines like the Aurora Borealis!",
+                    "Even Master Piandao would be impressed!",
+                    "The spirits smile upon your wisdom!",
+                    "Like a true Air Nomad, you found the answer!",
+                    "Sharp as Sokka's strategy!",
+                    "Brilliant as Katara's waterbending!"
+                ]
+                description = f"🎯 **{random.choice(correct_messages)}**"
         else:
             title = "❌ Incorrect"
             color = discord.Color.red()
-            description = "Better luck next time!"
+            incorrect_messages = [
+                "Even the greatest masters learn from mistakes!",
+                "Like Zuko's journey, every failure teaches wisdom!",
+                "The path to mastery requires practice!",
+                "Uncle Iroh would say: 'Failure is only the opportunity to begin again.'",
+                "Every airbender falls before they fly!",
+                "Like learning to bend, knowledge takes time!",
+                "The Avatar's journey has many lessons to learn!"
+            ]
+            description = f"📚 **{random.choice(incorrect_messages)}**"
+            
+            # Add streak broken message if applicable
+            if hasattr(session, 'previous_streak') and session.previous_streak > 0:
+                description += f"\n\n💔 Your {session.previous_streak}-question streak was broken, but you can start a new one!"
         
         embed = EmbedGenerator.create_embed(title=title, description=description, color=color)
         
