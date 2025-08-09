@@ -1116,6 +1116,88 @@ class AvatarPlaySystem(commands.Cog):
         else:
             await interaction.response.edit_message(embed=embed, view=view)
     
+    async def _show_next_question(self, interaction: discord.Interaction, session: GameSession):
+        """Display next question using edit_original_response since interaction was already used."""
+        question_data = session.questions[session.current_question]
+        question_num = session.current_question + 1
+        total_questions = len(session.questions)
+        
+        # Dynamic colors based on progress and streaks
+        if session.streak >= 5:
+            color = discord.Color.gold()  # Gold for hot streak
+            streak_emoji = "🔥"
+        elif session.streak >= 3:
+            color = discord.Color.orange()  # Orange for good streak
+            streak_emoji = "⚡"
+        else:
+            color = discord.Color.blue()  # Blue for normal
+            streak_emoji = "📝"
+        
+        # Enhanced title with dynamic elements
+        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        if session.streak >= 3:
+            title_parts.append(f"• {session.streak} STREAK!")
+        
+        embed = EmbedGenerator.create_embed(
+            title=" ".join(title_parts),
+            description=f"🎯 **{question_data['question']}**",
+            color=color
+        )
+        
+        # Enhanced options with styled formatting
+        option_emojis = ["🇦", "🇧", "🇨"]
+        option_styles = ["🔸", "🔹", "🔶"]
+        
+        for i, option in enumerate(question_data["options"][:3]):
+            embed.add_field(
+                name=f"{option_emojis[i]} Option {chr(65+i)}",
+                value=f"{option_styles[i]} **{option}**",
+                inline=False
+            )
+        
+        # Dynamic progress section with achievements
+        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        if session.streak > 0:
+            progress_value += f"\n🔥 **{session.streak}** Question Streak"
+        else:
+            progress_value += f"\n📍 Build your streak!"
+        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+        
+        embed.add_field(
+            name="📊 Performance",
+            value=progress_value,
+            inline=True
+        )
+        
+        # Enhanced timer with urgency indicators
+        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
+        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
+        
+        embed.add_field(
+            name=f"{time_emoji} Timer",
+            value=f"{timer_style}\n⏰ **{session.time_per_question}** seconds",
+            inline=True
+        )
+        
+        # Enhanced category and difficulty display with visual elements
+        category_emoji = "🌟" if question_data.get("category") == "Avatar & Airbending" else "💧" if "Water" in question_data.get("category", "") else "🌍" if "Earth" in question_data.get("category", "") else "🔥" if "Fire" in question_data.get("category", "") else "✨"
+        difficulty_color = "🟢" if question_data.get("difficulty", "normal") == "easy" else "🟡" if question_data.get("difficulty", "normal") == "normal" else "🟠" if question_data.get("difficulty", "normal") == "hard" else "🔴"
+        
+        embed.add_field(
+            name="📖 Question Info",
+            value=f"{category_emoji} **{question_data.get('category', 'General Knowledge')}**\n{difficulty_color} **{question_data.get('difficulty', 'normal').title()}** Difficulty",
+            inline=True
+        )
+        
+        embed = EmbedGenerator.finalize_embed(embed)
+        
+        # Create enhanced view with session reference
+        view = TriviaGameView(self, session)
+        session.view = view  # Store reference for timer cleanup
+        
+        # Always use edit_original_response for next questions
+        await interaction.edit_original_response(embed=embed, view=view)
+    
     async def process_answer(self, interaction: Optional[discord.Interaction], session: GameSession, choice: Optional[int] = None, timeout: bool = False):
         """Process player's answer and continue game."""
         question_data = session.questions[session.current_question]
@@ -1134,7 +1216,10 @@ class AvatarPlaySystem(commands.Cog):
         # Show result
         if interaction:
             result_embed = self._create_answer_result_embed(question_data, choice, is_correct, timeout, session)
-            await interaction.response.edit_message(embed=result_embed, view=None)
+            if interaction.response.is_done():
+                await interaction.edit_original_response(embed=result_embed, view=None)
+            else:
+                await interaction.response.edit_message(embed=result_embed, view=None)
         
         # Move to next question or end game
         session.current_question += 1
@@ -1143,7 +1228,8 @@ class AvatarPlaySystem(commands.Cog):
             # Next question after a short delay
             await asyncio.sleep(2)
             if interaction:
-                await self._show_question(interaction, session)
+                # For the next question, we need to use edit_original_response since the interaction was already used
+                await self._show_next_question(interaction, session)
         else:
             # Game finished
             await self._finish_game(interaction, session)
