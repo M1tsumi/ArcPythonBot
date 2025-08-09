@@ -95,6 +95,7 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.moderation',
             'cogs.game_info',
             'cogs.minigame_daily',
+            'cogs.avatar_play_system',  # Enhanced Avatar Play System
             'cogs.player_tools',
             'cogs.rally_system',
             'cogs.tgl_system',

@@ -116,7 +116,7 @@
 114. #32 [EOH]Popeye      — 94,964,644
 115. #20 [TWIN]Jcowi       — 94,919,859
 116. #30 [DAIX]JBoom       — 94,868,858
-117. #34 [WLD]eff         — 94,504,395
+117. #34 [WLD]Jeff         — 94,504,395
 118. #3 [PPG]KarolPoland  — 94,467,253
 119. #9 [RAW]KorrAang     — 94,166,431
 120. #14 [Zuzu]oz Shinigami — 93,803,973

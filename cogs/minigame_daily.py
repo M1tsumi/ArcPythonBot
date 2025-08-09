@@ -695,6 +695,17 @@ class MinigameDaily(commands.Cog):
     # Trivia command group: /trivia leaderboard, /trivia validate
     trivia_group = app_commands.Group(name="trivia", description="Minigame Trivia commands")
 
+    def _merge_duplicate_users(self, entries: List[Tuple[int, int, int]]) -> List[Tuple[int, int, int]]:
+        """Merge duplicate user entries by summing their stats."""
+        from collections import defaultdict
+        merged = defaultdict(lambda: [0, 0])  # [correct_total, sessions]
+        
+        for user_id, correct, sessions in entries:
+            merged[user_id][0] += correct
+            merged[user_id][1] += sessions
+        
+        return [(user_id, data[0], data[1]) for user_id, data in merged.items()]
+
     @trivia_group.command(name="leaderboard", description="Show trivia leaderboard (global or server)")
     @app_commands.describe(scope="Leaderboard scope")
     @app_commands.choices(scope=[
@@ -747,6 +758,8 @@ class MinigameDaily(commands.Cog):
             await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
             return
 
+        # FIX: Merge duplicates before sorting
+        entries = self._merge_duplicate_users(entries)
         entries.sort(key=lambda x: (-x[1], x[2]))
         top_entries = entries[:10]
         lines = []
@@ -770,7 +783,7 @@ class MinigameDaily(commands.Cog):
         app_commands.Choice(name="server", value="server"),
     ])
     async def trivia_leaderboard_root(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
-        # Reuse the same implementation as the grouped command
+        # Reuse the same implementation as the grouped command (now with duplicates fix)
         await self.trivia_leaderboard.callback(self, interaction, scope)
 
     @trivia_group.command(name="validate", description="Validate trivia file and preview a question")
