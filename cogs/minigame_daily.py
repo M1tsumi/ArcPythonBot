@@ -23,7 +23,9 @@ from utils.embed_generator import EmbedGenerator
 # ---------- Storage helpers ----------
 
 MINIGAME_ROOT = Path("data") / "minigame" / "servers"
-TRIVIA_FILE = Path("text files/trivia-questions.txt")
+# Resolve trivia file relative to repo root (parent of cogs/)
+_BASE_DIR = Path(__file__).resolve().parents[1]
+TRIVIA_FILE = _BASE_DIR / "text files" / "trivia-questions.txt"
 TRIVIA_QUESTIONS_PER_SESSION = 5
 TRIVIA_XP_PER_CORRECT = 50
 TRIVIA_BASIC_SCROLL_CHANCE = 0.10  # 10%
@@ -694,25 +696,27 @@ class MinigameDaily(commands.Cog):
 
     # ---------- Trivia Leaderboard ----------
 
-    @app_commands.command(name="trivia", description="Minigame: trivia commands")
-    @app_commands.describe(leaderboard_scope="Choose leaderboard scope: global or server")
-    @app_commands.choices(leaderboard_scope=[
+    # Trivia command group: /trivia leaderboard, /trivia validate
+    trivia_group = app_commands.Group(name="trivia", description="Minigame Trivia commands")
+
+    @trivia_group.command(name="leaderboard", description="Show trivia leaderboard (global or server)")
+    @app_commands.describe(scope="Leaderboard scope")
+    @app_commands.choices(scope=[
         app_commands.Choice(name="global", value="global"),
         app_commands.Choice(name="server", value="server"),
     ])
-    async def trivia_root(self, interaction: discord.Interaction, leaderboard_scope: app_commands.Choice[str]):
-        scope = leaderboard_scope.value
-        if scope not in ("global", "server"):
+    async def trivia_leaderboard(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
+        scope_value = scope.value
+        if scope_value not in ("global", "server"):
             await interaction.response.send_message("Invalid scope. Use global or server.", ephemeral=True)
             return
 
-        if interaction.guild is None and scope == "server":
+        if interaction.guild is None and scope_value == "server":
             await interaction.response.send_message("Server leaderboard must be used in a server.", ephemeral=True)
             return
 
-        # Aggregate stats
-        entries: List[Tuple[int, int, int]] = []  # (user_id, correct_total, sessions)
-        if scope == "server":
+        entries: List[Tuple[int, int, int]] = []
+        if scope_value == "server":
             guild_id = interaction.guild.id  # type: ignore[union-attr]
             server_dir = ensure_server_storage(guild_id)
             players_dir = server_dir / "players"
@@ -726,8 +730,7 @@ class MinigameDaily(commands.Cog):
                 sessions = int(stats.get("sessions_played", 0))
                 if correct_total > 0 or sessions > 0:
                     entries.append((int(data.get("user_id", 0)), correct_total, sessions))
-        else:  # global
-            # Walk through all guilds' players
+        else:
             if not MINIGAME_ROOT.exists():
                 await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
                 return
@@ -748,25 +751,22 @@ class MinigameDaily(commands.Cog):
             await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
             return
 
-        # Sort by correct_total descending, then sessions ascending
         entries.sort(key=lambda x: (-x[1], x[2]))
         top_entries = entries[:10]
-
         lines = []
         for rank, (uid, correct, sess) in enumerate(top_entries, start=1):
             user_mention = f"<@{uid}>"
             lines.append(f"**{rank}.** {user_mention} — Correct: **{correct}**, Sessions: {sess}")
 
         embed = EmbedGenerator.create_embed(
-            title=f"Trivia Leaderboard — {scope.title()}",
+            title=f"Trivia Leaderboard — {scope_value.title()}",
             description="\n".join(lines),
             color=discord.Color.gold(),
         )
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="trivia_validate", description="Admin: validate trivia questions file and preview a sample")
-    @app_commands.checks.cooldown(1, 5.0)
+    @trivia_group.command(name="validate", description="Validate trivia file and preview a question")
     async def trivia_validate(self, interaction: discord.Interaction):
         questions = parse_trivia_questions()
         count = len(questions)
