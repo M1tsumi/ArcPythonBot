@@ -1,0 +1,179 @@
+{
+  "skill_trees": {
+    "fire": {
+      "name": "Fire Mastery",
+      "emoji": "🔥",
+      "description": "Aggressive fire-based combat skills",
+      "skills": {
+        "tier_1": {
+          "name": "Flame Strike",
+          "cost": 1,
+          "description": "+10% ATK",
+          "bonuses": {
+            "atk_bonus": 0.10
+          }
+        },
+        "tier_2": {
+          "name": "Fire Wall",
+          "cost": 2,
+          "description": "+15% DEF",
+          "bonuses": {
+            "def_bonus": 0.15
+          }
+        },
+        "tier_3": {
+          "name": "Blazing Fury",
+          "cost": 3,
+          "description": "+20% ATK, +10% Crit",
+          "bonuses": {
+            "atk_bonus": 0.20,
+            "crit_bonus": 0.10
+          }
+        },
+        "tier_4": {
+          "name": "Inferno Mastery",
+          "cost": 5,
+          "description": "+25% All Stats",
+          "bonuses": {
+            "all_stats_bonus": 0.25
+          }
+        }
+      }
+    },
+    "water": {
+      "name": "Water Mastery",
+      "emoji": "💧",
+      "description": "Defensive and healing water abilities",
+      "skills": {
+        "tier_1": {
+          "name": "Water Whip",
+          "cost": 1,
+          "description": "+15% HP",
+          "bonuses": {
+            "hp_bonus": 0.15
+          }
+        },
+        "tier_2": {
+          "name": "Healing Stream",
+          "cost": 2,
+          "description": "+10% HP Regen",
+          "bonuses": {
+            "hp_regen_bonus": 0.10
+          }
+        },
+        "tier_3": {
+          "name": "Tidal Force",
+          "cost": 3,
+          "description": "+20% DEF, +15% HP",
+          "bonuses": {
+            "def_bonus": 0.20,
+            "hp_bonus": 0.15
+          }
+        },
+        "tier_4": {
+          "name": "Ocean Mastery",
+          "cost": 5,
+          "description": "+25% All Stats",
+          "bonuses": {
+            "all_stats_bonus": 0.25
+          }
+        }
+      }
+    },
+    "earth": {
+      "name": "Earth Mastery",
+      "emoji": "🌍",
+      "description": "Defensive earth-based abilities",
+      "skills": {
+        "tier_1": {
+          "name": "Rock Throw",
+          "cost": 1,
+          "description": "+15% DEF",
+          "bonuses": {
+            "def_bonus": 0.15
+          }
+        },
+        "tier_2": {
+          "name": "Stone Armor",
+          "cost": 2,
+          "description": "+20% DEF, +5% DMG Reduction",
+          "bonuses": {
+            "def_bonus": 0.20,
+            "dmg_reduction_bonus": 0.05
+          }
+        },
+        "tier_3": {
+          "name": "Earthquake",
+          "cost": 3,
+          "description": "+15% ATK, +20% DEF",
+          "bonuses": {
+            "atk_bonus": 0.15,
+            "def_bonus": 0.20
+          }
+        },
+        "tier_4": {
+          "name": "Mountain Mastery",
+          "cost": 5,
+          "description": "+25% All Stats",
+          "bonuses": {
+            "all_stats_bonus": 0.25
+          }
+        }
+      }
+    },
+    "air": {
+      "name": "Air Mastery",
+      "emoji": "💨",
+      "description": "Speed and critical strike abilities",
+      "skills": {
+        "tier_1": {
+          "name": "Wind Blade",
+          "cost": 1,
+          "description": "+10% ATK, +5% Speed",
+          "bonuses": {
+            "atk_bonus": 0.10,
+            "speed_bonus": 0.05
+          }
+        },
+        "tier_2": {
+          "name": "Air Shield",
+          "cost": 2,
+          "description": "+10% Evasion",
+          "bonuses": {
+            "evasion_bonus": 0.10
+          }
+        },
+        "tier_3": {
+          "name": "Tornado Strike",
+          "cost": 3,
+          "description": "+25% ATK, +10% Crit",
+          "bonuses": {
+            "atk_bonus": 0.25,
+            "crit_bonus": 0.10
+          }
+        },
+        "tier_4": {
+          "name": "Storm Mastery",
+          "cost": 5,
+          "description": "+25% All Stats",
+          "bonuses": {
+            "all_stats_bonus": 0.25
+          }
+        }
+      }
+    }
+  },
+  "total_costs": {
+    "tier_1_all_elements": 4,
+    "tier_2_all_elements": 8,
+    "tier_3_all_elements": 12,
+    "tier_4_all_elements": 20,
+    "max_all_skills": 44,
+    "note": "Total Skill Points needed to unlock all skills in all elements"
+  },
+  "prerequisites": {
+    "tier_2": "Must have Tier 1 of same element",
+    "tier_3": "Must have Tier 2 of same element",
+    "tier_4": "Must have Tier 3 of same element"
+  }
+}

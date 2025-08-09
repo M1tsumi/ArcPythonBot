@@ -1,0 +1,2 @@
+# This file ensures the global_profiles directory is tracked by git
+# Individual user profiles are excluded by .gitignore

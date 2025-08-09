@@ -1,0 +1,174 @@
+{
+  "events": [
+    {
+      "name": "Glorious Victory",
+      "description": "A special event where players compete to earn points and claim valuable rewards including gems, spirit badges, spirit shards, and research speedups. Defeat Shattered Skull Fortresses of different levels to earn points - higher levels give more points! ⏰ **Event ends in 1 day 9 hours 18 minutes and 30 seconds!**",
+      "type": "Competitive",
+      "difficulty": "Medium",
+      "duration": "2 days",
+      "start_date": "2025-08-01",
+      "end_date": "2025-08-02",
+      "mechanics": [
+        "Earn points through various activities",
+        "Complete daily objectives",
+        "Participate in alliance events",
+        "Win battles and skirmishes",
+        "Defeat Shattered Skull Fortresses for points:",
+        "• Level 1: 10 points each",
+        "• Level 2: 20 points each", 
+        "• Level 3: 30 points each",
+        "• Level 4: 45 points each",
+        "• Level 5: 50 points each",
+        "• Level 6: 60 points each"
+      ],
+      "tips": [
+        "Focus on daily objectives for consistent point gains",
+        "Coordinate with your alliance for better rewards",
+        "Save speedups for the final push",
+        "Prioritize activities that give the most points per time invested",
+        "Target higher level Shattered Skull Fortresses for better point efficiency",
+        "Level 6 fortresses give the most points (60) but may be harder to defeat",
+        "Level 4 fortresses offer good point-to-difficulty ratio (45 points)",
+        "Coordinate with alliance members to take down higher level fortresses together"
+      ],
+      "rewards": [
+        {
+          "points": 30,
+          "rewards": [
+            "100 Gems",
+            "3 Rare Spirit Badges",
+            "1 60-minute Research Speedup"
+          ]
+        },
+        {
+          "points": 70,
+          "rewards": [
+            "150 Gems",
+            "1 Epic Spirit Shard",
+            "1 Epic Spirit Badge",
+            "3 60-minute Research Speedups"
+          ]
+        },
+        {
+          "points": 120,
+          "rewards": [
+            "200 Gems",
+            "3 Epic Spirit Shards",
+            "3 Epic Spirit Badges",
+            "5 60-minute Research Speedups"
+          ]
+        },
+        {
+          "points": 200,
+          "rewards": [
+            "300 Gems",
+            "1 Legendary Spirit Shard",
+            "1 Legendary Spirit Badge",
+            "10 60-minute Research Speedups"
+          ]
+        }
+      ],
+      "requirements": [
+        "Must be level 10 or higher",
+        "Must be in an active alliance",
+        "Must have completed tutorial"
+      ]
+    },
+    {
+      "name": "Purification",
+      "description": "The Shattered Skulls who follow Father Glowworm are gradually increasing in Power. You must build your strength, lead your benders and heroes, and defeat the Shattered Skulls step by step to purify the land. This progressive challenge event tests your strategic planning, resource management, and alliance coordination skills.",
+      "type": "Progressive Challenge",
+      "difficulty": "Medium to Hard",
+      "duration": "3 days",
+      "start_date": "2025-08-15",
+      "end_date": "2025-08-18",
+      "mechanics": [
+        "Progressive Challenge: Each level must be completed before advancing to the next",
+        "Shattered Skull Types: Different enemy types (Fuzhi, Toghrul, Amur, Lushan, Kyro, Chanyu) with varying difficulty",
+        "Alliance Cooperation: Work with alliance members to defeat higher-level enemies",
+        "Resource Management: Balance your resources between progression and other activities",
+        "Time Management: Complete tasks efficiently within the 3-day event window",
+        "Level Requirements: Must be level 15+ to participate",
+        "Alliance Requirement: Must be in an active alliance"
+      ],
+      "tips": [
+        "Early Focus: Complete lower levels quickly to build momentum",
+        "Alliance Coordination: Coordinate with alliance members for higher-level challenges",
+        "Resource Planning: Save speedups and resources for the final push",
+        "Level Progression: Focus on completing one level at a time rather than spreading resources",
+        "Timing: Start the event early to maximize completion time",
+        "Alliance Support: Use alliance rallies for higher-level enemies",
+        "Resource Efficiency: Prioritize levels that give the best reward-to-difficulty ratio",
+        "Progress Saving: Your progress is saved between event sessions"
+      ],
+      "rewards": [
+        {
+          "level": "1-5",
+          "rewards": [
+            "100 Gems",
+            "1-5 Epic Spirit Shards",
+            "5 Rare Spirit Shards",
+            "30 Speedup 1m",
+            "Level-specific Purification Event Chest"
+          ]
+        },
+        {
+          "level": "6-10",
+          "rewards": [
+            "150 Gems",
+            "6-10 Epic Spirit Shards",
+            "5 Rare Spirit Shards",
+            "12 Speedup 5m",
+            "Level-specific Purification Event Chest"
+          ]
+        },
+        {
+          "level": "11-15",
+          "rewards": [
+            "200 Gems",
+            "1-3 Legendary Spirit Shards/Badges",
+            "5 Epic Spirit Shards/Badges",
+            "24 Speedup 5m / 2 Speedup 60m",
+            "Level-specific Purification Event Chest"
+          ]
+        },
+        {
+          "level": "16-20",
+          "rewards": [
+            "250 Gems",
+            "3-5 Legendary Spirit Shards/Badges",
+            "5 Epic Spirit Shards/Badges",
+            "2 Speedup 60m",
+            "Level-specific Purification Event Chest"
+          ]
+        },
+        {
+          "level": "21-25",
+          "rewards": [
+            "300 Gems",
+            "6-8 Legendary Spirit Shards/Badges",
+            "5 Epic Spirit Shards/Badges",
+            "2 Speedup 60m",
+            "Level-specific Purification Event Chest"
+          ]
+        },
+        {
+          "level": "26-30",
+          "rewards": [
+            "500-1000 Gems",
+            "8-10 Legendary Spirit Shards/Badges",
+            "5 Epic Spirit Shards/Badges",
+            "2-5 Speedup 60m",
+            "Level-specific Purification Event Chest"
+          ]
+        }
+      ],
+      "requirements": [
+        "Must be level 15 or higher",
+        "Must be in an active alliance",
+        "Must have completed tutorial",
+        "Must have basic understanding of combat mechanics"
+      ]
+    }
+  ]
+} 

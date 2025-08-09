@@ -1,0 +1,2 @@
+# This file ensures the leaderboards directory is tracked by git
+# Leaderboard cache files are excluded by .gitignore

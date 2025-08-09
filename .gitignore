@@ -1,0 +1,109 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Project specific files
+instructions.md
+
+# Game data files (prevent from being pushed to GitHub)
+*.txt
+!text files/trivia-questions.txt
+!text files/troops.txt
+!text files/leader-ranks.txt
+!text files/alliance-ranks.txt
+gloriousvictory.txt
+heroinfo.txt
+tgl.txt
+discord_announcements.txt
+
+# Wiki documentation (text files)
+wiki/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Images and assets (if you want to exclude them)
+# images/
+# assets/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Bot webhook scripts (keep private)
+bot_added_webhook.py 
+
+# Runtime analytics (do not commit)
+data/system/usage_stats.json
+
+# Server data - exclude server and user data but keep directory structure
+data/servers/minigame/servers/*/server.json
+data/servers/minigame/servers/*/players/
+data/servers/avatar_play/servers/*/server.json
+data/servers/avatar_play/servers/*/players/
+!data/servers/minigame/servers/.gitkeep
+!data/servers/minigame/.gitkeep
+!data/servers/avatar_play/servers/.gitkeep
+!data/servers/avatar_play/.gitkeep
+
+# User profiles data
+data/users/profiles/
+!data/users/profiles/.gitkeep
+
+# Global user profiles (exclude individual profiles)
+data/users/global_profiles/*.json
+!data/users/global_profiles/.gitkeep
+
+# Leaderboard caches (exclude cache files)
+data/users/leaderboards/*.json
+data/users/leaderboards/server_rankings/*.json
+!data/users/leaderboards/.gitkeep
+!data/users/leaderboards/server_rankings/.gitkeep
+
+# System state files (may contain sensitive data)
+data/system/rally_channels.json
+data/system/rally_stats.json

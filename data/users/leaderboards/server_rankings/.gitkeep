@@ -1,0 +1,2 @@
+# This file ensures the server_rankings directory is tracked by git
+# Individual server ranking files are excluded by .gitignore

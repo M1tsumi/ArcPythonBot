@@ -1,0 +1,53 @@
+{
+  "elements": {
+    "fire": {
+      "name": "Fire",
+      "emoji": "🔥",
+      "description": "Aggressive attackers with high damage output",
+      "base_stats": {
+        "base_atk": 100,
+        "base_def": 80,
+        "base_hp": 120
+      },
+      "stat_focus": "Attack-focused with balanced defense"
+    },
+    "water": {
+      "name": "Water",
+      "emoji": "💧",
+      "description": "Defensive specialists with high survivability",
+      "base_stats": {
+        "base_atk": 85,
+        "base_def": 95,
+        "base_hp": 140
+      },
+      "stat_focus": "HP and defense focused"
+    },
+    "earth": {
+      "name": "Earth",
+      "emoji": "🌍",
+      "description": "Balanced tanks with exceptional defense",
+      "base_stats": {
+        "base_atk": 90,
+        "base_def": 110,
+        "base_hp": 130
+      },
+      "stat_focus": "Defense-focused with good HP"
+    },
+    "air": {
+      "name": "Air",
+      "emoji": "💨",
+      "description": "High-speed attackers with critical strike potential",
+      "base_stats": {
+        "base_atk": 110,
+        "base_def": 75,
+        "base_hp": 115
+      },
+      "stat_focus": "Attack and speed focused"
+    }
+  },
+  "stat_descriptions": {
+    "base_atk": "Base Attack Power - determines damage output",
+    "base_def": "Base Defense - reduces incoming damage",
+    "base_hp": "Base Health Points - determines survivability"
+  }
+}

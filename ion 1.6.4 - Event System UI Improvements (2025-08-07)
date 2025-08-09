@@ -1,0 +1,141 @@
+[1mdiff --git a/cogs/events.py b/cogs/events.py[m
+[1mindex 73b97e5..6be90ba 100644[m
+[1m--- a/cogs/events.py[m
+[1m+++ b/cogs/events.py[m
+[36m@@ -18,7 +18,7 @@[m [mclass EventDetailsView(discord.ui.View):[m
+         self.event_data = event_data[m
+         self.data_parser = data_parser[m
+     [m
+[31m-    @discord.ui.button(label="Rewards", style=discord.ButtonStyle.primary, emoji="🏆")[m
+[32m+[m[32m    @discord.ui.button(label="Rewards", style=discord.ButtonStyle.primary)[m
+     async def show_rewards(self, interaction: discord.Interaction, button: discord.ui.Button):[m
+         """Show detailed rewards information."""[m
+         embed = discord.Embed([m
+[36m@@ -36,10 +36,10 @@[m [mclass EventDetailsView(discord.ui.View):[m
+                     [m
+                     tier_text = ""[m
+                     for reward in rewards:[m
+[31m-                        tier_text += f"🏆 {reward}\n"[m
+[32m+[m[32m                        tier_text += f"• {reward}\n"[m
+                     [m
+                     embed.add_field([m
+[31m-                        name=f"🎯 {points} Points",[m
+[32m+[m[32m                        name=f"{points} Points",[m
+                         value=tier_text,[m
+                         inline=False[m
+                     )[m
+[36m@@ -47,12 +47,12 @@[m [mclass EventDetailsView(discord.ui.View):[m
+                 # Old format (simple list)[m
+                 rewards_text = ""[m
+                 for reward in self.event_data['rewards']:[m
+[31m-                    rewards_text += f"🏆 {reward}\n"[m
+[32m+[m[32m                    rewards_text += f"• {reward}\n"[m
+                 embed.add_field(name="Rewards", value=rewards_text, inline=False)[m
+         [m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="Mechanics", style=discord.ButtonStyle.secondary, emoji="⚙️")[m
+[32m+[m[32m    @discord.ui.button(label="Mechanics", style=discord.ButtonStyle.secondary)[m
+     async def show_mechanics(self, interaction: discord.Interaction, button: discord.ui.Button):[m
+         """Show event mechanics."""[m
+         embed = discord.Embed([m
+[36m@@ -64,12 +64,12 @@[m [mclass EventDetailsView(discord.ui.View):[m
+         if 'mechanics' in self.event_data and self.event_data['mechanics']:[m
+             mechanics_text = ""[m
+             for mechanic in self.event_data['mechanics']:[m
+[31m-                mechanics_text += f"⚙️ {mechanic}\n"[m
+[32m+[m[32m                mechanics_text += f"• {mechanic}\n"[m
+             embed.add_field(name="Event Mechanics", value=mechanics_text, inline=False)[m
+         [m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="Tips", style=discord.ButtonStyle.success, emoji="💡")[m
+[32m+[m[32m    @discord.ui.button(label="Tips", style=discord.ButtonStyle.success)[m
+     async def show_tips(self, interaction: discord.Interaction, button: discord.ui.Button):[m
+         """Show event tips and strategies."""[m
+         embed = discord.Embed([m
+[36m@@ -81,12 +81,12 @@[m [mclass EventDetailsView(discord.ui.View):[m
+         if 'tips' in self.event_data and self.event_data['tips']:[m
+             tips_text = ""[m
+             for tip in self.event_data['tips']:[m
+[31m-                tips_text += f"💡 {tip}\n"[m
+[32m+[m[32m                tips_text += f"• {tip}\n"[m
+             embed.add_field(name="Tips", value=tips_text, inline=False)[m
+         [m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="Back", style=discord.ButtonStyle.danger, emoji="⬅️")[m
+[32m+[m[32m    @discord.ui.button(label="Back", style=discord.ButtonStyle.danger)[m
+     async def go_back(self, interaction: discord.Interaction, button: discord.ui.Button):[m
+         """Return to main event overview."""[m
+         embed = discord.Embed([m
+[36m@@ -115,7 +115,7 @@[m [mclass EventDetailsView(discord.ui.View):[m
+         if 'requirements' in self.event_data and self.event_data['requirements']:[m
+             req_text = ""[m
+             for req in self.event_data['requirements']:[m
+[31m-                req_text += f"📋 {req}\n"[m
+[32m+[m[32m                req_text += f"• {req}\n"[m
+             embed.add_field(name="Requirements", value=req_text, inline=False)[m
+         [m
+         # Add basic rewards info[m
+[1mdiff --git a/cogs/troop_calculator.py b/cogs/troop_calculator.py[m
+[1mindex 1de8a41..9401e38 100644[m
+[1m--- a/cogs/troop_calculator.py[m
+[1m+++ b/cogs/troop_calculator.py[m
+[36m@@ -64,10 +64,10 @@[m [mclass TroopCalculatorView(View):[m
+     @discord.ui.select([m
+         placeholder="Choose an element...",[m
+         options=[[m
+[31m-            discord.SelectOption(label="💧 Water", value="Water", emoji="💧"),[m
+[31m-            discord.SelectOption(label="🌍 Earth", value="Earth", emoji="🌍"),[m
+[31m-            discord.SelectOption(label="🔥 Fire", value="Fire", emoji="🔥"),[m
+[31m-            discord.SelectOption(label="💨 Air", value="Air", emoji="💨")[m
+[32m+[m[32m            discord.SelectOption(label="Water", value="Water"),[m
+[32m+[m[32m            discord.SelectOption(label="Earth", value="Earth"),[m
+[32m+[m[32m            discord.SelectOption(label="Fire", value="Fire"),[m
+[32m+[m[32m            discord.SelectOption(label="Air", value="Air")[m
+         ][m
+     )[m
+     async def element_select(self, interaction: discord.Interaction, select: Select):[m
+[36m@@ -112,21 +112,21 @@[m [mclass TroopCalculatorView(View):[m
+         embed = self.create_calculator_embed()[m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="➕ Increase Quantity", style=discord.ButtonStyle.primary, emoji="➕")[m
+[32m+[m[32m    @discord.ui.button(label="Increase Quantity", style=discord.ButtonStyle.primary)[m
+     async def increase_quantity(self, interaction: discord.Interaction, button: Button):[m
+         """Increase troop quantity."""[m
+         self.quantity += 1[m
+         embed = self.create_calculator_embed()[m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="➖ Decrease Quantity", style=discord.ButtonStyle.secondary, emoji="➖")[m
+[32m+[m[32m    @discord.ui.button(label="Decrease Quantity", style=discord.ButtonStyle.secondary)[m
+     async def decrease_quantity(self, interaction: discord.Interaction, button: Button):[m
+         """Decrease troop quantity."""[m
+         self.quantity = max(self.quantity - 1, 1)[m
+         embed = self.create_calculator_embed()[m
+         await interaction.response.edit_message(embed=embed, view=self)[m
+     [m
+[31m-    @discord.ui.button(label="🔢 Set Quantity", style=discord.ButtonStyle.success, emoji="🔢")[m
+[32m+[m[32m    @discord.ui.button(label="Set Quantity", style=discord.ButtonStyle.success)[m
+     async def set_quantity(self, interaction: discord.Interaction, button: Button):[m
+         """Set custom quantity using modal."""[m
+         await interaction.response.send_modal(TroopQuantityModal(self))[m
+[36m@@ -134,14 +134,14 @@[m [mclass TroopCalculatorView(View):[m
+     def create_calculator_embed(self) -> discord.Embed:[m
+         """Create the calculator embed."""[m
+         embed = discord.Embed([m
+[31m-            title="⚔️ Troop Calculator",[m
+[32m+[m[32m            title="Troop Calculator",[m
+             description="Calculate recruitment costs for troops",[m
+             color=discord.Color.blue()[m
+         )[m
+         [m
+         if not self.selected_element:[m
+             embed.add_field([m
+[31m-                name="📋 Instructions",[m
+[32m+[m[32m                name="Instructions",[m
+                 value="1. Select an element (Water, Earth, Fire, Air)\n"[m
+                       "2. Choose a tier (T1-T6)\n"[m
+                       "3. Adjust quan
