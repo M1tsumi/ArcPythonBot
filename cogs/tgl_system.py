@@ -433,7 +433,7 @@ class TGLOverviewView(discord.ui.View):
                 label="ðŸ“‹ Overview",
                 value="overview",
                 description="Main event overview and information",
-                emoji="ðŸ“‹",
+                emoji="📋",
                 default=True
             ),
             discord.SelectOption(
@@ -446,13 +446,13 @@ class TGLOverviewView(discord.ui.View):
                 label="Day 2: Bender Recruitment",
                 value="stage_2", 
                 description="Recruit benders from Tier 1 to Tier 6",
-                emoji="ðŸ‘¥"
+                emoji="👥"
             ),
             discord.SelectOption(
                 label="Day 3: Hero Growth",
                 value="stage_3",
                 description="Use scrolls and spirit shards/badges",
-                emoji="âš¡"
+                emoji="⚡"
             ),
             discord.SelectOption(
                 label="Day 4: Shattered Skulls & Construction",
@@ -464,12 +464,12 @@ class TGLOverviewView(discord.ui.View):
                 label="Day 5: Power Increase",
                 value="stage_5",
                 description="Final day - maximize power gains",
-                emoji="ðŸ’ª"
+                emoji="💪"
             )
         ]
         
         select = discord.ui.Select(
-            placeholder="ðŸŽ¯ Select a daily stage to view details...",
+            placeholder="🎯 Select a daily stage to view details...",
             options=options,
             custom_id="daily_stage_select"
         )
