@@ -1888,23 +1888,15 @@ class AvatarPlaySystem(commands.Cog):
         # Consolidate data from BOTH Avatar Play and Minigame systems
         consolidated_data = {}  # user_id -> {correct: int, sessions: int, games: int}
         
-        # Performance tracking and debugging
+        # Performance tracking
         files_processed = 0
-        start_time = asyncio.get_event_loop().time()
-        debug_info = []
         
         if scope_value == "server":
             guild_id = interaction.guild.id
-            debug_info.append(f"Server scope for guild: {guild_id}")
             
             # 1. Get Avatar Play System data (check both possible locations)
             avatar_play_dir_new = PLAY_DATA_ROOT / str(guild_id) / "players"
             avatar_play_dir_old = Path("data") / "avatar_play" / "servers" / str(guild_id) / "players"
-            
-            debug_info.append(f"Avatar Play path (new): {avatar_play_dir_new}")
-            debug_info.append(f"Avatar Play (new) exists: {avatar_play_dir_new.exists()}")
-            debug_info.append(f"Avatar Play path (old): {avatar_play_dir_old}")
-            debug_info.append(f"Avatar Play (old) exists: {avatar_play_dir_old.exists()}")
             
             # Check both locations
             for avatar_play_dir in [avatar_play_dir_new, avatar_play_dir_old]:
@@ -1929,8 +1921,6 @@ class AvatarPlaySystem(commands.Cog):
             
             # 2. Get Minigame System data (if any)
             minigame_dir = ensure_server_storage(guild_id) / "players"
-            debug_info.append(f"Minigame path: {minigame_dir}")
-            debug_info.append(f"Minigame exists: {minigame_dir.exists()}")
             
             if minigame_dir.exists():
                 for file in minigame_dir.glob("*.json"):
@@ -1951,17 +1941,11 @@ class AvatarPlaySystem(commands.Cog):
                         continue
                         
         else:  # global scope
-            debug_info.append("Global scope")
-            debug_info.append(f"Avatar Play root: {PLAY_DATA_ROOT}")
-            debug_info.append(f"Avatar Play root exists: {PLAY_DATA_ROOT.exists()}")
-            debug_info.append(f"Minigame root: {MINIGAME_ROOT}")
-            debug_info.append(f"Minigame root exists: {MINIGAME_ROOT.exists()}")
             
             # 1. Get Avatar Play System data from all servers (check both locations)
             avatar_play_roots = [PLAY_DATA_ROOT, Path("data") / "avatar_play" / "servers"]
             
             for avatar_play_root in avatar_play_roots:
-                debug_info.append(f"Checking avatar play root: {avatar_play_root} (exists: {avatar_play_root.exists()})")
                 if avatar_play_root.exists():
                     for server_dir in avatar_play_root.glob("*/"):
                         players_dir = server_dir / "players"
@@ -2006,22 +1990,11 @@ class AvatarPlaySystem(commands.Cog):
                                 continue
 
         if not consolidated_data:
-            # Send debug information when no data is found
-            debug_text = "\n".join(debug_info)
+            # Simple no-data message
             error_embed = EmbedGenerator.create_embed(
-                title="🔍 No Trivia Data Found",
-                description="No trivia data available yet. Debug information:",
-                color=discord.Color.orange()
-            )
-            error_embed.add_field(
-                name="🛠️ Debug Info",
-                value=f"```\n{debug_text}\n```",
-                inline=False
-            )
-            error_embed.add_field(
-                name="💡 Possible Solutions",
-                value="• Use `/play` to generate trivia data\n• Check if you're in the right server\n• Try `/trivia_leaderboard global` instead",
-                inline=False
+                title="📊 No Trivia Data",
+                description=f"No trivia data found for {scope_value} leaderboard.\n\nUse `/play` to start competing and appear on the leaderboard!",
+                color=discord.Color.blue()
             )
             error_embed = EmbedGenerator.finalize_embed(error_embed)
             
@@ -2063,21 +2036,8 @@ class AvatarPlaySystem(commands.Cog):
             color=discord.Color.gold(),
         )
         
-        embed.add_field(
-            name="📊 Data Sources", 
-            value="🎮 Avatar Play System\n🎯 Minigame System\n*(Combined & deduplicated)*",
-            inline=True
-        )
-        
-        embed.add_field(
-            name="🎲 Available Commands", 
-            value="`/play` — Start trivia\n`/trivia_leaderboard server`\n`/trivia_leaderboard global`",
-            inline=True
-        )
-        
-        # Add processing stats
-        processing_time = round((asyncio.get_event_loop().time() - start_time) * 1000, 1)
-        embed.set_footer(text=f"Processed {files_processed} files in {processing_time}ms | Unified leaderboard system")
+        # Simple footer with just essential info
+        embed.set_footer(text=f"🎮 {scope_value.title()} Rankings | Use /play to compete!")
         
         embed = EmbedGenerator.finalize_embed(embed)
         

@@ -749,31 +749,7 @@ class MinigameDaily(commands.Cog):
         
         return [(user_id, data[0], data[1]) for user_id, data in merged.items()]
 
-    @trivia_group.command(name="leaderboard", description="⚠️ DEPRECATED: Use /trivia_leaderboard instead")
-    @app_commands.describe(scope="Leaderboard scope")
-    @app_commands.choices(scope=[
-        app_commands.Choice(name="global", value="global"),
-        app_commands.Choice(name="server", value="server"),
-    ])
-    async def trivia_leaderboard_deprecated(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
-        """Deprecated trivia leaderboard command - redirects to unified version."""
-        embed = EmbedGenerator.create_embed(
-            title="⚠️ Command Deprecated",
-            description="This command has been replaced with the unified trivia leaderboard system.",
-            color=discord.Color.orange()
-        )
-        embed.add_field(
-            name="🔄 Use Instead",
-            value=f"`/trivia_leaderboard {scope.value}`",
-            inline=False
-        )
-        embed.add_field(
-            name="✨ New Features",
-            value="• Combines data from both Avatar Play and Minigame systems\n• Eliminates duplicates\n• Better accuracy calculations",
-            inline=False
-        )
-        embed = EmbedGenerator.finalize_embed(embed)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
     @trivia_group.command(name="validate", description="Validate trivia file and preview a question")
     async def trivia_validate(self, interaction: discord.Interaction):
