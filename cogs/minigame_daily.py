@@ -11,7 +11,7 @@ import random
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Tuple
 
 import discord
 from discord import app_commands
@@ -89,6 +89,7 @@ def load_player(guild_id: int, user_id: int) -> Dict[str, Any]:
                 "ace_attempts": 0,
                 "sessions_played": 0,
             },
+            "last_trivia_at": None,
         },
     }
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -207,7 +208,36 @@ def parse_trivia_questions() -> List[Dict[str, Any]]:
                         "options": opts_in_order,
                         "answer_index": {"A": 0, "B": 1, "C": 2, "D": 3}[ans_letter],
                     })
+            continue
 
+        # Try list format like:
+        # Question text
+        # A) Option text [✅]
+        # B) Option text
+        # C) Option text
+        if block:
+            q_text = block[0].strip()
+            opt_lines = [ln.strip() for ln in block[1:] if ln.strip()]
+            # Gather options in order A-D if present
+            option_map: Dict[str, Tuple[str, bool]] = {}
+            for ln in opt_lines:
+                if len(ln) >= 3 and ln[1] == ')' and ln[0].upper() in ['A', 'B', 'C', 'D']:
+                    letter = ln[0].upper()
+                    text = ln[3:].strip()
+                    is_correct = '✅' in text
+                    text = text.replace('✅', '').strip()
+                    option_map[letter] = (text, is_correct)
+            if q_text and option_map:
+                ordered_letters = [ltr for ltr in ['A', 'B', 'C', 'D'] if ltr in option_map]
+                options_list: List[str] = [option_map[ltr][0] for ltr in ordered_letters]
+                correct_indices = [i for i, ltr in enumerate(ordered_letters) if option_map[ltr][1]]
+                answer_index = correct_indices[0] if correct_indices else 0
+                if len(options_list) >= 2:  # require at least 2 options
+                    questions.append({
+                        "question": q_text,
+                        "options": options_list,
+                        "answer_index": answer_index,
+                    })
     return questions
 
 
@@ -500,6 +530,19 @@ class MinigameDaily(commands.Cog):
                 return
             # Start a trivia session in DMs
             player = load_player(self.guild_id, self.user_id)
+            # 1-minute cooldown per user for trivia
+            now = datetime.now(timezone.utc)
+            last_trivia_iso = player.get("stats", {}).get("last_trivia_at")
+            if last_trivia_iso:
+                try:
+                    last_dt = datetime.fromisoformat(last_trivia_iso.replace("Z", "+00:00")).astimezone(timezone.utc)
+                except Exception:
+                    last_dt = None
+                if last_dt is not None and (now - last_dt) < timedelta(minutes=1):
+                    remaining = timedelta(minutes=1) - (now - last_dt)
+                    secs = int(remaining.total_seconds())
+                    await interaction.response.send_message(f"Trivia is on cooldown for {secs}s.", ephemeral=True)
+                    return
             try:
                 dm = await interaction.user.create_dm()  # type: ignore[union-attr]
             except Exception:
@@ -508,6 +551,11 @@ class MinigameDaily(commands.Cog):
 
             await interaction.response.send_message("Opened a DM with you for a 5-question Trivia!", ephemeral=True)
             await self.parent.run_trivia_session(dm, interaction.user, self.guild_id, self.user_id)
+            # Set cooldown timestamp
+            player = load_player(self.guild_id, self.user_id)
+            stats = player.setdefault("stats", {})
+            stats["last_trivia_at"] = now.isoformat()
+            save_player(self.guild_id, self.user_id, player)
 
     class RollChoiceView(discord.ui.View):
         def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
@@ -629,6 +677,79 @@ class MinigameDaily(commands.Cog):
         embed = self.build_play_embed(player)
         view = self.PlayView(self, guild_id, user_id)
         await interaction.response.send_message(embed=embed, view=view)
+
+    # ---------- Trivia Leaderboard ----------
+
+    @app_commands.command(name="trivia", description="Minigame: trivia commands")
+    @app_commands.describe(leaderboard_scope="Choose leaderboard scope: global or server")
+    @app_commands.choices(leaderboard_scope=[
+        app_commands.Choice(name="global", value="global"),
+        app_commands.Choice(name="server", value="server"),
+    ])
+    async def trivia_root(self, interaction: discord.Interaction, leaderboard_scope: app_commands.Choice[str]):
+        scope = leaderboard_scope.value
+        if scope not in ("global", "server"):
+            await interaction.response.send_message("Invalid scope. Use global or server.", ephemeral=True)
+            return
+
+        if interaction.guild is None and scope == "server":
+            await interaction.response.send_message("Server leaderboard must be used in a server.", ephemeral=True)
+            return
+
+        # Aggregate stats
+        entries: List[Tuple[int, int, int]] = []  # (user_id, correct_total, sessions)
+        if scope == "server":
+            guild_id = interaction.guild.id  # type: ignore[union-attr]
+            server_dir = ensure_server_storage(guild_id)
+            players_dir = server_dir / "players"
+            for file in players_dir.glob("*.json"):
+                try:
+                    data = json.loads(file.read_text(encoding="utf-8"))
+                except Exception:
+                    continue
+                stats = data.get("stats", {}).get("trivia", {})
+                correct_total = int(stats.get("correct_total", 0))
+                sessions = int(stats.get("sessions_played", 0))
+                if correct_total > 0 or sessions > 0:
+                    entries.append((int(data.get("user_id", 0)), correct_total, sessions))
+        else:  # global
+            # Walk through all guilds' players
+            if not MINIGAME_ROOT.exists():
+                await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
+                return
+            for server_dir in MINIGAME_ROOT.glob("*/"):
+                players_dir = server_dir / "players"
+                for file in players_dir.glob("*.json"):
+                    try:
+                        data = json.loads(file.read_text(encoding="utf-8"))
+                    except Exception:
+                        continue
+                    stats = data.get("stats", {}).get("trivia", {})
+                    correct_total = int(stats.get("correct_total", 0))
+                    sessions = int(stats.get("sessions_played", 0))
+                    if correct_total > 0 or sessions > 0:
+                        entries.append((int(data.get("user_id", 0)), correct_total, sessions))
+
+        if not entries:
+            await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
+            return
+
+        # Sort by correct_total descending, then sessions ascending
+        entries.sort(key=lambda x: (-x[1], x[2]))
+        top_entries = entries[:10]
+
+        lines = []
+        for rank, (uid, correct, sess) in enumerate(top_entries, start=1):
+            user_mention = f"<@{uid}>"
+            lines.append(f"**{rank}.** {user_mention} — Correct: **{correct}**, Sessions: {sess}")
+
+        embed = EmbedGenerator.create_embed(
+            title=f"Trivia Leaderboard — {scope.title()}",
+            description="\n".join(lines),
+            color=discord.Color.gold(),
+        )
+        embed = EmbedGenerator.finalize_embed(embed)
+        await interaction.response.send_message(embed=embed)
 
     # ---------- Trivia game loop ----------
 
