@@ -751,7 +751,21 @@ class AvatarPlaySystem(commands.Cog):
         # Cache trivia questions during initialization to prevent command delays
         self.trivia_questions = parse_avatar_trivia_questions()
         if self.logger:
-            self.logger.info(f"Loaded {len(self.trivia_questions)} trivia questions during cog initialization")
+            if self.trivia_questions:
+                self.logger.info(f"Loaded {len(self.trivia_questions)} trivia questions during cog initialization")
+            else:
+                self.logger.error("No trivia questions loaded during cog initialization!")
+                self.logger.error(f"Trivia file path: {TRIVIA_FILE}")
+                self.logger.error(f"Trivia file exists: {TRIVIA_FILE.exists()}")
+                if TRIVIA_FILE.exists():
+                    try:
+                        with open(TRIVIA_FILE, 'r', encoding='utf-8') as f:
+                            lines = f.readlines()
+                            self.logger.error(f"Trivia file has {len(lines)} lines")
+                            if lines:
+                                self.logger.error(f"First line: {lines[0].strip()[:100]}")
+                    except Exception as e:
+                        self.logger.error(f"Error reading trivia file: {e}")
     
     def refresh_trivia_questions(self):
         """Refresh cached trivia questions."""
