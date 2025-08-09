@@ -313,7 +313,238 @@ class GameSession:
     time_per_question: int
 
 
-# ---------- UI Components ----------
+# ---------- Enhanced Discord Components v2 UI ----------
+
+class EnhancedPlayMainView(discord.ui.View):
+    """Main enhanced play interface with Discord Components v2."""
+    
+    def __init__(self, cog: "AvatarPlaySystem", guild_id: int, user_id: int, player: Dict[str, Any]):
+        super().__init__(timeout=300)
+        self.cog = cog
+        self.guild_id = guild_id
+        self.user_id = user_id
+        self.player = player
+        
+        # Setup all components
+        self._setup_difficulty_selector()
+        self._setup_game_mode_buttons()  
+        self._setup_action_buttons()
+    
+    def _setup_difficulty_selector(self):
+        """Setup the difficulty selection dropdown."""
+        current_difficulty = self.player.get("preferred_difficulty", "normal")
+        
+        options = [
+            discord.SelectOption(
+                label="🟢 Easy", 
+                value="easy", 
+                description="Simpler questions • 80% XP",
+                default=current_difficulty == "easy",
+                emoji="🟢"
+            ),
+            discord.SelectOption(
+                label="🟡 Normal", 
+                value="normal", 
+                description="Standard difficulty • 100% XP",
+                default=current_difficulty == "normal",
+                emoji="🟡"
+            ),
+            discord.SelectOption(
+                label="🟠 Hard", 
+                value="hard", 
+                description="Challenging questions • 150% XP",
+                default=current_difficulty == "hard",
+                emoji="🟠"
+            ),
+            discord.SelectOption(
+                label="🔴 Expert", 
+                value="expert", 
+                description="Master-level challenges • 200% XP",
+                default=current_difficulty == "expert",
+                emoji="🔴"
+            )
+        ]
+        
+        select = discord.ui.Select(
+            placeholder=f"🎚️ Difficulty: {current_difficulty.title()}",
+            options=options,
+            custom_id="difficulty_select"
+        )
+        select.callback = self._difficulty_callback
+        self.add_item(select)
+    
+    async def _difficulty_callback(self, interaction: discord.Interaction):
+        """Handle difficulty selection."""
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+            return
+        
+        difficulty = interaction.data['values'][0]
+        self.player["preferred_difficulty"] = difficulty
+        save_play_player(self.guild_id, self.user_id, self.player)
+        
+        # Update the embed with new difficulty
+        daily_bonus = self.cog._check_daily_bonus(self.player)
+        embed = self.cog._create_main_play_embed(self.player, daily_bonus)
+        
+        # Update the view to reflect new difficulty
+        self.clear_items()
+        self._setup_difficulty_selector()
+        self._setup_game_mode_buttons()
+        self._setup_action_buttons()
+        
+        await interaction.response.edit_message(embed=embed, view=self)
+    
+    def _setup_game_mode_buttons(self):
+        """Setup game mode selection buttons."""
+        unlocked_modes = self.player.get("unlocked_modes", ["quick", "standard"])
+        
+        # Row 1: Quick, Standard, Challenge
+        quick_style = discord.ButtonStyle.success if "quick" in unlocked_modes else discord.ButtonStyle.secondary
+        self.add_item(discord.ui.Button(
+            label="Quick", 
+            emoji="⚡", 
+            style=quick_style,
+            custom_id="mode_quick",
+            disabled="quick" not in unlocked_modes
+        ))
+        
+        standard_style = discord.ButtonStyle.primary if "standard" in unlocked_modes else discord.ButtonStyle.secondary
+        self.add_item(discord.ui.Button(
+            label="Standard", 
+            emoji="🎯", 
+            style=standard_style,
+            custom_id="mode_standard",
+            disabled="standard" not in unlocked_modes
+        ))
+        
+        challenge_style = discord.ButtonStyle.danger if "challenge" in unlocked_modes else discord.ButtonStyle.secondary
+        self.add_item(discord.ui.Button(
+            label="Challenge", 
+            emoji="🔥", 
+            style=challenge_style,
+            custom_id="mode_challenge",
+            disabled="challenge" not in unlocked_modes
+        ))
+        
+        # Row 2: Blitz, Master
+        blitz_style = discord.ButtonStyle.success if "blitz" in unlocked_modes else discord.ButtonStyle.secondary
+        self.add_item(discord.ui.Button(
+            label="Blitz", 
+            emoji="💨", 
+            style=blitz_style,
+            custom_id="mode_blitz",
+            disabled="blitz" not in unlocked_modes,
+            row=1
+        ))
+        
+        master_style = discord.ButtonStyle.danger if "master" in unlocked_modes else discord.ButtonStyle.secondary
+        self.add_item(discord.ui.Button(
+            label="Master", 
+            emoji="👑", 
+            style=master_style,
+            custom_id="mode_master",
+            disabled="master" not in unlocked_modes,
+            row=1
+        ))
+        
+        # Add callbacks for all mode buttons
+        for item in self.children:
+            if isinstance(item, discord.ui.Button) and item.custom_id and item.custom_id.startswith("mode_"):
+                mode = item.custom_id.replace("mode_", "")
+                item.callback = self._create_mode_callback(mode)
+    
+    def _create_mode_callback(self, mode: str):
+        """Create callback for game mode buttons."""
+        async def callback(interaction: discord.Interaction):
+            if interaction.user.id != self.user_id:
+                await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+                return
+            
+            difficulty = self.player.get("preferred_difficulty", "normal")
+            await self.cog.start_game_session(interaction, mode, difficulty)
+        
+        return callback
+    
+    def _setup_action_buttons(self):
+        """Setup action buttons (stats, leaderboard, etc)."""
+        # Row 3: Action buttons
+        self.add_item(discord.ui.Button(
+            label="Stats", 
+            emoji="📊", 
+            style=discord.ButtonStyle.secondary,
+            custom_id="show_stats",
+            row=2
+        ))
+        
+        self.add_item(discord.ui.Button(
+            label="Leaderboard", 
+            emoji="🏆", 
+            style=discord.ButtonStyle.secondary,
+            custom_id="show_leaderboard",
+            row=2
+        ))
+        
+        self.add_item(discord.ui.Button(
+            label="Achievements", 
+            emoji="🏅", 
+            style=discord.ButtonStyle.secondary,
+            custom_id="show_achievements",
+            row=2
+        ))
+        
+        self.add_item(discord.ui.Button(
+            label="Daily Bonus", 
+            emoji="🎁", 
+            style=discord.ButtonStyle.success if self.cog._check_daily_bonus(self.player) else discord.ButtonStyle.secondary,
+            custom_id="daily_info",
+            row=2,
+            disabled=not self.cog._check_daily_bonus(self.player)
+        ))
+        
+        # Add callbacks for action buttons
+        for item in self.children:
+            if isinstance(item, discord.ui.Button) and item.custom_id in ["show_stats", "show_leaderboard", "show_achievements", "daily_info"]:
+                if item.custom_id == "show_stats":
+                    item.callback = self._stats_callback
+                elif item.custom_id == "show_leaderboard":
+                    item.callback = self._leaderboard_callback
+                elif item.custom_id == "show_achievements":
+                    item.callback = self._achievements_callback
+                elif item.custom_id == "daily_info":
+                    item.callback = self._daily_info_callback
+    
+    async def _stats_callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+            return
+        await self.cog.show_player_stats(interaction)
+    
+    async def _leaderboard_callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+            return
+        await self.cog.show_leaderboard(interaction)
+    
+    async def _achievements_callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+            return
+        await self.cog.show_achievements(interaction)
+    
+    async def _daily_info_callback(self, interaction: discord.Interaction):
+        if interaction.user.id != self.user_id:
+            await interaction.response.send_message("❌ This is not your game session!", ephemeral=True)
+            return
+        
+        embed = discord.Embed(
+            title="🎁 Daily Bonus Active!",
+            description="Your next game will give **2x XP**!\n\nDaily bonuses reset every 24 hours and help you climb the leaderboard faster!",
+            color=discord.Color.gold()
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+    
+
 
 class PlayModeSelectView(discord.ui.View):
     """Main play menu with mode selection."""
@@ -480,7 +711,7 @@ class AvatarPlaySystem(commands.Cog):
     
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
-        """Main play command with enhanced UI."""
+        """Main play command with enhanced Discord Components v2 UI."""
         if interaction.guild is None:
             await interaction.response.send_message("❌ Avatar Play can only be used in servers!", ephemeral=True)
             return
@@ -494,9 +725,9 @@ class AvatarPlaySystem(commands.Cog):
         # Check daily bonus
         daily_bonus = self._check_daily_bonus(player)
         
-        # Create main play embed
+        # Create main play embed with Components v2
         embed = self._create_main_play_embed(player, daily_bonus)
-        view = PlayModeSelectView(self, guild_id, user_id)
+        view = EnhancedPlayMainView(self, guild_id, user_id, player)
         
         await interaction.response.send_message(embed=embed, view=view)
     
@@ -515,7 +746,7 @@ class AvatarPlaySystem(commands.Cog):
             return True
     
     def _create_main_play_embed(self, player: Dict[str, Any], daily_bonus: bool) -> discord.Embed:
-        """Create the main play interface embed."""
+        """Create the enhanced main play interface embed with Components v2 info."""
         level = player.get("level", 1)
         xp = player.get("xp", 0)
         total_xp = player.get("total_xp", 0)
@@ -532,49 +763,74 @@ class AvatarPlaySystem(commands.Cog):
         xp_progress = total_xp - calculate_xp_for_level(level)
         xp_needed = next_level_xp - total_xp
         
+        current_difficulty = player.get("preferred_difficulty", "normal")
+        difficulty_emoji = {"easy": "🟢", "normal": "🟡", "hard": "🟠", "expert": "🔴"}
+        
         embed = EmbedGenerator.create_embed(
-            title="🎮 Avatar Trivia Arena",
-            description="Test your knowledge of the Avatar universe!",
+            title="🎮 Avatar Trivia Arena - Discord Components v2",
+            description="🎯 **Interactive Avatar Universe Trivia**\nUse the buttons and dropdown below to play!",
             color=discord.Color.blue()
         )
         
         embed.add_field(
-            name="👤 Player Stats",
-            value=f"**Level:** {level}\n**XP:** {xp_progress}/{xp_needed}\n**Tokens:** 🪙 {tokens}",
+            name="👤 Player Profile",
+            value=f"**Level:** {level} ({xp_progress}/{xp_needed} XP)\n**Tokens:** 🪙 {tokens}\n**Energy:** {'🟢' if energy >= 70 else '🟡' if energy >= 30 else '🔴'} {energy}/100",
             inline=True
         )
         
         embed.add_field(
-            name="🎯 Performance", 
-            value=f"**Games:** {games}\n**Correct:** {correct}\n**Best Streak:** {streak}",
+            name="📊 Performance Stats", 
+            value=f"**Games Played:** {games}\n**Correct Answers:** {correct}\n**Best Streak:** {streak}",
             inline=True
         )
         
         embed.add_field(
-            name="⚡ Spirit Energy",
-            value=f"{'🟢' if energy >= 70 else '🟡' if energy >= 30 else '🔴'} {energy}/100",
+            name="⚙️ Settings",
+            value=f"**Difficulty:** {difficulty_emoji.get(current_difficulty, '🟡')} {current_difficulty.title()}\n**Daily Bonus:** {'🎁 Available!' if daily_bonus else '❌ Used'}",
             inline=True
+        )
+        
+        # Game Mode Status with interactive buttons below
+        unlocked = player.get("unlocked_modes", ["quick", "standard"])
+        mode_status = []
+        for mode_name in ["quick", "standard", "challenge", "blitz", "master"]:
+            mode_data = GAME_MODES[mode_name]
+            if mode_name in unlocked:
+                mode_status.append(f"✅ **{mode_name.title()}** - {mode_data['description']}")
+            else:
+                unlock_req = self._get_mode_unlock_requirement(mode_name)
+                mode_status.append(f"🔒 **{mode_name.title()}** - {unlock_req}")
+        
+        embed.add_field(
+            name="🎮 Game Modes",
+            value="\n".join(mode_status),
+            inline=False
+        )
+        
+        # Interactive guide
+        embed.add_field(
+            name="🎛️ How to Play",
+            value="🔸 **Select Difficulty** using the dropdown above\n🔸 **Choose Game Mode** using the colorful buttons\n🔸 **View Stats/Achievements** with the action buttons\n🔸 **Answer Questions** with A/B/C/D buttons during games",
+            inline=False
         )
         
         if daily_bonus:
             embed.add_field(
-                name="🎁 Daily Bonus Available!",
-                value="First game today gives **2x XP**!",
+                name="🎁 Daily Bonus Active!",
+                value="Your next game will give **2x XP**! Click the Daily Bonus button for more info.",
                 inline=False
             )
         
-        # Show unlocked modes
-        unlocked = player.get("unlocked_modes", ["quick", "standard"])
-        modes_text = ""
-        for mode_name, mode_data in GAME_MODES.items():
-            if mode_name in unlocked:
-                modes_text += f"✅ **{mode_name.title()}** - {mode_data['description']}\n"
-            else:
-                modes_text += f"🔒 **{mode_name.title()}** - {mode_data['description']}\n"
-        
-        embed.add_field(name="🎮 Available Modes", value=modes_text, inline=False)
-        
         return EmbedGenerator.finalize_embed(embed)
+    
+    def _get_mode_unlock_requirement(self, mode: str) -> str:
+        """Get unlock requirement text for a mode."""
+        requirements = {
+            "challenge": "Reach Level 5",
+            "blitz": "Reach Level 10", 
+            "master": "Reach Level 20 or get Trivia Master achievement"
+        }
+        return requirements.get(mode, "Unknown requirement")
     
     async def start_game_session(self, interaction: discord.Interaction, mode: str, difficulty: str):
         """Start a new trivia game session."""
@@ -1021,6 +1277,51 @@ class AvatarPlaySystem(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
+    async def show_achievements(self, interaction: discord.Interaction):
+        """Show player's achievements."""
+        guild_id = interaction.guild.id
+        user_id = interaction.user.id
+        player = load_play_player(guild_id, user_id)
+        
+        achievements = player.get("achievements", [])
+        
+        embed = EmbedGenerator.create_embed(
+            title=f"🏅 {interaction.user.display_name}'s Achievements",
+            color=discord.Color.gold()
+        )
+        
+        achievement_names = {
+            "trivia_novice": "🥉 Trivia Novice - 10 correct answers",
+            "trivia_apprentice": "🥈 Trivia Apprentice - 50 correct answers",
+            "trivia_master": "🥇 Trivia Master - 200 correct answers",
+            "trivia_grandmaster": "👑 Trivia Grandmaster - 500 correct answers",
+            "streak_warrior": "🔥 Streak Warrior - 5-question streak",
+            "streak_legend": "⚡ Streak Legend - 10-question streak",
+            "perfect_player": "💎 Perfect Player - 3 perfect games",
+            "daily_champion": "📅 Daily Champion - 7-day streak"
+        }
+        
+        if achievements:
+            unlocked_text = "\n".join([achievement_names.get(ach, ach) for ach in achievements])
+            embed.add_field(name="✅ Unlocked", value=unlocked_text, inline=False)
+        
+        # Show locked achievements
+        locked = [name for name in achievement_names.keys() if name not in achievements]
+        if locked:
+            locked_text = "\n".join([f"🔒 {achievement_names[ach]}" for ach in locked[:5]])
+            if len(locked) > 5:
+                locked_text += f"\n... and {len(locked) - 5} more!"
+            embed.add_field(name="🔒 Locked", value=locked_text, inline=False)
+        
+        embed.add_field(
+            name="📊 Progress", 
+            value=f"**{len(achievements)}/{len(achievement_names)}** achievements unlocked",
+            inline=False
+        )
+        
+        embed = EmbedGenerator.finalize_embed(embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
     async def show_leaderboard(self, interaction: discord.Interaction):
         """Show server leaderboard with enhanced display."""
         guild_id = interaction.guild.id
