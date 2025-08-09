@@ -696,7 +696,9 @@ class TriviaGameView(discord.ui.View):
             self.answered = True
             self.timer_active = False
             self.session.streak = 0
-            await self.cog.process_answer(None, self.session, timeout=True)
+            # Try to use the last interaction if available
+            last_interaction = getattr(self.session, 'last_interaction', None)
+            await self.cog.process_answer(last_interaction, self.session, timeout=True)
     
     @discord.ui.button(label="A", style=discord.ButtonStyle.secondary, emoji="🇦")
     async def answer_a(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -721,6 +723,9 @@ class TriviaGameView(discord.ui.View):
         if self.answered:
             await interaction.response.send_message("You already answered this question!", ephemeral=True)
             return
+        
+        # Store the interaction for potential use in game completion
+        self.session.last_interaction = interaction
         
         # Mark as answered and stop all timers
         self.answered = True
@@ -1284,8 +1289,8 @@ class AvatarPlaySystem(commands.Cog):
         session.current_question += 1
         
         if session.current_question < len(session.questions):
-            # Next question after a short delay
-            await asyncio.sleep(2)
+            # Next question after a shorter delay to prevent interaction timeout
+            await asyncio.sleep(1)
             if interaction:
                 # For the next question, we need to use edit_original_response since the interaction was already used
                 await self._show_next_question(interaction, session)
@@ -1453,7 +1458,38 @@ class AvatarPlaySystem(commands.Cog):
         results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus)
         
         if interaction:
-            await interaction.edit_original_response(embed=results_embed, view=None)
+            try:
+                await interaction.edit_original_response(embed=results_embed, view=None)
+            except discord.NotFound:
+                # Interaction expired, try followup
+                try:
+                    await interaction.followup.send(embed=results_embed)
+                except:
+                    # Try direct response as last resort
+                    try:
+                        await interaction.response.send_message(embed=results_embed)
+                    except:
+                        if hasattr(self, 'logger') and self.logger:
+                            self.logger.error("Failed to send game completion message - all interaction methods failed")
+                            self.logger.error(f"Session: {session.player_id}, Questions: {len(session.questions)}, Current: {session.current_question}")
+            except Exception as e:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error(f"Error sending game completion message: {e}")
+                # Try followup as fallback
+                try:
+                    await interaction.followup.send(embed=results_embed)
+                except:
+                    # Try direct response as last resort
+                    try:
+                        await interaction.response.send_message(embed=results_embed)
+                    except:
+                        if hasattr(self, 'logger') and self.logger:
+                            self.logger.error("All fallback methods failed for game completion message")
+        else:
+            # No interaction available, game completed due to timeout
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.warning(f"Game completed but no interaction available for completion message. Player: {session.player_id}")
+            # In this case, stats are still saved, just no completion message shown
     
     def _check_achievements(self, player: Dict[str, Any], session: GameSession, is_perfect: bool) -> List[str]:
         """Check for new achievements."""
