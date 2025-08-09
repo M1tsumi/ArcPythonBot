@@ -923,6 +923,20 @@ class MinigameDaily(commands.Cog):
         return self._TriviaQuestionView(correct_index, user_id, options_count)
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(MinigameDaily(bot))
+    # Add cog and ensure the /trivia command group is registered on the command tree
+    cog = MinigameDaily(bot)
+    await bot.add_cog(cog)
+    try:
+        # Remove any pre-existing 'trivia' command (command or group) to avoid signature mismatch
+        existing = bot.tree.get_command("trivia")
+        if existing is not None:
+            bot.tree.remove_command("trivia")
+    except Exception:
+        pass
+    try:
+        bot.tree.add_command(cog.trivia_group)
+    except Exception:
+        # If already added or any issue occurs, ignore; on_ready will sync the tree
+        pass
 
 

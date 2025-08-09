@@ -5,10 +5,10 @@
   "verified": true,
   "accepted_terms": true,
   "verified_at": "2025-08-09T00:18:32.311193+00:00",
-  "xp": 0,
-  "level": 1,
+  "xp": 25,
+  "level": 3,
   "scrolls": {
-    "basic": 0,
+    "basic": 1,
     "epic": 0
   },
   "inventory": {
@@ -20,11 +20,11 @@
     "daily_uses": 0,
     "last_daily_at": null,
     "trivia": {
-      "correct_total": 0,
+      "correct_total": 5,
       "incorrect_total": 0,
-      "ace_attempts": 0,
-      "sessions_played": 0
+      "ace_attempts": 1,
+      "sessions_played": 1
     },
-    "last_trivia_at": "2025-08-09T00:20:51.453394+00:00"
+    "last_trivia_at": "2025-08-09T00:36:14.719730+00:00"
   }
 }
