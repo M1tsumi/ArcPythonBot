@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import random
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -553,7 +554,7 @@ class MinigameDaily(commands.Cog):
 
             session_questions = random.sample(questions, k=min(TRIVIA_QUESTIONS_PER_SESSION, len(questions)))
             view = self.parent._EphemeralTriviaView(self.parent, self.guild_id, self.user_id, session_questions)
-            first_embed = view.build_current_embed()
+            first_embed = view.build_current_embed(seconds_left=10)
 
             # Set cooldown timestamp at start
             stats = player.setdefault("stats", {})
@@ -561,6 +562,12 @@ class MinigameDaily(commands.Cog):
             save_player(self.guild_id, self.user_id, player)
 
             await interaction.response.send_message(embed=first_embed, view=view, ephemeral=True)
+            try:
+                msg = await interaction.original_response()
+                view.set_message(msg)
+                view.start_countdown()
+            except Exception:
+                pass
 
     class RollChoiceView(discord.ui.View):
         def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
@@ -806,7 +813,15 @@ class MinigameDaily(commands.Cog):
             self.index = 0
             self.correct_count = 0
             self.incorrect_count = 0
+            self.time_per_question = 10
+            self.seconds_left = self.time_per_question
+            self.message: Optional[discord.Message] = None
+            self.countdown_task: Optional[asyncio.Task] = None
+            self._awaiting_answer = True
             self._rebuild_buttons()
+
+        def set_message(self, msg: discord.Message) -> None:
+            self.message = msg
 
         def _option_letters(self) -> List[str]:
             return ["A", "B", "C", "D"]
@@ -814,15 +829,16 @@ class MinigameDaily(commands.Cog):
         def current_question(self) -> Dict[str, Any]:
             return self.questions[self.index]
 
-        def build_current_embed(self) -> discord.Embed:
+        def build_current_embed(self, *, seconds_left: Optional[int] = None) -> discord.Embed:
             q = self.current_question()
+            secs = seconds_left if seconds_left is not None else self.time_per_question
             option_fields: List[Dict[str, Any]] = []
             letters = self._option_letters()
             for idx, opt_text in enumerate(q["options"]):
                 letter = letters[idx] if idx < len(letters) else str(idx + 1)
                 option_fields.append({"name": letter, "value": opt_text, "inline": False})
             embed = EmbedGenerator.create_embed(
-                title=f"Trivia Question {self.index + 1}/{len(self.questions)}",
+                title=f"Trivia Question {self.index + 1}/{len(self.questions)} — {secs}s",
                 description=q["question"],
                 color=discord.Color.blue(),
                 fields=option_fields,
@@ -844,6 +860,21 @@ class MinigameDaily(commands.Cog):
                     if interaction.user is None or interaction.user.id != self.user_id:
                         await interaction.response.send_message("This question is not for you.", ephemeral=True)
                         return
+                    # Acknowledge quickly to avoid interaction timeout
+                    try:
+                        await interaction.response.defer(ephemeral=True)
+                    except Exception:
+                        pass
+                    if not self._awaiting_answer:
+                        return
+                    self._awaiting_answer = False
+                    # Stop countdown
+                    if self.countdown_task and not self.countdown_task.done():
+                        self.countdown_task.cancel()
+                        try:
+                            await self.countdown_task
+                        except asyncio.CancelledError:
+                            pass
                     is_correct = (choice_idx == self.current_question()["answer_index"])
                     if is_correct:
                         self.correct_count += 1
@@ -853,56 +884,112 @@ class MinigameDaily(commands.Cog):
                     # Next question or finish
                     self.index += 1
                     if self.index < len(self.questions):
-                        # Rebuild for next question
+                        # Reset state and show next question
+                        self.seconds_left = self.time_per_question
+                        self._awaiting_answer = True
                         self._rebuild_buttons()
-                        await interaction.response.edit_message(embed=self.build_current_embed(), view=self)
+                        try:
+                            if self.message is not None:
+                                await self.message.edit(embed=self.build_current_embed(seconds_left=self.seconds_left), view=self)
+                        finally:
+                            self.start_countdown()
                     else:
-                        # Finish: update stats, compute rewards, show summary
-                        player = load_player(self.guild_id, self.user_id)
-                        player_stats = player.setdefault("stats", {}).setdefault("trivia", {})
-                        player_stats["correct_total"] = int(player_stats.get("correct_total", 0)) + self.correct_count
-                        player_stats["incorrect_total"] = int(player_stats.get("incorrect_total", 0)) + self.incorrect_count
-                        player_stats["sessions_played"] = int(player_stats.get("sessions_played", 0)) + 1
-                        if self.incorrect_count == 0 and self.correct_count > 0:
-                            player_stats["ace_attempts"] = int(player_stats.get("ace_attempts", 0)) + 1
-
-                        gained_xp = TRIVIA_XP_PER_CORRECT * self.correct_count
-                        level_result = apply_xp_and_level(player, gained_xp)
-
-                        drops: List[str] = []
-                        if random.random() < TRIVIA_BASIC_SCROLL_CHANCE:
-                            player.setdefault("scrolls", {}).setdefault("basic", 0)
-                            player["scrolls"]["basic"] += 1
-                            drops.append("Basic Scroll 📜")
-                        if random.random() < TRIVIA_EPIC_SCROLL_CHANCE:
-                            player.setdefault("scrolls", {}).setdefault("epic", 0)
-                            player["scrolls"]["epic"] += 1
-                            drops.append("Epic Scroll 🟣📜")
-
-                        save_player(self.guild_id, self.user_id, player)
-
-                        summary_lines = [
-                            f"Correct: **{self.correct_count}**",
-                            f"Incorrect: **{self.incorrect_count}**",
-                            f"XP gained: **{gained_xp}**",
-                        ]
-                        summary_lines.append("Drops: " + (", ".join(drops) if drops else "None"))
-                        summary = EmbedGenerator.create_embed(
-                            title="Trivia Results",
-                            description="\n".join(summary_lines),
-                            color=discord.Color.green(),
-                        )
-                        summary = EmbedGenerator.finalize_embed(summary)
-
-                        # Remove buttons on completion
-                        for item in list(self.children):
-                            self.remove_item(item)
-
-                        await interaction.response.edit_message(embed=summary, view=self)
-                        self.stop()
+                        await self._finish_and_summarize()
 
                 btn.callback = on_click  # type: ignore[assignment]
                 self.add_item(btn)
+
+        def start_countdown(self) -> None:
+            # Cancel any existing task
+            if self.countdown_task and not self.countdown_task.done():
+                self.countdown_task.cancel()
+            self.seconds_left = self.time_per_question
+            self.countdown_task = asyncio.create_task(self._run_countdown())
+
+        async def _run_countdown(self) -> None:
+            try:
+                while self.seconds_left > 0 and self._awaiting_answer:
+                    if self.message is not None:
+                        try:
+                            await self.message.edit(embed=self.build_current_embed(seconds_left=self.seconds_left), view=self)
+                        except Exception:
+                            pass
+                    await asyncio.sleep(1)
+                    self.seconds_left -= 1
+                # If still awaiting answer after countdown ends, treat as incorrect and advance
+                if self._awaiting_answer:
+                    self._awaiting_answer = False
+                    self.incorrect_count += 1
+                    self.index += 1
+                    if self.index < len(self.questions):
+                        self.seconds_left = self.time_per_question
+                        self._awaiting_answer = True
+                        self._rebuild_buttons()
+                        if self.message is not None:
+                            try:
+                                await self.message.edit(embed=self.build_current_embed(seconds_left=self.seconds_left), view=self)
+                            except Exception:
+                                pass
+                        self.start_countdown()
+                    else:
+                        await self._finish_and_summarize()
+            except asyncio.CancelledError:
+                # Normal on user answer
+                pass
+
+        async def _finish_and_summarize(self) -> None:
+            # Stop timer if running
+            if self.countdown_task and not self.countdown_task.done():
+                self.countdown_task.cancel()
+                try:
+                    await self.countdown_task
+                except asyncio.CancelledError:
+                    pass
+            # Update stats and rewards
+            player = load_player(self.guild_id, self.user_id)
+            player_stats = player.setdefault("stats", {}).setdefault("trivia", {})
+            player_stats["correct_total"] = int(player_stats.get("correct_total", 0)) + self.correct_count
+            player_stats["incorrect_total"] = int(player_stats.get("incorrect_total", 0)) + self.incorrect_count
+            player_stats["sessions_played"] = int(player_stats.get("sessions_played", 0)) + 1
+            if self.incorrect_count == 0 and self.correct_count > 0:
+                player_stats["ace_attempts"] = int(player_stats.get("ace_attempts", 0)) + 1
+
+            gained_xp = TRIVIA_XP_PER_CORRECT * self.correct_count
+            level_result = apply_xp_and_level(player, gained_xp)
+
+            drops: List[str] = []
+            if random.random() < TRIVIA_BASIC_SCROLL_CHANCE:
+                player.setdefault("scrolls", {}).setdefault("basic", 0)
+                player["scrolls"]["basic"] += 1
+                drops.append("Basic Scroll 📜")
+            if random.random() < TRIVIA_EPIC_SCROLL_CHANCE:
+                player.setdefault("scrolls", {}).setdefault("epic", 0)
+                player["scrolls"]["epic"] += 1
+                drops.append("Epic Scroll 🟣📜")
+
+            save_player(self.guild_id, self.user_id, player)
+
+            summary_lines = [
+                f"Correct: **{self.correct_count}**",
+                f"Incorrect: **{self.incorrect_count}**",
+                f"XP gained: **{gained_xp}**",
+            ]
+            summary_lines.append("Drops: " + (", ".join(drops) if drops else "None"))
+            summary = EmbedGenerator.create_embed(
+                title="Trivia Results",
+                description="\n".join(summary_lines),
+                color=discord.Color.green(),
+            )
+            summary = EmbedGenerator.finalize_embed(summary)
+            # Clear buttons
+            for item in list(self.children):
+                self.remove_item(item)
+            if self.message is not None:
+                try:
+                    await self.message.edit(embed=summary, view=self)
+                except Exception:
+                    pass
+            self.stop()
 
     async def run_trivia_session(self, dm_channel: discord.DMChannel, user: discord.User | discord.Member, guild_id: int, user_id: int):
         questions = parse_trivia_questions()
