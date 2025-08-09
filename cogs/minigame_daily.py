@@ -651,9 +651,9 @@ class MinigameDaily(commands.Cog):
     def _apply_xp(self, player: Dict[str, Any], gained: int) -> None:
         apply_xp_and_level(player, gained)
 
-    @app_commands.command(name="play", description="Minigame: Open the game panel to view stats and roll scrolls")
+    @app_commands.command(name="minigame", description="Minigame: Open the game panel to view stats and roll scrolls")
     @app_commands.checks.cooldown(1, 3.0)
-    async def play(self, interaction: discord.Interaction):
+    async def minigame(self, interaction: discord.Interaction):
         if interaction.guild is None:
             embed = EmbedGenerator.create_embed(
                 title="Guild Only",
