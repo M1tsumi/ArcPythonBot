@@ -140,7 +140,7 @@ def save_play_player(guild_id: int, user_id: int, data: Dict[str, Any]) -> None:
 # ---------- Trivia Question Parser ----------
 
 def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
-    """Parse Avatar trivia questions with enhanced categorization."""
+    """Parse Avatar trivia questions with enhanced categorization and proper shuffling."""
     if not TRIVIA_FILE.exists():
         return []
 
@@ -178,12 +178,17 @@ def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
             if option_line.startswith(('A)', 'B)', 'C)', 'D)')):
                 option_text = option_line[2:].strip()
                 if '✅' in option_text:
-                    correct_answer = len(options)
+                    correct_answer = len(options)  # This will be the index of the current option
                     option_text = option_text.replace('✅', '').strip()
                 options.append(option_text)
             j += 1
         
         if len(options) >= 2 and correct_answer is not None:
+            # Shuffle options and update correct answer index
+            correct_option = options[correct_answer]
+            random.shuffle(options)
+            new_correct_index = options.index(correct_option)
+            
             # Categorize question based on content
             category = categorize_question(question_text)
             difficulty = estimate_difficulty(question_text, options)
@@ -191,7 +196,7 @@ def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
             questions.append({
                 "question": question_text,
                 "options": options,
-                "answer_index": correct_answer,
+                "answer_index": new_correct_index,
                 "category": category,
                 "difficulty": difficulty,
                 "id": len(questions)
@@ -691,7 +696,9 @@ class TriviaGameView(discord.ui.View):
             self.answered = True
             self.timer_active = False
             self.session.streak = 0
-            await self.cog.process_answer(None, self.session, timeout=True)
+            # Try to use the last interaction if available
+            last_interaction = getattr(self.session, 'last_interaction', None)
+            await self.cog.process_answer(last_interaction, self.session, timeout=True)
     
     @discord.ui.button(label="A", style=discord.ButtonStyle.secondary, emoji="🇦")
     async def answer_a(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -705,9 +712,7 @@ class TriviaGameView(discord.ui.View):
     async def answer_c(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._process_answer(interaction, 2)
     
-    @discord.ui.button(label="D", style=discord.ButtonStyle.secondary, emoji="🇩")
-    async def answer_d(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self._process_answer(interaction, 3)
+
     
     async def _process_answer(self, interaction: discord.Interaction, choice: int):
         """Process player's answer with proper timer cleanup."""
@@ -718,6 +723,9 @@ class TriviaGameView(discord.ui.View):
         if self.answered:
             await interaction.response.send_message("You already answered this question!", ephemeral=True)
             return
+        
+        # Store the interaction for potential use in game completion
+        self.session.last_interaction = interaction
         
         # Mark as answered and stop all timers
         self.answered = True
@@ -739,6 +747,33 @@ class AvatarPlaySystem(commands.Cog):
         self.bot = bot
         self.logger = getattr(bot, "logger", None)
         self.active_sessions: Dict[int, GameSession] = {}
+        
+        # Cache trivia questions during initialization to prevent command delays
+        self.trivia_questions = parse_avatar_trivia_questions()
+        if self.logger:
+            if self.trivia_questions:
+                self.logger.info(f"Loaded {len(self.trivia_questions)} trivia questions during cog initialization")
+            else:
+                self.logger.error("No trivia questions loaded during cog initialization!")
+                self.logger.error(f"Trivia file path: {TRIVIA_FILE}")
+                self.logger.error(f"Trivia file exists: {TRIVIA_FILE.exists()}")
+                if TRIVIA_FILE.exists():
+                    try:
+                        with open(TRIVIA_FILE, 'r', encoding='utf-8') as f:
+                            lines = f.readlines()
+                            self.logger.error(f"Trivia file has {len(lines)} lines")
+                            if lines:
+                                self.logger.error(f"First line: {lines[0].strip()[:100]}")
+                    except Exception as e:
+                        self.logger.error(f"Error reading trivia file: {e}")
+    
+    def refresh_trivia_questions(self):
+        """Refresh cached trivia questions."""
+        self.trivia_questions = parse_avatar_trivia_questions()
+        if self.logger:
+            self.logger.info(f"Refreshed {len(self.trivia_questions)} trivia questions")
+    
+
     
     # ---------- Fixed Leaderboard Logic ----------
     
@@ -833,8 +868,33 @@ class AvatarPlaySystem(commands.Cog):
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
         """Main play command with enhanced Discord Components v2 UI."""
+        # Log entry immediately for debugging
+        if hasattr(self, 'logger') and self.logger:
+            self.logger.info(f"Play command started for user {interaction.user.id}")
+        
+        # Defer immediately - this must be the absolute first operation
+        try:
+            await interaction.response.defer()
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.info(f"Play command deferred successfully for user {interaction.user.id}")
+        except discord.NotFound:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command interaction expired IMMEDIATELY for user {interaction.user.id}")
+            return
+        except discord.InteractionResponded:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command interaction already responded for user {interaction.user.id}")
+            return
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command defer failed for user {interaction.user.id}: {e}")
+            return
+        
         if interaction.guild is None:
-            await interaction.response.send_message("❌ Avatar Play can only be used in servers!", ephemeral=True)
+            try:
+                await interaction.followup.send("❌ Avatar Play can only be used in servers!", ephemeral=True)
+            except:
+                pass
             return
         
         guild_id = interaction.guild.id
@@ -850,7 +910,18 @@ class AvatarPlaySystem(commands.Cog):
         embed = self._create_main_play_embed(player, daily_bonus)
         view = EnhancedPlayMainView(self, guild_id, user_id, player)
         
-        await interaction.response.send_message(embed=embed, view=view)
+        try:
+            await interaction.followup.send(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try with response as fallback
+            try:
+                await interaction.response.send_message(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to send play command response - all methods failed")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error sending play command response: {e}")
     
     def _check_daily_bonus(self, player: Dict[str, Any]) -> bool:
         """Check if player gets daily bonus."""
@@ -931,7 +1002,7 @@ class AvatarPlaySystem(commands.Cog):
         # Interactive guide
         embed.add_field(
             name="🎛️ How to Play",
-            value="🔸 **Select Difficulty** using the dropdown above\n🔸 **Choose Game Mode** using the colorful buttons\n🔸 **View Stats/Achievements** with the action buttons\n🔸 **Answer Questions** with A/B/C/D buttons during games",
+            value="🔸 **Select Difficulty** using the dropdown above\n🔸 **Choose Game Mode** using the colorful buttons\n🔸 **View Stats/Achievements** with the action buttons\n🔸 **Answer Questions** with A/B/C buttons during games",
             inline=False
         )
         
@@ -958,10 +1029,16 @@ class AvatarPlaySystem(commands.Cog):
         guild_id = interaction.guild.id
         user_id = interaction.user.id
         
-        # Load questions
-        questions = parse_avatar_trivia_questions()
+        # Use cached questions for instant response
+        questions = self.trivia_questions
         if not questions:
-            await interaction.response.send_message("❌ No trivia questions available!", ephemeral=True)
+            try:
+                if interaction.response.is_done():
+                    await interaction.followup.send("❌ No trivia questions available!", ephemeral=True)
+                else:
+                    await interaction.response.send_message("❌ No trivia questions available!", ephemeral=True)
+            except:
+                pass
             return
         
         # Filter by difficulty if specified
@@ -1099,10 +1176,117 @@ class AvatarPlaySystem(commands.Cog):
         view = TriviaGameView(self, session)
         session.view = view  # Store reference for timer cleanup
         
-        if interaction.response.is_done():
-            await interaction.edit_original_response(embed=embed, view=view)
+        try:
+            if interaction.response.is_done():
+                await interaction.edit_original_response(embed=embed, view=view)
+            else:
+                await interaction.response.edit_message(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try fallback
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(embed=embed, view=view)
+                else:
+                    await interaction.edit_original_response(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to show question - interaction expired")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error showing question: {e}")
+    
+    async def _show_next_question(self, interaction: discord.Interaction, session: GameSession):
+        """Display next question using edit_original_response since interaction was already used."""
+        question_data = session.questions[session.current_question]
+        question_num = session.current_question + 1
+        total_questions = len(session.questions)
+        
+        # Dynamic colors based on progress and streaks
+        if session.streak >= 5:
+            color = discord.Color.gold()  # Gold for hot streak
+            streak_emoji = "🔥"
+        elif session.streak >= 3:
+            color = discord.Color.orange()  # Orange for good streak
+            streak_emoji = "⚡"
         else:
-            await interaction.response.edit_message(embed=embed, view=view)
+            color = discord.Color.blue()  # Blue for normal
+            streak_emoji = "📝"
+        
+        # Enhanced title with dynamic elements
+        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        if session.streak >= 3:
+            title_parts.append(f"• {session.streak} STREAK!")
+        
+        embed = EmbedGenerator.create_embed(
+            title=" ".join(title_parts),
+            description=f"🎯 **{question_data['question']}**",
+            color=color
+        )
+        
+        # Enhanced options with styled formatting
+        option_emojis = ["🇦", "🇧", "🇨"]
+        option_styles = ["🔸", "🔹", "🔶"]
+        
+        for i, option in enumerate(question_data["options"][:3]):
+            embed.add_field(
+                name=f"{option_emojis[i]} Option {chr(65+i)}",
+                value=f"{option_styles[i]} **{option}**",
+                inline=False
+            )
+        
+        # Dynamic progress section with achievements
+        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        if session.streak > 0:
+            progress_value += f"\n🔥 **{session.streak}** Question Streak"
+        else:
+            progress_value += f"\n📍 Build your streak!"
+        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+        
+        embed.add_field(
+            name="📊 Performance",
+            value=progress_value,
+            inline=True
+        )
+        
+        # Enhanced timer with urgency indicators
+        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
+        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
+        
+        embed.add_field(
+            name=f"{time_emoji} Timer",
+            value=f"{timer_style}\n⏰ **{session.time_per_question}** seconds",
+            inline=True
+        )
+        
+        # Enhanced category and difficulty display with visual elements
+        category_emoji = "🌟" if question_data.get("category") == "Avatar & Airbending" else "💧" if "Water" in question_data.get("category", "") else "🌍" if "Earth" in question_data.get("category", "") else "🔥" if "Fire" in question_data.get("category", "") else "✨"
+        difficulty_color = "🟢" if question_data.get("difficulty", "normal") == "easy" else "🟡" if question_data.get("difficulty", "normal") == "normal" else "🟠" if question_data.get("difficulty", "normal") == "hard" else "🔴"
+        
+        embed.add_field(
+            name="📖 Question Info",
+            value=f"{category_emoji} **{question_data.get('category', 'General Knowledge')}**\n{difficulty_color} **{question_data.get('difficulty', 'normal').title()}** Difficulty",
+            inline=True
+        )
+        
+        embed = EmbedGenerator.finalize_embed(embed)
+        
+        # Create enhanced view with session reference
+        view = TriviaGameView(self, session)
+        session.view = view  # Store reference for timer cleanup
+        
+        # Always use edit_original_response for next questions
+        try:
+            await interaction.edit_original_response(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try fallback
+            try:
+                await interaction.response.send_message(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to show next question - interaction expired")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error showing next question: {e}")
     
     async def process_answer(self, interaction: Optional[discord.Interaction], session: GameSession, choice: Optional[int] = None, timeout: bool = False):
         """Process player's answer and continue game."""
@@ -1122,16 +1306,20 @@ class AvatarPlaySystem(commands.Cog):
         # Show result
         if interaction:
             result_embed = self._create_answer_result_embed(question_data, choice, is_correct, timeout, session)
-            await interaction.response.edit_message(embed=result_embed, view=None)
+            if interaction.response.is_done():
+                await interaction.edit_original_response(embed=result_embed, view=None)
+            else:
+                await interaction.response.edit_message(embed=result_embed, view=None)
         
         # Move to next question or end game
         session.current_question += 1
         
         if session.current_question < len(session.questions):
-            # Next question after a short delay
-            await asyncio.sleep(2)
+            # Next question after a shorter delay to prevent interaction timeout
+            await asyncio.sleep(1)
             if interaction:
-                await self._show_question(interaction, session)
+                # For the next question, we need to use edit_original_response since the interaction was already used
+                await self._show_next_question(interaction, session)
         else:
             # Game finished
             await self._finish_game(interaction, session)
@@ -1196,7 +1384,7 @@ class AvatarPlaySystem(commands.Cog):
         embed = EmbedGenerator.create_embed(title=title, description=description, color=color)
         
         # Show correct answer
-        option_letters = ["A", "B", "C", "D"]
+        option_letters = ["A", "B", "C"]
         correct_letter = option_letters[question_data["answer_index"]]
         correct_option = question_data["options"][question_data["answer_index"]]
         
@@ -1286,7 +1474,7 @@ class AvatarPlaySystem(commands.Cog):
             "games_played": 1,
             "questions_answered": total_questions,
             "correct_answers": session.correct_answers,
-            "xp_gained": xp_result["total_gained"],
+            "xp_gained": xp_result["gained_xp"],
             "best_streak": session.streak,
             "perfect_games": 1 if is_perfect else 0
         }
@@ -1296,7 +1484,38 @@ class AvatarPlaySystem(commands.Cog):
         results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus)
         
         if interaction:
-            await interaction.edit_original_response(embed=results_embed, view=None)
+            try:
+                await interaction.edit_original_response(embed=results_embed, view=None)
+            except discord.NotFound:
+                # Interaction expired, try followup
+                try:
+                    await interaction.followup.send(embed=results_embed)
+                except:
+                    # Try direct response as last resort
+                    try:
+                        await interaction.response.send_message(embed=results_embed)
+                    except:
+                        if hasattr(self, 'logger') and self.logger:
+                            self.logger.error("Failed to send game completion message - all interaction methods failed")
+                            self.logger.error(f"Session: {session.player_id}, Questions: {len(session.questions)}, Current: {session.current_question}")
+            except Exception as e:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error(f"Error sending game completion message: {e}")
+                # Try followup as fallback
+                try:
+                    await interaction.followup.send(embed=results_embed)
+                except:
+                    # Try direct response as last resort
+                    try:
+                        await interaction.response.send_message(embed=results_embed)
+                    except:
+                        if hasattr(self, 'logger') and self.logger:
+                            self.logger.error("All fallback methods failed for game completion message")
+        else:
+            # No interaction available, game completed due to timeout
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.warning(f"Game completed but no interaction available for completion message. Player: {session.player_id}")
+            # In this case, stats are still saved, just no completion message shown
     
     def _check_achievements(self, player: Dict[str, Any], session: GameSession, is_perfect: bool) -> List[str]:
         """Check for new achievements."""
@@ -1609,80 +1828,224 @@ class AvatarPlaySystem(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
-    # ========== Fix for trivia leaderboard duplicates ==========
+    # ========== Unified Trivia Leaderboard (Single Source of Truth) ==========
     
-    @app_commands.command(name="trivia_leaderboard_fixed", description="🏆 Show trivia leaderboard (fixed duplicates)")
+    @app_commands.command(name="trivia_leaderboard", description="🏆 Show trivia leaderboard (unified system)")
     @app_commands.describe(scope="Leaderboard scope")
     @app_commands.choices(scope=[
         app_commands.Choice(name="global", value="global"),
         app_commands.Choice(name="server", value="server"),
     ])
-    async def fixed_trivia_leaderboard(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
-        """Fixed version of trivia leaderboard that merges duplicates."""
+    async def unified_trivia_leaderboard(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
+        """Unified trivia leaderboard that consolidates all trivia data sources."""
         from cogs.minigame_daily import MINIGAME_ROOT, ensure_server_storage
+        
+        try:
+            # Try to defer the response immediately to prevent timeout
+            await interaction.response.defer()
+        except discord.NotFound:
+            # Interaction already expired, try to respond anyway
+            try:
+                await interaction.response.send_message("⚠️ Interaction timed out, but processing your request...", ephemeral=True)
+            except:
+                # If we can't respond at all, log and return
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to respond to trivia leaderboard interaction - interaction expired")
+                return
+        except Exception as e:
+            # Other error with defer
+            try:
+                await interaction.response.send_message(f"❌ Error processing request: {str(e)}", ephemeral=True)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error(f"Trivia leaderboard error: {e}")
+                return
         
         scope_value = scope.value
         if scope_value not in ("global", "server"):
-            await interaction.response.send_message("Invalid scope. Use global or server.", ephemeral=True)
+            try:
+                await interaction.followup.send("Invalid scope. Use global or server.", ephemeral=True)
+            except:
+                return
             return
 
         if interaction.guild is None and scope_value == "server":
-            await interaction.response.send_message("Server leaderboard must be used in a server.", ephemeral=True)
+            try:
+                await interaction.followup.send("Server leaderboard must be used in a server.", ephemeral=True)
+            except:
+                return
             return
 
-        entries: List[Tuple[int, int, int]] = []
+        # Consolidate data from BOTH Avatar Play and Minigame systems
+        consolidated_data = {}  # user_id -> {correct: int, sessions: int, games: int}
+        
+        # Performance tracking
+        files_processed = 0
+        
         if scope_value == "server":
             guild_id = interaction.guild.id
-            server_dir = ensure_server_storage(guild_id)
-            players_dir = server_dir / "players"
-            for file in players_dir.glob("*.json"):
-                try:
-                    data = json.loads(file.read_text(encoding="utf-8"))
-                except Exception:
-                    continue
-                stats = data.get("stats", {}).get("trivia", {})
-                correct_total = int(stats.get("correct_total", 0))
-                sessions = int(stats.get("sessions_played", 0))
-                if correct_total > 0 or sessions > 0:
-                    entries.append((int(data.get("user_id", 0)), correct_total, sessions))
-        else:
-            if not MINIGAME_ROOT.exists():
-                await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
-                return
-            for server_dir in MINIGAME_ROOT.glob("*/"):
-                players_dir = server_dir / "players"
-                for file in players_dir.glob("*.json"):
+            
+            # 1. Get Avatar Play System data (check both possible locations)
+            avatar_play_dir_new = PLAY_DATA_ROOT / str(guild_id) / "players"
+            avatar_play_dir_old = Path("data") / "avatar_play" / "servers" / str(guild_id) / "players"
+            
+            # Check both locations
+            for avatar_play_dir in [avatar_play_dir_new, avatar_play_dir_old]:
+                if avatar_play_dir.exists():
+                    for file in avatar_play_dir.glob("*.json"):
+                        try:
+                            data = json.loads(file.read_text(encoding="utf-8"))
+                            user_id = int(data.get("user_id", 0))
+                            stats = data.get("stats", {})
+                            correct = int(stats.get("correct_answers", 0))
+                            games = int(stats.get("games_played", 0))
+                            questions = int(stats.get("questions_answered", 0))
+                            
+                            if user_id not in consolidated_data:
+                                consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                            consolidated_data[user_id]["correct"] += correct
+                            consolidated_data[user_id]["sessions"] += games  # games = sessions
+                            consolidated_data[user_id]["games"] += games
+                            files_processed += 1
+                        except Exception:
+                            continue
+            
+            # 2. Get Minigame System data (if any)
+            minigame_dir = ensure_server_storage(guild_id) / "players"
+            
+            if minigame_dir.exists():
+                for file in minigame_dir.glob("*.json"):
                     try:
                         data = json.loads(file.read_text(encoding="utf-8"))
+                        user_id = int(data.get("user_id", 0))
+                        stats = data.get("stats", {}).get("trivia", {})
+                        correct = int(stats.get("correct_total", 0))
+                        sessions = int(stats.get("sessions_played", 0))
+                        
+                        if user_id not in consolidated_data:
+                            consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                        consolidated_data[user_id]["correct"] += correct
+                        consolidated_data[user_id]["sessions"] += sessions
+                        consolidated_data[user_id]["games"] += sessions
+                        files_processed += 1
                     except Exception:
                         continue
-                    stats = data.get("stats", {}).get("trivia", {})
-                    correct_total = int(stats.get("correct_total", 0))
-                    sessions = int(stats.get("sessions_played", 0))
-                    if correct_total > 0 or sessions > 0:
-                        entries.append((int(data.get("user_id", 0)), correct_total, sessions))
+                        
+        else:  # global scope
+            
+            # 1. Get Avatar Play System data from all servers (check both locations)
+            avatar_play_roots = [PLAY_DATA_ROOT, Path("data") / "avatar_play" / "servers"]
+            
+            for avatar_play_root in avatar_play_roots:
+                if avatar_play_root.exists():
+                    for server_dir in avatar_play_root.glob("*/"):
+                        players_dir = server_dir / "players"
+                        if players_dir.exists():
+                            for file in players_dir.glob("*.json"):
+                                try:
+                                    data = json.loads(file.read_text(encoding="utf-8"))
+                                    user_id = int(data.get("user_id", 0))
+                                    stats = data.get("stats", {})
+                                    correct = int(stats.get("correct_answers", 0))
+                                    games = int(stats.get("games_played", 0))
+                                    
+                                    if user_id not in consolidated_data:
+                                        consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                                    consolidated_data[user_id]["correct"] += correct
+                                    consolidated_data[user_id]["sessions"] += games
+                                    consolidated_data[user_id]["games"] += games
+                                    files_processed += 1
+                                except Exception:
+                                    continue
+            
+            # 2. Get Minigame System data from all servers
+            if MINIGAME_ROOT.exists():
+                for server_dir in MINIGAME_ROOT.glob("*/"):
+                    players_dir = server_dir / "players"
+                    if players_dir.exists():
+                        for file in players_dir.glob("*.json"):
+                            try:
+                                data = json.loads(file.read_text(encoding="utf-8"))
+                                user_id = int(data.get("user_id", 0))
+                                stats = data.get("stats", {}).get("trivia", {})
+                                correct = int(stats.get("correct_total", 0))
+                                sessions = int(stats.get("sessions_played", 0))
+                                
+                                if user_id not in consolidated_data:
+                                    consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                                consolidated_data[user_id]["correct"] += correct
+                                consolidated_data[user_id]["sessions"] += sessions
+                                consolidated_data[user_id]["games"] += sessions
+                                files_processed += 1
+                            except Exception:
+                                continue
 
-        if not entries:
-            await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
+        if not consolidated_data:
+            # Simple no-data message
+            error_embed = EmbedGenerator.create_embed(
+                title="📊 No Trivia Data",
+                description=f"No trivia data found for {scope_value} leaderboard.\n\nUse `/play` to start competing and appear on the leaderboard!",
+                color=discord.Color.blue()
+            )
+            error_embed = EmbedGenerator.finalize_embed(error_embed)
+            
+            try:
+                await interaction.followup.send(embed=error_embed, ephemeral=True)
+            except:
+                try:
+                    await interaction.response.send_message("No trivia data available yet. Use `/play` to start playing!", ephemeral=True)
+                except:
+                    pass
             return
 
-        # FIX: Merge duplicates before sorting
-        entries = self._merge_duplicate_users(entries)
-        entries.sort(key=lambda x: (-x[1], x[2]))
+        # Convert to sorted list: (user_id, correct_answers, sessions)
+        entries = [(user_id, data["correct"], data["sessions"]) 
+                  for user_id, data in consolidated_data.items() 
+                  if data["correct"] > 0 or data["sessions"] > 0]
+        
+        entries.sort(key=lambda x: (-x[1], -x[2]))  # Sort by correct answers desc, then sessions desc
         top_entries = entries[:10]
         
         lines = []
         for rank, (uid, correct, sess) in enumerate(top_entries, start=1):
             user_mention = f"<@{uid}>"
-            lines.append(f"**{rank}.** {user_mention} — Correct: **{correct}**, Sessions: {sess}")
+            
+            # Calculate accuracy if we have session data
+            accuracy = ""
+            if sess > 0:
+                # Estimate total questions (Avatar Play system typically has varying questions per session)
+                estimated_total = sess * 5  # Conservative estimate of 5 questions per session
+                acc_percent = (correct / estimated_total) * 100 if estimated_total > 0 else 0
+                accuracy = f" | {acc_percent:.1f}% accuracy"
+            
+            rank_emoji = {1: "🥇", 2: "🥈", 3: "🥉"}.get(rank, f"{rank}.")
+            lines.append(f"{rank_emoji} {user_mention} — **{correct}** correct{accuracy}")
 
         embed = EmbedGenerator.create_embed(
-            title=f"🏆 Trivia Leaderboard — {scope_value.title()} (Fixed)",
-            description="\n".join(lines),
+            title=f"🏆 Avatar Trivia Leaderboard — {scope_value.title()}",
+            description="\n".join(lines) if lines else "No trivia data found.",
             color=discord.Color.gold(),
         )
+        
+        # Simple footer with just essential info
+        embed.set_footer(text=f"🎮 {scope_value.title()} Rankings | Use /play to compete!")
+        
         embed = EmbedGenerator.finalize_embed(embed)
-        await interaction.response.send_message(embed=embed)
+        
+        try:
+            await interaction.followup.send(embed=embed)
+        except discord.NotFound:
+            # Interaction expired, try one more time with response
+            try:
+                await interaction.response.send_message(embed=embed)
+            except:
+                # Give up gracefully
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to send trivia leaderboard - all interaction methods failed")
+        except Exception as e:
+            # Other error
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error sending trivia leaderboard: {e}")
 
 
 async def setup(bot: commands.Bot):
