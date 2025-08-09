@@ -1,4 +1,16 @@
 # Changelog
+## [1.7.2] - 2025-08-09
+
+### Fixed
+- **TGL System**: Fixed corrupted emoji encodings throughout the TGL command system
+  - All emojis now display correctly (🏆, 📊, 🎯, ⛏️, 👥, ⚡, 🗡️, 💪, etc.)
+  - Fixed bullet point character corruption in command outputs
+  - Verified all 5 daily stages are properly included in overview and dropdown navigation
+
+### Improved
+- **TGL Overview**: Enhanced interactive dropdown functionality with proper emoji display
+- **Code Quality**: Improved readability and formatting of TGL system code
+
 ## [1.7.1] - 2025-08-08
 
 ### Fixed
