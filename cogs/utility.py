@@ -549,6 +549,12 @@ class Utility(commands.Cog):
             
             # Sync commands
             synced = await self.bot.tree.sync()
+            # Also force a per-guild sync in the current guild (faster visibility)
+            if interaction.guild is not None:
+                try:
+                    await self.bot.tree.sync(guild=interaction.guild)
+                except Exception:
+                    pass
             
             embed = discord.Embed(
                 title="✅ Commands Refreshed",

@@ -766,6 +766,17 @@ class MinigameDaily(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
+    # Root-level alias for quick access without the /trivia group
+    @app_commands.command(name="trivia_leaderboard", description="Show trivia leaderboard (global or server)")
+    @app_commands.describe(scope="Leaderboard scope")
+    @app_commands.choices(scope=[
+        app_commands.Choice(name="global", value="global"),
+        app_commands.Choice(name="server", value="server"),
+    ])
+    async def trivia_leaderboard_root(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
+        # Reuse the same implementation as the grouped command
+        await self.trivia_leaderboard.callback(self, interaction, scope)
+
     @trivia_group.command(name="validate", description="Validate trivia file and preview a question")
     async def trivia_validate(self, interaction: discord.Interaction):
         questions = parse_trivia_questions()

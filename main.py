@@ -141,8 +141,18 @@ class AvatarRealmsBot(commands.Bot):
         
         # Sync slash commands with better error handling
         try:
+            # Global sync first
             synced = await self.tree.sync()
-            self.logger.info(f"🔄 Synced {len(synced)} command(s)")
+            self.logger.info(f"🔄 Globally synced {len(synced)} command(s)")
+            # Per-guild sync to force-refresh in each server (avoids stale caches)
+            refreshed = 0
+            for guild in self.guilds:
+                try:
+                    await self.tree.sync(guild=guild)
+                    refreshed += 1
+                except Exception as e:
+                    self.logger.warning(f"Guild sync failed for {guild.id}: {e}")
+            self.logger.info(f"🔁 Per-guild refresh completed for {refreshed} guild(s)")
             
             # Log all available commands
             all_commands = []
