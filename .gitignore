@@ -8,6 +8,7 @@ instructions.md
 
 # Game data files (prevent from being pushed to GitHub)
 *.txt
+!text files/trivia-questions.txt
 !text files/troops.txt
 !text files/leader-ranks.txt
 !text files/alliance-ranks.txt
