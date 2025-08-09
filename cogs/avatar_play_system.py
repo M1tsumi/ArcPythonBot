@@ -747,6 +747,17 @@ class AvatarPlaySystem(commands.Cog):
         self.bot = bot
         self.logger = getattr(bot, "logger", None)
         self.active_sessions: Dict[int, GameSession] = {}
+        
+        # Cache trivia questions during initialization to prevent command delays
+        self.trivia_questions = parse_avatar_trivia_questions()
+        if self.logger:
+            self.logger.info(f"Loaded {len(self.trivia_questions)} trivia questions during cog initialization")
+    
+    def refresh_trivia_questions(self):
+        """Refresh cached trivia questions."""
+        self.trivia_questions = parse_avatar_trivia_questions()
+        if self.logger:
+            self.logger.info(f"Refreshed {len(self.trivia_questions)} trivia questions")
     
     # ---------- Fixed Leaderboard Logic ----------
     
@@ -994,8 +1005,8 @@ class AvatarPlaySystem(commands.Cog):
         guild_id = interaction.guild.id
         user_id = interaction.user.id
         
-        # Load questions
-        questions = parse_avatar_trivia_questions()
+        # Use cached questions for instant response
+        questions = self.trivia_questions
         if not questions:
             try:
                 if interaction.response.is_done():
