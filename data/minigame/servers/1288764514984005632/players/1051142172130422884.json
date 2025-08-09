@@ -1,0 +1,30 @@
+{
+  "user_id": 1051142172130422884,
+  "guild_id": 1288764514984005632,
+  "created_at": "2025-08-09T00:18:30.446719+00:00",
+  "verified": true,
+  "accepted_terms": true,
+  "verified_at": "2025-08-09T00:18:32.311193+00:00",
+  "xp": 0,
+  "level": 1,
+  "scrolls": {
+    "basic": 0,
+    "epic": 0
+  },
+  "inventory": {
+    "basic_hero_shards": 0,
+    "epic_hero_shards": 0,
+    "skill_points": 0
+  },
+  "stats": {
+    "daily_uses": 0,
+    "last_daily_at": null,
+    "trivia": {
+      "correct_total": 0,
+      "incorrect_total": 0,
+      "ace_attempts": 0,
+      "sessions_played": 0
+    },
+    "last_trivia_at": "2025-08-09T00:18:38.941562+00:00"
+  }
+}

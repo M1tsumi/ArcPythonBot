@@ -765,6 +765,30 @@ class MinigameDaily(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
+    @app_commands.command(name="trivia_validate", description="Admin: validate trivia questions file and preview a sample")
+    @app_commands.checks.cooldown(1, 5.0)
+    async def trivia_validate(self, interaction: discord.Interaction):
+        questions = parse_trivia_questions()
+        count = len(questions)
+        description = [
+            f"Parsed questions: **{count}**",
+            f"File path: `{TRIVIA_FILE}`",
+            f"Exists: **{TRIVIA_FILE.exists()}**",
+        ]
+        if count > 0:
+            q = random.choice(questions)
+            opts = "\n".join([f"- {opt}" for opt in q.get("options", [])])
+            description.append("\nSample Question:")
+            description.append(q.get("question", ""))
+            description.append("Options:\n" + opts)
+        embed = EmbedGenerator.create_embed(
+            title="Trivia Validation",
+            description="\n".join(description),
+            color=discord.Color.teal(),
+        )
+        embed = EmbedGenerator.finalize_embed(embed)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
     # ---------- Trivia game loop ----------
 
     async def run_trivia_session(self, dm_channel: discord.DMChannel, user: discord.User | discord.Member, guild_id: int, user_id: int):
