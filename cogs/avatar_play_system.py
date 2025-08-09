@@ -759,6 +759,8 @@ class AvatarPlaySystem(commands.Cog):
         if self.logger:
             self.logger.info(f"Refreshed {len(self.trivia_questions)} trivia questions")
     
+
+    
     # ---------- Fixed Leaderboard Logic ----------
     
     def _merge_duplicate_users(self, entries: List[Tuple[int, int, int]]) -> List[Tuple[int, int, int]]:
@@ -852,18 +854,26 @@ class AvatarPlaySystem(commands.Cog):
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
         """Main play command with enhanced Discord Components v2 UI."""
+        # Log entry immediately for debugging
+        if hasattr(self, 'logger') and self.logger:
+            self.logger.info(f"Play command started for user {interaction.user.id}")
+        
+        # Defer immediately - this must be the absolute first operation
         try:
-            # Defer immediately to prevent timeout
             await interaction.response.defer()
-        except discord.NotFound:
-            # Interaction already expired
             if hasattr(self, 'logger') and self.logger:
-                self.logger.error("Play command interaction expired before defer")
+                self.logger.info(f"Play command deferred successfully for user {interaction.user.id}")
+        except discord.NotFound:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command interaction expired IMMEDIATELY for user {interaction.user.id}")
+            return
+        except discord.InteractionResponded:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command interaction already responded for user {interaction.user.id}")
             return
         except Exception as e:
-            # Other error with defer
             if hasattr(self, 'logger') and self.logger:
-                self.logger.error(f"Play command defer error: {e}")
+                self.logger.error(f"Play command defer failed for user {interaction.user.id}: {e}")
             return
         
         if interaction.guild is None:
