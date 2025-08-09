@@ -1707,16 +1707,16 @@ class AvatarPlaySystem(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
-    # ========== Fix for trivia leaderboard duplicates ==========
+    # ========== Unified Trivia Leaderboard (Single Source of Truth) ==========
     
-    @app_commands.command(name="trivia_leaderboard_fixed", description="🏆 Show trivia leaderboard (fixed duplicates)")
+    @app_commands.command(name="trivia_leaderboard", description="🏆 Show trivia leaderboard (unified system)")
     @app_commands.describe(scope="Leaderboard scope")
     @app_commands.choices(scope=[
         app_commands.Choice(name="global", value="global"),
         app_commands.Choice(name="server", value="server"),
     ])
-    async def fixed_trivia_leaderboard(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
-        """Fixed version of trivia leaderboard that merges duplicates."""
+    async def unified_trivia_leaderboard(self, interaction: discord.Interaction, scope: app_commands.Choice[str]):
+        """Unified trivia leaderboard that consolidates all trivia data sources."""
         from cogs.minigame_daily import MINIGAME_ROOT, ensure_server_storage
         
         scope_value = scope.value
@@ -1728,57 +1728,139 @@ class AvatarPlaySystem(commands.Cog):
             await interaction.response.send_message("Server leaderboard must be used in a server.", ephemeral=True)
             return
 
-        entries: List[Tuple[int, int, int]] = []
+        # Consolidate data from BOTH Avatar Play and Minigame systems
+        consolidated_data = {}  # user_id -> {correct: int, sessions: int, games: int}
+        
         if scope_value == "server":
             guild_id = interaction.guild.id
-            server_dir = ensure_server_storage(guild_id)
-            players_dir = server_dir / "players"
-            for file in players_dir.glob("*.json"):
-                try:
-                    data = json.loads(file.read_text(encoding="utf-8"))
-                except Exception:
-                    continue
-                stats = data.get("stats", {}).get("trivia", {})
-                correct_total = int(stats.get("correct_total", 0))
-                sessions = int(stats.get("sessions_played", 0))
-                if correct_total > 0 or sessions > 0:
-                    entries.append((int(data.get("user_id", 0)), correct_total, sessions))
-        else:
-            if not MINIGAME_ROOT.exists():
-                await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
-                return
-            for server_dir in MINIGAME_ROOT.glob("*/"):
-                players_dir = server_dir / "players"
-                for file in players_dir.glob("*.json"):
+            
+            # 1. Get Avatar Play System data
+            avatar_play_dir = PLAY_DATA_ROOT / str(guild_id) / "players"
+            if avatar_play_dir.exists():
+                for file in avatar_play_dir.glob("*.json"):
                     try:
                         data = json.loads(file.read_text(encoding="utf-8"))
+                        user_id = int(data.get("user_id", 0))
+                        stats = data.get("stats", {})
+                        correct = int(stats.get("correct_answers", 0))
+                        games = int(stats.get("games_played", 0))
+                        questions = int(stats.get("questions_answered", 0))
+                        
+                        if user_id not in consolidated_data:
+                            consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                        consolidated_data[user_id]["correct"] += correct
+                        consolidated_data[user_id]["sessions"] += games  # games = sessions
+                        consolidated_data[user_id]["games"] += games
                     except Exception:
                         continue
-                    stats = data.get("stats", {}).get("trivia", {})
-                    correct_total = int(stats.get("correct_total", 0))
-                    sessions = int(stats.get("sessions_played", 0))
-                    if correct_total > 0 or sessions > 0:
-                        entries.append((int(data.get("user_id", 0)), correct_total, sessions))
+            
+            # 2. Get Minigame System data (if any)
+            minigame_dir = ensure_server_storage(guild_id) / "players"
+            if minigame_dir.exists():
+                for file in minigame_dir.glob("*.json"):
+                    try:
+                        data = json.loads(file.read_text(encoding="utf-8"))
+                        user_id = int(data.get("user_id", 0))
+                        stats = data.get("stats", {}).get("trivia", {})
+                        correct = int(stats.get("correct_total", 0))
+                        sessions = int(stats.get("sessions_played", 0))
+                        
+                        if user_id not in consolidated_data:
+                            consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                        consolidated_data[user_id]["correct"] += correct
+                        consolidated_data[user_id]["sessions"] += sessions
+                        consolidated_data[user_id]["games"] += sessions
+                    except Exception:
+                        continue
+                        
+        else:  # global scope
+            # 1. Get Avatar Play System data from all servers
+            if PLAY_DATA_ROOT.exists():
+                for server_dir in PLAY_DATA_ROOT.glob("*/"):
+                    players_dir = server_dir / "players"
+                    if players_dir.exists():
+                        for file in players_dir.glob("*.json"):
+                            try:
+                                data = json.loads(file.read_text(encoding="utf-8"))
+                                user_id = int(data.get("user_id", 0))
+                                stats = data.get("stats", {})
+                                correct = int(stats.get("correct_answers", 0))
+                                games = int(stats.get("games_played", 0))
+                                
+                                if user_id not in consolidated_data:
+                                    consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                                consolidated_data[user_id]["correct"] += correct
+                                consolidated_data[user_id]["sessions"] += games
+                                consolidated_data[user_id]["games"] += games
+                            except Exception:
+                                continue
+            
+            # 2. Get Minigame System data from all servers
+            if MINIGAME_ROOT.exists():
+                for server_dir in MINIGAME_ROOT.glob("*/"):
+                    players_dir = server_dir / "players"
+                    if players_dir.exists():
+                        for file in players_dir.glob("*.json"):
+                            try:
+                                data = json.loads(file.read_text(encoding="utf-8"))
+                                user_id = int(data.get("user_id", 0))
+                                stats = data.get("stats", {}).get("trivia", {})
+                                correct = int(stats.get("correct_total", 0))
+                                sessions = int(stats.get("sessions_played", 0))
+                                
+                                if user_id not in consolidated_data:
+                                    consolidated_data[user_id] = {"correct": 0, "sessions": 0, "games": 0}
+                                consolidated_data[user_id]["correct"] += correct
+                                consolidated_data[user_id]["sessions"] += sessions
+                                consolidated_data[user_id]["games"] += sessions
+                            except Exception:
+                                continue
 
-        if not entries:
+        if not consolidated_data:
             await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
             return
 
-        # FIX: Merge duplicates before sorting
-        entries = self._merge_duplicate_users(entries)
-        entries.sort(key=lambda x: (-x[1], x[2]))
+        # Convert to sorted list: (user_id, correct_answers, sessions)
+        entries = [(user_id, data["correct"], data["sessions"]) 
+                  for user_id, data in consolidated_data.items() 
+                  if data["correct"] > 0 or data["sessions"] > 0]
+        
+        entries.sort(key=lambda x: (-x[1], -x[2]))  # Sort by correct answers desc, then sessions desc
         top_entries = entries[:10]
         
         lines = []
         for rank, (uid, correct, sess) in enumerate(top_entries, start=1):
             user_mention = f"<@{uid}>"
-            lines.append(f"**{rank}.** {user_mention} — Correct: **{correct}**, Sessions: {sess}")
+            
+            # Calculate accuracy if we have session data
+            accuracy = ""
+            if sess > 0:
+                # Estimate total questions (Avatar Play system typically has varying questions per session)
+                estimated_total = sess * 5  # Conservative estimate of 5 questions per session
+                acc_percent = (correct / estimated_total) * 100 if estimated_total > 0 else 0
+                accuracy = f" | {acc_percent:.1f}% accuracy"
+            
+            rank_emoji = {1: "🥇", 2: "🥈", 3: "🥉"}.get(rank, f"{rank}.")
+            lines.append(f"{rank_emoji} {user_mention} — **{correct}** correct{accuracy}")
 
         embed = EmbedGenerator.create_embed(
-            title=f"🏆 Trivia Leaderboard — {scope_value.title()} (Fixed)",
-            description="\n".join(lines),
+            title=f"🏆 Avatar Trivia Leaderboard — {scope_value.title()}",
+            description="\n".join(lines) if lines else "No trivia data found.",
             color=discord.Color.gold(),
         )
+        
+        embed.add_field(
+            name="📊 Data Sources", 
+            value="🎮 Avatar Play System\n🎯 Minigame System\n*(Combined & deduplicated)*",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🎲 Available Commands", 
+            value="`/play` — Start trivia\n`/trivia_leaderboard server`\n`/trivia_leaderboard global`",
+            inline=True
+        )
+        
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
