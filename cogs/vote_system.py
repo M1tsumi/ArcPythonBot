@@ -223,7 +223,6 @@ class VoteSystem(commands.Cog):
         )
         
         embed.set_footer(text="💖 Thank you for supporting Avatar Realms Collide!")
-        embed = EmbedGenerator.finalize_embed(embed)
         
         await interaction.response.send_message(embed=embed)
 
@@ -291,7 +290,6 @@ class VoteSystem(commands.Cog):
                     )
             
             embed.set_footer(text="🚀 Go earn some XP with your new bonus!")
-            embed = EmbedGenerator.finalize_embed(embed)
             
             await interaction.response.send_message(embed=embed)
         else:
@@ -354,7 +352,6 @@ class VoteSystem(commands.Cog):
                 inline=False
             )
         
-        embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
 
