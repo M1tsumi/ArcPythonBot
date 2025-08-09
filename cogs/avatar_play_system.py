@@ -1719,17 +1719,24 @@ class AvatarPlaySystem(commands.Cog):
         """Unified trivia leaderboard that consolidates all trivia data sources."""
         from cogs.minigame_daily import MINIGAME_ROOT, ensure_server_storage
         
+        # Defer the response immediately to prevent timeout
+        await interaction.response.defer()
+        
         scope_value = scope.value
         if scope_value not in ("global", "server"):
-            await interaction.response.send_message("Invalid scope. Use global or server.", ephemeral=True)
+            await interaction.followup.send("Invalid scope. Use global or server.", ephemeral=True)
             return
 
         if interaction.guild is None and scope_value == "server":
-            await interaction.response.send_message("Server leaderboard must be used in a server.", ephemeral=True)
+            await interaction.followup.send("Server leaderboard must be used in a server.", ephemeral=True)
             return
 
         # Consolidate data from BOTH Avatar Play and Minigame systems
         consolidated_data = {}  # user_id -> {correct: int, sessions: int, games: int}
+        
+        # Performance tracking
+        files_processed = 0
+        start_time = asyncio.get_event_loop().time()
         
         if scope_value == "server":
             guild_id = interaction.guild.id
@@ -1751,6 +1758,7 @@ class AvatarPlaySystem(commands.Cog):
                         consolidated_data[user_id]["correct"] += correct
                         consolidated_data[user_id]["sessions"] += games  # games = sessions
                         consolidated_data[user_id]["games"] += games
+                        files_processed += 1
                     except Exception:
                         continue
             
@@ -1770,6 +1778,7 @@ class AvatarPlaySystem(commands.Cog):
                         consolidated_data[user_id]["correct"] += correct
                         consolidated_data[user_id]["sessions"] += sessions
                         consolidated_data[user_id]["games"] += sessions
+                        files_processed += 1
                     except Exception:
                         continue
                         
@@ -1792,6 +1801,7 @@ class AvatarPlaySystem(commands.Cog):
                                 consolidated_data[user_id]["correct"] += correct
                                 consolidated_data[user_id]["sessions"] += games
                                 consolidated_data[user_id]["games"] += games
+                                files_processed += 1
                             except Exception:
                                 continue
             
@@ -1813,11 +1823,12 @@ class AvatarPlaySystem(commands.Cog):
                                 consolidated_data[user_id]["correct"] += correct
                                 consolidated_data[user_id]["sessions"] += sessions
                                 consolidated_data[user_id]["games"] += sessions
+                                files_processed += 1
                             except Exception:
                                 continue
 
         if not consolidated_data:
-            await interaction.response.send_message("No trivia data available yet.", ephemeral=True)
+            await interaction.followup.send("No trivia data available yet.", ephemeral=True)
             return
 
         # Convert to sorted list: (user_id, correct_answers, sessions)
@@ -1861,8 +1872,12 @@ class AvatarPlaySystem(commands.Cog):
             inline=True
         )
         
+        # Add processing stats
+        processing_time = round((asyncio.get_event_loop().time() - start_time) * 1000, 1)
+        embed.set_footer(text=f"Processed {files_processed} files in {processing_time}ms | Unified leaderboard system")
+        
         embed = EmbedGenerator.finalize_embed(embed)
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot):
