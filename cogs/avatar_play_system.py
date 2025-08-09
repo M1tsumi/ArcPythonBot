@@ -1013,6 +1013,9 @@ class AvatarPlaySystem(commands.Cog):
                 inline=False
             )
         
+        # Add vote reminder footer
+        embed.set_footer(text="💡 Tip: Use /vote to get up to 13x XP bonuses! Support the server and earn massive rewards!")
+        
         return EmbedGenerator.finalize_embed(embed)
     
     def _get_mode_unlock_requirement(self, mode: str) -> str:
@@ -1463,6 +1466,13 @@ class AvatarPlaySystem(commands.Cog):
             "streak": 1 + (session.streak * STREAK_BONUS_MULTIPLIER)
         }
         
+        # Check for vote bonus multiplier
+        vote_cog = self.bot.get_cog("VoteSystem")
+        if vote_cog:
+            vote_multiplier = vote_cog.get_user_vote_bonus(session.player_id)
+            if vote_multiplier > 1.0:
+                multipliers["vote_bonus"] = vote_multiplier
+        
         # Daily bonus check
         daily_bonus = self._check_daily_bonus(player)
         if daily_bonus:
@@ -1508,8 +1518,14 @@ class AvatarPlaySystem(commands.Cog):
         }
         global_profile_manager.update_global_stats(session.player_id, session.guild_id, game_stats)
         
+        # Get vote multiplier for display
+        vote_cog = self.bot.get_cog("VoteSystem")
+        vote_multiplier = 1.0
+        if vote_cog:
+            vote_multiplier = vote_cog.get_user_vote_bonus(session.player_id)
+        
         # Create results embed
-        results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus)
+        results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus, vote_multiplier)
         
         if interaction:
             try:
@@ -1594,7 +1610,7 @@ class AvatarPlaySystem(commands.Cog):
         
         player["unlocked_modes"] = list(unlocked_modes)
     
-    def _create_game_results_embed(self, session: GameSession, xp_result: Dict[str, Any], accuracy: float, is_perfect: bool, new_achievements: List[str], daily_bonus: bool) -> discord.Embed:
+    def _create_game_results_embed(self, session: GameSession, xp_result: Dict[str, Any], accuracy: float, is_perfect: bool, new_achievements: List[str], daily_bonus: bool, vote_multiplier: float = 1.0) -> discord.Embed:
         """Create comprehensive game results embed."""
         if is_perfect:
             title = "🏆 PERFECT GAME!"
@@ -1649,6 +1665,8 @@ class AvatarPlaySystem(commands.Cog):
             bonuses.append(f"🏆 Perfect Game: +{PERFECT_GAME_BONUS} XP")
         if daily_bonus:
             bonuses.append("🎁 Daily Bonus: 2x XP")
+        if vote_multiplier > 1.0:
+            bonuses.append(f"🗳️ Vote Bonus: {vote_multiplier:.1f}x XP")
         
         if bonuses:
             embed.add_field(name="🎁 Bonuses", value="\n".join(bonuses), inline=False)
