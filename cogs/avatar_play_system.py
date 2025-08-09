@@ -836,8 +836,25 @@ class AvatarPlaySystem(commands.Cog):
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
         """Main play command with enhanced Discord Components v2 UI."""
+        try:
+            # Defer immediately to prevent timeout
+            await interaction.response.defer()
+        except discord.NotFound:
+            # Interaction already expired
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error("Play command interaction expired before defer")
+            return
+        except Exception as e:
+            # Other error with defer
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Play command defer error: {e}")
+            return
+        
         if interaction.guild is None:
-            await interaction.response.send_message("❌ Avatar Play can only be used in servers!", ephemeral=True)
+            try:
+                await interaction.followup.send("❌ Avatar Play can only be used in servers!", ephemeral=True)
+            except:
+                pass
             return
         
         guild_id = interaction.guild.id
@@ -853,7 +870,18 @@ class AvatarPlaySystem(commands.Cog):
         embed = self._create_main_play_embed(player, daily_bonus)
         view = EnhancedPlayMainView(self, guild_id, user_id, player)
         
-        await interaction.response.send_message(embed=embed, view=view)
+        try:
+            await interaction.followup.send(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try with response as fallback
+            try:
+                await interaction.response.send_message(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to send play command response - all methods failed")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error sending play command response: {e}")
     
     def _check_daily_bonus(self, player: Dict[str, Any]) -> bool:
         """Check if player gets daily bonus."""
@@ -964,7 +992,13 @@ class AvatarPlaySystem(commands.Cog):
         # Load questions
         questions = parse_avatar_trivia_questions()
         if not questions:
-            await interaction.response.send_message("❌ No trivia questions available!", ephemeral=True)
+            try:
+                if interaction.response.is_done():
+                    await interaction.followup.send("❌ No trivia questions available!", ephemeral=True)
+                else:
+                    await interaction.response.send_message("❌ No trivia questions available!", ephemeral=True)
+            except:
+                pass
             return
         
         # Filter by difficulty if specified
@@ -1111,10 +1145,24 @@ class AvatarPlaySystem(commands.Cog):
         view = TriviaGameView(self, session)
         session.view = view  # Store reference for timer cleanup
         
-        if interaction.response.is_done():
-            await interaction.edit_original_response(embed=embed, view=view)
-        else:
-            await interaction.response.edit_message(embed=embed, view=view)
+        try:
+            if interaction.response.is_done():
+                await interaction.edit_original_response(embed=embed, view=view)
+            else:
+                await interaction.response.edit_message(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try fallback
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(embed=embed, view=view)
+                else:
+                    await interaction.edit_original_response(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to show question - interaction expired")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error showing question: {e}")
     
     async def _show_next_question(self, interaction: discord.Interaction, session: GameSession):
         """Display next question using edit_original_response since interaction was already used."""
@@ -1196,7 +1244,18 @@ class AvatarPlaySystem(commands.Cog):
         session.view = view  # Store reference for timer cleanup
         
         # Always use edit_original_response for next questions
-        await interaction.edit_original_response(embed=embed, view=view)
+        try:
+            await interaction.edit_original_response(embed=embed, view=view)
+        except discord.NotFound:
+            # Interaction expired, try fallback
+            try:
+                await interaction.response.send_message(embed=embed, view=view)
+            except:
+                if hasattr(self, 'logger') and self.logger:
+                    self.logger.error("Failed to show next question - interaction expired")
+        except Exception as e:
+            if hasattr(self, 'logger') and self.logger:
+                self.logger.error(f"Error showing next question: {e}")
     
     async def process_answer(self, interaction: Optional[discord.Interaction], session: GameSession, choice: Optional[int] = None, timeout: bool = False):
         """Process player's answer and continue game."""
