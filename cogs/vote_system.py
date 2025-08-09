@@ -165,8 +165,8 @@ class VoteSystem(commands.Cog):
         user_id = interaction.user.id
         status = self.get_user_vote_status(user_id)
         
-        # Create main embed
-        embed = EmbedGenerator.create_embed(
+        # Create main embed (without caching to prevent duplication)
+        embed = discord.Embed(
             title="🗳️ Vote for Avatar Realms Collide!",
             description="Support our community and earn **massive XP bonuses**!\n\n**Each vote gives you 5x XP for 24 hours and they STACK!**",
             color=discord.Color.gold()
@@ -262,7 +262,7 @@ class VoteSystem(commands.Cog):
             new_status = self.get_user_vote_status(user_id)
             multiplier = new_status["total_multiplier"]
             
-            embed = EmbedGenerator.create_embed(
+            embed = discord.Embed(
                 title="🎉 Vote Bonus Activated!",
                 description=f"Thank you for voting on **{self.voting_sites[site_key]['name']}**!",
                 color=discord.Color.green()
@@ -301,7 +301,7 @@ class VoteSystem(commands.Cog):
         user_id = interaction.user.id
         status = self.get_user_vote_status(user_id)
         
-        embed = EmbedGenerator.create_embed(
+        embed = discord.Embed(
             title="📊 Your Voting Status",
             color=discord.Color.blue()
         )
