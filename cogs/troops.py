@@ -292,26 +292,6 @@ class Troops(commands.Cog):
         view = TroopsView(self.data_parser)
         await ctx.send(embed=embed, view=view)
     
-    @commands.hybrid_command(name="troopcalc", description="Calculate troop recruitment costs")
-    async def troop_calculator(self, ctx):
-        """Calculate troop recruitment costs with interactive interface."""
-        try:
-            # Import the troop calculator view
-            from cogs.troop_calculator import TroopCalculatorView
-            
-            troops_data = self.data_parser.get_troops_data_fixed()
-            if not troops_data:
-                embed = EmbedGenerator.create_error_embed("No troops data found. Please check the troops.txt file.")
-                await ctx.send(embed=embed)
-                return
-                
-            view = TroopCalculatorView(self.data_parser)
-            embed = view.create_calculator_embed()
-            await ctx.send(embed=embed, view=view)
-        except Exception as e:
-            embed = EmbedGenerator.create_error_embed(f"Error loading troop calculator: {e}")
-            await ctx.send(embed=embed)
-    
     def get_element_emoji(self, element: str) -> str:
         """Get emoji for element."""
         emojis = {

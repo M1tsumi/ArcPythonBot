@@ -223,50 +223,76 @@ class Utility(commands.Cog):
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="help", description="Get help and join our Discord server")
+    @app_commands.command(name="help", description="Comprehensive help and command guide")
     @app_commands.checks.cooldown(1, 10.0)
     async def help(self, interaction: discord.Interaction):
-        """Slash command to provide help and Discord server link."""
+        """Comprehensive help command with all bot features and commands."""
         embed = EmbedGenerator.create_embed(
-            title="Help",
-            description="How to get help and stay connected.",
+            title="🎮 Complete Bot Guide & Commands",
+            description="Everything you need to know about Avatar Realms Collide Bot!",
             color=discord.Color.blue()
         )
+        
         embed.add_field(
-            name="Join Our Discord Server",
+            name="📱 Join Our Discord Server",
             value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
             inline=False
         )
+        
         embed.add_field(
-            name="Game Information Commands",
-            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/hero_info` - Get detailed hero information\n• `/hero_rankup` - View hero rankup guide and costs\n• `/townhall` - View town hall requirements\n• `/leaderboard` - Check top players and alliances",
+            name="🎮 Game Information Commands",
+            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/hero_info` - Get detailed hero information\n• `/hero_rankup` - View hero rankup guide and costs\n• `/townhall` - View town hall requirements\n• `/leaderboard` - Check top players and alliances\n• `/map` - View game map\n• `/troops` - Troop information and stats\n• `/troopcalc` - Calculate troop costs\n• `/tierlist` - View hero tier lists",
             inline=False
         )
+        
         embed.add_field(
-            name="Event Commands",
+            name="🎭 Event Commands",
             value="• `/events` - View current and upcoming events\n• `/avatar_day_festival` - Avatar Day Festival information\n• `/festival_tasks` - View all festival tasks by day\n• `/festival_shop` - View festival exchange shop\n• `/festival_guide` - Get festival tips and strategy\n• `/festival_rewards` - View all festival rewards\n• `/balance_and_order` - Balance and Order event information\n• `/balance_tasks` - View Balance and Order tasks\n• `/balance_guide` - Get Balance and Order tips\n• `/borte_scheme` - Borte's Scheme event information\n• `/borte_mechanics` - View Borte's Scheme mechanics\n• `/borte_rewards` - View Borte's Scheme rewards\n• `/borte_guide` - Get Borte's Scheme tips",
             inline=False
         )
+        
         embed.add_field(
-            name="Rally System Commands",
+            name="🎯 Minigame Systems",
+            value="• `/play` - Avatar trivia with multiple game modes (Quick, Standard, Challenge, Blitz, Master)\n• `/daily` - Daily verification and XP rewards\n• `/minigame` - Open game panel and roll scrolls\n• `/trivia` - Additional trivia questions\n• `/trivia_leaderboard` - View trivia rankings\n• `/inventory` - Check your items and resources\n• `/hero` - Manage and upgrade your heroes\n• `/skills` - View and upgrade elemental skills\n• `/duel` - Challenge other players to PvP combat",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚔️ Rally System Commands",
             value="• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard\n• `/leader` - Admin leaderboard management (pause/resume/clear)",
             inline=False
         )
+        
         embed.add_field(
-            name="TGL Commands",
-            value="• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities",
+            name="🏆 TGL & Glorious Victory",
+            value="• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities\n• `/glorious_victory` - Glorious Victory event info\n• `/gv_calc` - Calculate Glorious Victory points",
             inline=False
         )
+        
+        embed.add_field(
+            name="⏰ Timer & Voting",
+            value="• `/timer` - Set game timers and reminders\n• `/timers` - View active timers\n• `/cancel_timer` - Cancel specific timer\n• `/cancel_all_timers` - Cancel all timers\n• `/vote` - Vote for the bot to get XP bonuses\n• `/vote_status` - Check your voting status",
+            inline=False
+        )
+        
         embed.add_field(
             name="🔧 Utility Commands",
-            value="• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server",
+            value="• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server\n• `/refresh` - Refresh slash commands (Admin)\n• `/statistics` - View bot usage statistics",
             inline=False
         )
+        
+        embed.add_field(
+            name="💡 Pro Tips for Minigames",
+            value="🗳️ **Vote daily** with `/vote` for massive XP bonuses!\n🔥 **Maintain streaks** for +10% XP per correct answer\n👑 **Try Master mode** for 3x XP multiplier\n🎯 **Play daily** for 2x XP bonus on first game\n📊 **Check leaderboards** to see your ranking\n⚔️ **Upgrade your hero** before dueling for better stats\n🌟 **Complete achievements** for permanent rewards",
+            inline=False
+        )
+        
         embed.add_field(
             name="💡 Need More Help?",
             value="Join our Discord server for:\n• Real-time help and support\n• Game updates and announcements\n• Community discussions\n• Bug reports and suggestions\n• Contribution opportunities",
             inline=False
         )
+        
         embed = EmbedGenerator.finalize_embed(embed)
         await interaction.response.send_message(embed=embed)
 
@@ -479,133 +505,7 @@ class Utility(commands.Cog):
                 except:
                     pass
 
-    # ===== Slash command GROUPS =====
-    # RENAMED group from "help" -> "guide" to avoid clashing with /help above
-    guide_group = app_commands.Group(name="guide", description="Get guides for various bot features")
 
-    @guide_group.command(name="minigame", description="📚 Complete guide to all minigames and systems")
-    async def help_minigame(self, interaction: discord.Interaction):
-        """Comprehensive guide to all minigame systems."""
-        embed = discord.Embed(
-            title="🎮 Minigame Systems Guide",
-            description="**Avatar Realms Collide** features multiple engaging minigame systems! Here's everything you need to know:",
-            color=discord.Color.blue()
-        )
-        embed.add_field(
-            name="🎯 Avatar Play System (`/play`)",
-            value=(
-                "**Avatar trivia with multiple game modes:**\n"
-                "• **⚡ Quick** - 3 questions, 8s each (1.0x XP)\n"
-                "• **🎯 Standard** - 5 questions, 10s each (1.2x XP)\n"
-                "• **🔥 Challenge** - 8 questions, 12s each (1.5x XP)\n"
-                "• **💨 Blitz** - 10 questions, 5s each (2.0x XP)\n"
-                "• **👑 Master** - 15 questions, 15s each (3.0x XP)\n\n"
-                "**Difficulty Options:**\n"
-                "🟢 Easy (0.8x XP) | 🟡 Normal (1.0x XP) | 🟠 Hard (1.5x XP) | 🔴 Expert (2.0x XP)"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="📅 Daily Minigame System (`/daily` & `/minigame`)",
-            value=(
-                "**Daily verification and rewards:**\n"
-                "• Use `/daily` for daily verification and XP\n"
-                "• Use `/minigame` to open game panel and roll scrolls\n"
-                "• Features trivia questions with XP rewards\n"
-                "• **50 XP** per correct answer\n"
-                "• Chance to earn **Basic Scrolls** 📜 and **Epic Scrolls** 🟣📜\n"
-                "• Must verify once before accessing features"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="🏰 Rally System (`/rally`)",
-            value=(
-                "**Organize Shattered Skulls Fortress raids:**\n"
-                "• Create rallies: `/rally level:1-6 time_limit:5m/15m/30m/1hr`\n"
-                "• **Level 1**: 1 player, 10 points\n"
-                "• **Level 2**: 1 player, 20 points\n"
-                "• **Level 3**: 2 players, 30 points\n"
-                "• **Level 4**: 3 players, 45 points\n"
-                "• **Level 5**: 4 players, 50 points\n"
-                "• **Level 6**: 5 players, 60 points\n"
-                "• Use `/setup #channel` (Admin only) to configure"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="⚡ XP & Progression System",
-            value=(
-                "**Avatar Play XP Calculation:**\n"
-                "• **Base**: 75 XP per correct answer\n"
-                "• **Multipliers**: Mode × Difficulty × Streak × Daily × Vote\n"
-                "• **Streak Bonus**: +10% per consecutive correct answer\n"
-                "• **Daily Bonus**: 2x XP for first game each day\n"
-                "• **Perfect Game**: +200 bonus XP\n"
-                "• **Vote Bonus**: Up to 13x XP (use `/vote`!)\n\n"
-                "**Level Up Rewards:**\n"
-                "• **Avatar Tokens**: 10 per level gained\n"
-                "• Exponential XP requirements (15% increase per level)"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="🦸 Hero & Skill Systems",
-            value=(
-                "**Hero Management (`/hero`):**\n"
-                "• Upgrade heroes: Rare → Epic → Legendary\n"
-                "• Choose elements: Fire 🔥, Water 💧, Earth 🌱, Air 💨\n"
-                "• Requires **Hero Shards** from minigames\n\n"
-                "**Skill Trees (`/skills`):**\n"
-                "• 44 skills across 4 elemental trees\n"
-                "• Upgrade with **Skill Points** earned from playing\n"
-                "• Prerequisites and tier progression system\n"
-                "• Boost stats for duels and achievements"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="⚔️ PvP Duel System (`/duel`)",
-            value=(
-                "**Player vs Player Combat:**\n"
-                "• Challenge other players: `/duel challenge @user`\n"
-                "• Turn-based combat with element advantages\n"
-                "• ELO rating system with tier progression\n"
-                "• Track wins, losses, streaks, and statistics\n"
-                "• Uses your hero upgrades and elemental skills\n"
-                "• View leaderboards: `/duel leaderboard`"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="💎 Resources & Rewards",
-            value=(
-                "**Earned from playing minigames:**\n"
-                "• **XP** - Levels up your profile and unlocks features\n"
-                "• **Avatar Tokens** - Premium currency for upgrades\n"
-                "• **Hero Shards** - Upgrade your hero's rarity\n"
-                "• **Skill Points** - Unlock and upgrade elemental skills\n"
-                "• **Scrolls** - Basic 📜 and Epic 🟣📜 rewards\n"
-                "• **Achievements** - Unlock titles and bonuses\n"
-                "• **Spirit Energy** - Visual status representation"
-            ),
-            inline=False
-        )
-        embed.add_field(
-            name="💡 Pro Tips",
-            value=(
-                "🗳️ **Vote daily** with `/vote` for massive XP bonuses!\n"
-                "🔥 **Maintain streaks** for +10% XP per correct answer\n"
-                "👑 **Try Master mode** for 3x XP multiplier\n"
-                "🎯 **Play daily** for 2x XP bonus on first game\n"
-                "📊 **Check leaderboards** to see your ranking\n"
-                "⚔️ **Upgrade your hero** before dueling for better stats\n"
-                "🌟 **Complete achievements** for permanent rewards"
-            ),
-            inline=False
-        )
-        embed.set_footer(text="💖 Have fun playing! Use individual commands to get started with any system.")
-        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""
