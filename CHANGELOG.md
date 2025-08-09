@@ -1,4 +1,93 @@
 # Changelog
+## [1.8.0] - 2025-08-09
+
+### Added - 🚀 MAJOR RELEASE: Hero Progression & PvP Duel System
+- **Hero Progression System**: Complete hero advancement framework
+  - Rarity progression: Rare → Epic → Legendary with 6-star upgrade system
+  - Element selection: Fire, Water, Earth, and Air heroes with unique stats
+  - Resource management: Hero Shards and Scrolls for upgrades
+  - Stat scaling: ATK, DEF, HP scale with rarity and star levels
+  - Visual progression tracking with emoji indicators
+- **Elemental Skill Trees**: Comprehensive skill progression system
+  - 44 unique skills across 4 elements (11 skills per element)
+  - Tiered progression: Basic → Advanced → Master → Ultimate skill tiers
+  - Skill point economy: Earn through minigames, spend strategically
+  - Prerequisites system: Logical skill unlocking requirements
+  - Automatic bonus calculations: Stats bonuses from unlocked skills
+- **PvP Duel System**: Strategic turn-based combat
+  - Turn-based battle mechanics with speed-based turn order
+  - Element advantage system: Fire > Air > Earth > Water > Fire
+  - Combat mechanics: Critical hits, evasion, status effects
+  - Interactive battle UI: Real-time action selection and animations
+  - Challenge system: Send, accept, or decline duel invitations
+- **ELO Rating System**: Competitive ranking framework
+  - Rating tiers: Bronze → Silver → Gold → Platinum → Diamond → Master → Grandmaster
+  - Dynamic rating adjustments based on opponent strength
+  - Experience-based modifiers for new players
+  - Tier promotion/demotion with visual indicators
+- **Achievement System**: 18+ unique achievements with rewards
+  - Progression achievements: First win, win streaks, rating milestones
+  - Combat achievements: Perfect games, damage thresholds, element mastery
+  - Special achievements: Underdog victories, consistency rewards
+  - Automatic reward distribution: Scrolls, Shards, and Skill Points
+- **Enhanced Global Profile System**: Cross-server progression tracking
+  - Duel statistics: Wins, losses, draws, streaks, ratings
+  - Performance metrics: Damage dealt/taken, favorite elements
+  - Element statistics: Per-element win rates and performance
+  - Recent duel history: Last 10 battles with detailed results
+- **New Discord Commands**: 10 new slash commands across 3 new cogs
+  - `/hero upgrade`: Upgrade hero rarity and stars
+  - `/hero info`: View detailed hero information and stats
+  - `/hero list`: Display personal hero collection
+  - `/skills tree`: Browse interactive elemental skill trees
+  - `/skills overview`: View personal skill progression
+  - `/skills upgrade`: Unlock new skills with skill points
+  - `/duel challenge`: Challenge players to PvP battles
+  - `/duel stats`: View personal duel statistics
+  - `/duel leaderboard`: Browse global duel rankings
+  - `/duel cancel`: Cancel pending duel challenges
+
+### Enhanced
+- **Minigame Integration**: Enhanced reward system with duel bonuses
+  - Increased Epic Scroll drop rate: 2% → 5% for trivia
+  - Increased daily epic drop rate: 15% → 20%
+  - Bonus Skill Point rewards for duelists with high trivia scores
+  - Resource synchronization between minigame and global profiles
+- **Global Profile Manager**: Extended with comprehensive new features
+  - Hero management: Create, update, and track hero progression
+  - Skill management: Unlock skills, calculate bonuses, track progression
+  - Resource tracking: Scrolls, Shards, Skill Points across systems
+  - Duel statistics: Complete battle performance tracking
+  - Achievement processing: Automatic detection and reward distribution
+- **Data Architecture**: New JSON configuration files
+  - `player_definitions.json`: Hero rarity tiers and progression costs
+  - `base_stats.json`: Element-specific base statistics
+  - `skill_definitions.json`: Complete skill trees with 44 skills
+  - `combat_data.json`: Combat mechanics and element advantages
+  - `achievements.json`: Achievement definitions and rewards
+
+### Technical
+- **New Utility Modules**: Core game logic implementation
+  - `player_manager.py`: Hero progression and stat calculations
+  - `skill_manager.py`: Skill tree logic and bonus calculations
+  - `duel_manager.py`: Combat simulation and battle management
+  - `rating_system.py`: ELO calculations and tier management
+- **New Cogs**: Modular Discord command systems
+  - `player_system.py`: Hero management commands
+  - `skill_system.py`: Skill tree interaction commands
+  - `duel_system.py`: PvP battle commands with interactive UI
+- **Enhanced Architecture**: Improved data management and integration
+  - Asynchronous combat processing with real-time UI updates
+  - Comprehensive error handling for edge cases
+  - Resource validation and conflict prevention
+  - Cross-system integration with existing minigame economy
+
+### Changed
+- **Version**: Updated from 1.7.2 to 1.8.0
+- **Bot Description**: Enhanced to reflect new RPG progression features
+- **Profile Schema**: Updated to version 1.1 with new data structures
+- **Command Count**: Expanded from ~25 to 35+ commands total
+
 ## [1.7.2] - 2025-08-09
 
 ### Fixed
@@ -330,8 +419,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.6.4** (Current): Event System UI Improvements
-- **1.6.3** (Current): Troops Calculator, Server Command Fixes
+- **1.8.0** (Current): Hero Progression & PvP Duel System - Major Release
+- **1.7.2**: TGL System Fixes, Emoji Encoding Improvements
+- **1.7.1**: Tierlist Command Reliability, Leaderboard System Enhancements
+- **1.7.0**: Tier List System, Professional Embeds, Anti-spam Features
+- **1.6.4**: Event System UI Improvements
+- **1.6.3**: Troops Calculator, Server Command Fixes
 - **1.6.2**: Troops System, Enhanced UI, Improved Data Management
 - **1.6.1**: Purification System, Enhanced Event Handling, Improved Data Management
 - **1.6.0**: Timer System, Game Activity Tracking, DM Notifications

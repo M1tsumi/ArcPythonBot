@@ -8,13 +8,13 @@
 
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.7.2-blue.svg)](https://github.com/yourusername/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.8.0-blue.svg)](https://github.com/M1tsumi/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.7.2 - Avatar Realms Collide Discord Bot**  
-> An interactive Discord bot for exploring character talent trees, leaderboards, rally system, troops calculator, and game information in the Avatar Realms Collide universe.
+> **🎮 Version 1.8.0 - Avatar Realms Collide Discord Bot**  
+> An interactive Discord bot featuring hero progression, elemental skills, PvP duels, character talent trees, leaderboards, rally system, and comprehensive game management for the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
 
@@ -29,6 +29,34 @@
 - [License](#-license)
 
 ## ✨ Features
+
+### 🦸 **Hero Progression System** ⭐ NEW in v1.8.0
+- **Rarity Advancement**: Progress heroes from Rare → Epic → Legendary
+- **Star System**: Upgrade heroes through 6 star levels with stat scaling
+- **Element Selection**: Choose from Fire, Water, Earth, and Air elements
+- **Resource Management**: Use Hero Shards and Scrolls for upgrades
+- **Global Profile Integration**: Track all heroes across servers
+
+### ⚔️ **Elemental Skill Trees** ⭐ NEW in v1.8.0
+- **44 Unique Skills**: Master abilities across all 4 elements
+- **Tiered Progression**: Unlock skills through Basic → Advanced → Master → Ultimate tiers
+- **Skill Point Economy**: Earn and spend skill points strategically
+- **Bonus Calculations**: Automatic stat bonuses from unlocked skills
+- **Prerequisites System**: Logical skill progression paths
+
+### 🎯 **PvP Duel System** ⭐ NEW in v1.8.0
+- **Turn-based Combat**: Strategic battles using hero stats and skills
+- **Element Advantages**: Fire > Air > Earth > Water > Fire combat triangle
+- **ELO Rating System**: Competitive ranking with Bronze to Grandmaster tiers
+- **Battle Statistics**: Track wins, losses, damage dealt, streaks, and more
+- **Achievement System**: 18+ unique achievements with rewards
+- **Interactive UI**: Real-time battle interface with action choices
+
+### 🏆 **Enhanced Leaderboards** 📈 Updated in v1.8.0
+- **Duel Rankings**: Top duelists by rating, wins, and performance
+- **Global Profiles**: Cross-server progression tracking
+- **Multiple Categories**: Leaders, alliances, duel champions, and more
+- **Real-time Updates**: Live ranking adjustments
 
 ### 🎯 **Interactive Talent Tree Browser**
 - **Element-based Navigation**: Browse characters by Fire, Water, Earth, and Air elements
@@ -221,6 +249,16 @@ The Greatest Leader event tools:
 
 | Command | Description | Usage |
 |---------|-------------|-------|
+| `/hero upgrade` | ⭐ Upgrade your hero's rarity and stars | Hero progression system |
+| `/hero info` | ⭐ View detailed hero information | Complete hero stats and abilities |
+| `/hero list` | ⭐ List all your heroes and progress | Personal hero collection |
+| `/skills tree` | ⭐ Browse elemental skill trees | Interactive skill tree navigation |
+| `/skills overview` | ⭐ View your skill progression | Personal skill advancement |
+| `/skills upgrade` | ⭐ Unlock new elemental skills | Skill point spending |
+| `/duel challenge` | ⚔️ Challenge another player to PvP | Strategic turn-based combat |
+| `/duel stats` | ⚔️ View your duel statistics | Personal battle performance |
+| `/duel leaderboard` | ⚔️ View top duelists rankings | Global competitive rankings |
+| `/duel cancel` | ⚔️ Cancel pending duel challenge | Challenge management |
 | `/tierlist` | Show community hero tier list | Sends image embed if file exists |
 | `/talent_trees` | Interactive talent tree browser | Select element → Choose character → View trees |
 | `/leaderboard` | View top leaders and alliances | Choose leaderboard type → View rankings |
@@ -341,7 +379,18 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 🗺️ Roadmap
 
-### Version 1.7.2 (Current)
+### Version 1.8.0 (Current) 🚀 MAJOR RELEASE
+- ✅ **Hero Progression System**: Complete rarity and star upgrade system
+- ✅ **Elemental Skill Trees**: 44 skills across 4 elements with tier progression
+- ✅ **PvP Duel System**: Turn-based combat with ELO rating system
+- ✅ **Achievement System**: 18+ unique achievements with rewards
+- ✅ **Enhanced Global Profiles**: Cross-server progression tracking
+- ✅ **Combat Mechanics**: Element advantages, critical hits, evasion system
+- ✅ **Duel Statistics**: Comprehensive battle performance tracking
+- ✅ **Interactive Battle UI**: Real-time combat interface
+- ✅ **Resource Economy**: Hero Shards, Scrolls, and Skill Points integration
+- ✅ **Minigame Enhancements**: Improved drop rates and duel bonuses
+- ✅ **New Commands**: `/hero`, `/skills`, `/duel` command groups (10 new commands)
 - ✅ Interactive talent tree browser
 - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
@@ -351,25 +400,19 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - ✅ **Hero Information System**: Comprehensive hero guide and unlock methods
 - ✅ **Timer System**: Game activity timers with DM notifications
 - ✅ **Performance Optimizations**: Embed caching and faster operations
-- ✅ **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
-- ✅ **Event Commands**: `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
 - ✅ Character database with 25+ characters and unlock information
 - ✅ Element-based categorization with rarity system
 - ✅ Professional Discord UI with interactive components
-- ✅ **Creator Restrictions**: Rally creators cannot join own rallies
-- ✅ **Time Limits**: Configurable rally durations with auto-cleanup
-- ✅ **Point System**: Automatic tracking and rewards
-- ✅ **Admin Controls**: Leaderboard pause/resume/clear functionality
 
 ### Upcoming Features
-- 🔄 **Skill Priorities**: Character skill progression system
-- 🔄 **Rarity Changes**: Dynamic rarity updates
-- 🔄 **Level Requirements**: Character level progression
-- 🔄 **Resource Requirements**: Game resource management
-- 🔄 **Event System**: In-game event tracking
-- 🔄 **User Profiles**: Player profile management
-- 🔄 **Advanced Search**: Enhanced character search
+- 🔄 **Advanced PvP**: Tournament system and seasonal rankings
+- 🔄 **Guild System**: Alliance-based progression and battles
+- 🔄 **Daily Quests**: Regular challenges for additional rewards
+- 🔄 **Equipment System**: Gear and artifacts for heroes
+- 🔄 **Prestige System**: Advanced progression beyond Legendary
+- 🔄 **Real-time Events**: Live game event integration
 - 🔄 **Mobile Optimization**: Better mobile Discord experience
+- 🔄 **Advanced Analytics**: Detailed battle and progression statistics
 
 ### Future Updates
 - **Real-time Data**: Live game data integration
