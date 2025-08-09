@@ -592,6 +592,415 @@ class Utility(commands.Cog):
                 except:
                     pass  # If all else fails, just log the error
 
+    @app_commands.command(name="ping", description="🏓 Check bot latency and status")
+    async def ping_slash(self, interaction: discord.Interaction):
+        """Slash command to check bot latency and status."""
+        start_time = time.time()
+        
+        # Create initial embed
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Checking bot status and latency...",
+            color=discord.Color.blue()
+        )
+        
+        # Send initial response
+        await interaction.response.send_message(embed=embed)
+        
+        # Calculate latency
+        end_time = time.time()
+        latency = (end_time - start_time) * 1000  # Convert to milliseconds
+        api_latency = round(self.bot.latency * 1000, 2)  # Discord API latency
+        
+        # Update embed with results
+        embed = discord.Embed(
+            title="🏓 Pong!",
+            description="Bot is online and responding.",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="⚡ Response Time",
+            value=f"**{latency:.1f}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="📡 API Latency",
+            value=f"**{api_latency}ms**",
+            inline=True
+        )
+        
+        embed.add_field(
+            name="🤖 Status",
+            value="**Online**",
+            inline=True
+        )
+        
+        embed.set_footer(text="Avatar Realms Collide Bot is running smoothly!")
+        
+        await interaction.edit_original_response(embed=embed)
+
+    @app_commands.command(name="info", description="📋 Comprehensive bot information and statistics")
+    async def info_slash(self, interaction: discord.Interaction):
+        """Slash command for comprehensive bot information."""
+        await interaction.response.defer()
+        
+        try:
+            # Calculate statistics
+            total_servers = len(self.bot.guilds)
+            total_members = sum(guild.member_count for guild in self.bot.guilds if guild.member_count)
+            total_commands = len(self.bot.tree.get_commands())
+            
+            # Create main embed
+            embed = discord.Embed(
+                title="🤖 Avatar Realms Collide Bot Information",
+                description="Your comprehensive Avatar universe companion bot!",
+                color=discord.Color.blue()
+            )
+            
+            # Bot Statistics
+            embed.add_field(
+                name="📊 Statistics",
+                value=f"**Servers**: {total_servers:,}\n**Users**: {total_members:,}\n**Commands**: {total_commands}",
+                inline=True
+            )
+            
+            # Performance
+            embed.add_field(
+                name="⚡ Performance",
+                value=f"**Latency**: {round(self.bot.latency * 1000, 1)}ms\n**Status**: Online\n**Version**: 1.8.0",
+                inline=True
+            )
+            
+            # Features
+            embed.add_field(
+                name="🎮 Features",
+                value="• Avatar Trivia Games\n• Hero Progression\n• Skill Trees\n• PvP Duels\n• Rally System\n• Leaderboards",
+                inline=True
+            )
+            
+            # Links
+            embed.add_field(
+                name="🔗 Links",
+                value=f"[Discord Server]({DISCORD_SERVER_LINK})\n[Add to Server]({BOT_INVITE_LINK})\n[Development]({DEVELOPMENT_SERVER_LINK})",
+                inline=False
+            )
+            
+            embed.set_footer(text="Thank you for using Avatar Realms Collide Bot!")
+            
+            await interaction.followup.send(embed=embed)
+            
+        except Exception as e:
+            embed = discord.Embed(
+                title="❌ Error",
+                description=f"Failed to retrieve bot information: {str(e)}",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="links", description="🔗 Get important bot and server links")
+    async def links_slash(self, interaction: discord.Interaction):
+        """Slash command for bot and server links."""
+        embed = discord.Embed(
+            title="🔗 Important Links",
+            description="Stay connected with Avatar Realms Collide!",
+            color=discord.Color.blue()
+        )
+        
+        embed.add_field(
+            name="🏠 Main Discord Server",
+            value=f"[Join our Discord Server]({DISCORD_SERVER_LINK})\nGet help, updates, and connect with the community!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🤖 Add Bot to Your Server",
+            value=f"[Add Avatar Realms Collide Bot]({BOT_INVITE_LINK})\nBring the Avatar universe to your Discord server!",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="⚙️ Development Server",
+            value=f"[Development & Testing]({DEVELOPMENT_SERVER_LINK})\nFor bot development updates and testing.",
+            inline=False
+        )
+        
+        embed.set_footer(text="Thank you for supporting Avatar Realms Collide Bot!")
+        
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="servers", description="🏠 View bot server statistics and top servers")
+    async def servers_slash(self, interaction: discord.Interaction):
+        """Slash command for bot server statistics."""
+        # Check if user has permission (bot owner or admin)
+        if interaction.user.id not in [742397721485951106]:  # Add bot owner ID
+            embed = discord.Embed(
+                title="❌ Access Denied",
+                description="You don't have permission to use this command.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        try:
+            await interaction.response.defer(ephemeral=True)
+            
+            # Calculate statistics
+            total_servers = len(self.bot.guilds)
+            total_members = sum(guild.member_count for guild in self.bot.guilds if guild.member_count)
+            avg_members = total_members / total_servers if total_servers > 0 else 0
+            
+            # Get top 10 servers by member count
+            top_servers = sorted(self.bot.guilds, key=lambda g: g.member_count or 0, reverse=True)[:10]
+            
+            # Create main statistics embed
+            embed = discord.Embed(
+                title="🏠 Bot Server Statistics",
+                description="Comprehensive overview of bot server distribution and performance",
+                color=discord.Color.blue()
+            )
+            
+            # Add key statistics
+            embed.add_field(
+                name="📊 Overview",
+                value=f"**Total Servers**: {total_servers:,}\n"
+                      f"**Total Members**: {total_members:,}\n"
+                      f"**Average Members/Server**: {avg_members:.0f}",
+                inline=True
+            )
+            
+            # Calculate member count distribution
+            large_servers = len([g for g in self.bot.guilds if (g.member_count or 0) >= 1000])
+            medium_servers = len([g for g in self.bot.guilds if 100 <= (g.member_count or 0) < 1000])
+            small_servers = len([g for g in self.bot.guilds if (g.member_count or 0) < 100])
+            
+            embed.add_field(
+                name="📈 Distribution",
+                value=f"**Large Servers** (1k+): {large_servers}\n"
+                      f"**Medium Servers** (100-999): {medium_servers}\n"
+                      f"**Small Servers** (<100): {small_servers}",
+                inline=True
+            )
+            
+            # Add performance metrics
+            embed.add_field(
+                name="⚡ Performance",
+                value=f"**Bot Latency**: {round(self.bot.latency * 1000, 1)}ms\n"
+                      f"**Commands**: {len(self.bot.tree.get_commands())}\n"
+                      f"**Status**: Online",
+                inline=True
+            )
+            
+            # Create top servers list
+            top_servers_text = ""
+            for i, guild in enumerate(top_servers, 1):
+                member_count = guild.member_count or 0
+                owner_name = guild.owner.display_name if guild.owner else "Unknown"
+                top_servers_text += f"**{i}.** {guild.name}\n"
+                top_servers_text += f"👥 {member_count:,} members | 👑 {owner_name}\n\n"
+            
+            embed.add_field(
+                name="🏆 Top 10 Servers",
+                value=top_servers_text if top_servers_text else "No servers found",
+                inline=False
+            )
+            
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            
+        except Exception as e:
+            embed = discord.Embed(
+                title="❌ Error",
+                description=f"Failed to retrieve server statistics: {str(e)}",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="addtoserver", description="🚀 Get the invite link to add this bot to your server")
+    async def addtoserver_slash(self, interaction: discord.Interaction):
+        """Slash command to get bot invite link."""
+        embed = discord.Embed(
+            title="🚀 Add Avatar Realms Collide Bot to Your Server!",
+            description="Bring the Avatar universe to your Discord community!",
+            color=discord.Color.green()
+        )
+        
+        embed.add_field(
+            name="✨ Features You'll Get:",
+            value="• **Avatar Trivia Games** - Test your Avatar knowledge\n"
+                  "• **Hero Progression** - Upgrade your heroes\n"
+                  "• **Skill Trees** - Master elemental abilities\n"
+                  "• **PvP Duels** - Battle other players\n"
+                  "• **Rally System** - Organize group activities\n"
+                  "• **Leaderboards** - Compete for the top spots",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="🔗 Invite Link:",
+            value=f"**[Click here to add the bot!]({BOT_INVITE_LINK})**\n\n"
+                  "The bot will be added with all necessary permissions to function properly.",
+            inline=False
+        )
+        
+        embed.add_field(
+            name="📚 Need Help?",
+            value=f"Join our [support server]({DISCORD_SERVER_LINK}) for:\n"
+                  "• Setup assistance\n• Command tutorials\n• Community support\n• Updates and announcements",
+            inline=False
+        )
+        
+        embed.set_footer(text="Thank you for choosing Avatar Realms Collide Bot!")
+        
+        await interaction.response.send_message(embed=embed)
+
+    # Create help command group
+    help_group = app_commands.Group(name="help", description="Get help with various bot features")
+
+    @help_group.command(name="minigame", description="📚 Complete guide to all minigames and systems")
+    async def help_minigame(self, interaction: discord.Interaction):
+        """Comprehensive guide to all minigame systems."""
+        
+        # Create main embed
+        embed = discord.Embed(
+            title="🎮 Minigame Systems Guide",
+            description="**Avatar Realms Collide** features multiple engaging minigame systems! Here's everything you need to know:",
+            color=discord.Color.blue()
+        )
+        
+        # Avatar Play System
+        embed.add_field(
+            name="🎯 Avatar Play System (`/play`)",
+            value=(
+                "**Avatar trivia with multiple game modes:**\n"
+                "• **⚡ Quick** - 3 questions, 8s each (1.0x XP)\n"
+                "• **🎯 Standard** - 5 questions, 10s each (1.2x XP)\n"
+                "• **🔥 Challenge** - 8 questions, 12s each (1.5x XP)\n"
+                "• **💨 Blitz** - 10 questions, 5s each (2.0x XP)\n"
+                "• **👑 Master** - 15 questions, 15s each (3.0x XP)\n\n"
+                "**Difficulty Options:**\n"
+                "🟢 Easy (0.8x XP) | 🟡 Normal (1.0x XP) | 🟠 Hard (1.5x XP) | 🔴 Expert (2.0x XP)"
+            ),
+            inline=False
+        )
+        
+        # Minigame Daily System
+        embed.add_field(
+            name="📅 Daily Minigame System (`/daily` & `/minigame`)",
+            value=(
+                "**Daily verification and rewards:**\n"
+                "• Use `/daily` for daily verification and XP\n"
+                "• Use `/minigame` to open game panel and roll scrolls\n"
+                "• Features trivia questions with XP rewards\n"
+                "• **50 XP** per correct answer\n"
+                "• Chance to earn **Basic Scrolls** 📜 and **Epic Scrolls** 🟣📜\n"
+                "• Must verify once before accessing features"
+            ),
+            inline=False
+        )
+        
+        # Rally System
+        embed.add_field(
+            name="🏰 Rally System (`/rally`)",
+            value=(
+                "**Organize Shattered Skulls Fortress raids:**\n"
+                "• Create rallies: `/rally level:1-6 time_limit:5m/15m/30m/1hr`\n"
+                "• **Level 1**: 1 player, 10 points\n"
+                "• **Level 2**: 1 player, 20 points\n"
+                "• **Level 3**: 2 players, 30 points\n"
+                "• **Level 4**: 3 players, 45 points\n"
+                "• **Level 5**: 4 players, 50 points\n"
+                "• **Level 6**: 5 players, 60 points\n"
+                "• Use `/setup #channel` (Admin only) to configure"
+            ),
+            inline=False
+        )
+        
+        # XP and Progression
+        embed.add_field(
+            name="⚡ XP & Progression System",
+            value=(
+                "**Avatar Play XP Calculation:**\n"
+                "• **Base**: 75 XP per correct answer\n"
+                "• **Multipliers**: Mode × Difficulty × Streak × Daily × Vote\n"
+                "• **Streak Bonus**: +10% per consecutive correct answer\n"
+                "• **Daily Bonus**: 2x XP for first game each day\n"
+                "• **Perfect Game**: +200 bonus XP\n"
+                "• **Vote Bonus**: Up to 13x XP (use `/vote`!)\n\n"
+                "**Level Up Rewards:**\n"
+                "• **Avatar Tokens**: 10 per level gained\n"
+                "• Exponential XP requirements (15% increase per level)"
+            ),
+            inline=False
+        )
+        
+        # Hero & Skill Systems
+        embed.add_field(
+            name="🦸 Hero & Skill Systems",
+            value=(
+                "**Hero Management (`/hero`):**\n"
+                "• Upgrade heroes: Rare → Epic → Legendary\n"
+                "• Choose elements: Fire 🔥, Water 💧, Earth 🌱, Air 💨\n"
+                "• Requires **Hero Shards** from minigames\n\n"
+                "**Skill Trees (`/skills`):**\n"
+                "• 44 skills across 4 elemental trees\n"
+                "• Upgrade with **Skill Points** earned from playing\n"
+                "• Prerequisites and tier progression system\n"
+                "• Boost stats for duels and achievements"
+            ),
+            inline=False
+        )
+        
+        # Duel System
+        embed.add_field(
+            name="⚔️ PvP Duel System (`/duel`)",
+            value=(
+                "**Player vs Player Combat:**\n"
+                "• Challenge other players: `/duel challenge @user`\n"
+                "• Turn-based combat with element advantages\n"
+                "• ELO rating system with tier progression\n"
+                "• Track wins, losses, streaks, and statistics\n"
+                "• Uses your hero upgrades and elemental skills\n"
+                "• View leaderboards: `/duel leaderboard`"
+            ),
+            inline=False
+        )
+        
+        # Resources and Rewards
+        embed.add_field(
+            name="💎 Resources & Rewards",
+            value=(
+                "**Earned from playing minigames:**\n"
+                "• **XP** - Levels up your profile and unlocks features\n"
+                "• **Avatar Tokens** - Premium currency for upgrades\n"
+                "• **Hero Shards** - Upgrade your hero's rarity\n"
+                "• **Skill Points** - Unlock and upgrade elemental skills\n"
+                "• **Scrolls** - Basic 📜 and Epic 🟣📜 rewards\n"
+                "• **Achievements** - Unlock titles and bonuses\n"
+                "• **Spirit Energy** - Visual status representation"
+            ),
+            inline=False
+        )
+        
+        # Tips and Tricks
+        embed.add_field(
+            name="💡 Pro Tips",
+            value=(
+                "🗳️ **Vote daily** with `/vote` for massive XP bonuses!\n"
+                "🔥 **Maintain streaks** for +10% XP per correct answer\n"
+                "👑 **Try Master mode** for 3x XP multiplier\n"
+                "🎯 **Play daily** for 2x XP bonus on first game\n"
+                "📊 **Check leaderboards** to see your ranking\n"
+                "⚔️ **Upgrade your hero** before dueling for better stats\n"
+                "🌟 **Complete achievements** for permanent rewards"
+            ),
+            inline=False
+        )
+        
+        embed.set_footer(text="💖 Have fun playing! Use individual commands to get started with any system.")
+        
+        await interaction.response.send_message(embed=embed)
+
 async def setup(bot):
     """Setup function to add the cog to the bot."""
     await bot.add_cog(Utility(bot)) 
