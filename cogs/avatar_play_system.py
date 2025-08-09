@@ -140,7 +140,7 @@ def save_play_player(guild_id: int, user_id: int, data: Dict[str, Any]) -> None:
 # ---------- Trivia Question Parser ----------
 
 def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
-    """Parse Avatar trivia questions with enhanced categorization."""
+    """Parse Avatar trivia questions with enhanced categorization and proper shuffling."""
     if not TRIVIA_FILE.exists():
         return []
 
@@ -178,12 +178,17 @@ def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
             if option_line.startswith(('A)', 'B)', 'C)', 'D)')):
                 option_text = option_line[2:].strip()
                 if '✅' in option_text:
-                    correct_answer = len(options)
+                    correct_answer = len(options)  # This will be the index of the current option
                     option_text = option_text.replace('✅', '').strip()
                 options.append(option_text)
             j += 1
         
         if len(options) >= 2 and correct_answer is not None:
+            # Shuffle options and update correct answer index
+            correct_option = options[correct_answer]
+            random.shuffle(options)
+            new_correct_index = options.index(correct_option)
+            
             # Categorize question based on content
             category = categorize_question(question_text)
             difficulty = estimate_difficulty(question_text, options)
@@ -191,7 +196,7 @@ def parse_avatar_trivia_questions() -> List[Dict[str, Any]]:
             questions.append({
                 "question": question_text,
                 "options": options,
-                "answer_index": correct_answer,
+                "answer_index": new_correct_index,
                 "category": category,
                 "difficulty": difficulty,
                 "id": len(questions)
@@ -705,9 +710,7 @@ class TriviaGameView(discord.ui.View):
     async def answer_c(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self._process_answer(interaction, 2)
     
-    @discord.ui.button(label="D", style=discord.ButtonStyle.secondary, emoji="🇩")
-    async def answer_d(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self._process_answer(interaction, 3)
+
     
     async def _process_answer(self, interaction: discord.Interaction, choice: int):
         """Process player's answer with proper timer cleanup."""
@@ -931,7 +934,7 @@ class AvatarPlaySystem(commands.Cog):
         # Interactive guide
         embed.add_field(
             name="🎛️ How to Play",
-            value="🔸 **Select Difficulty** using the dropdown above\n🔸 **Choose Game Mode** using the colorful buttons\n🔸 **View Stats/Achievements** with the action buttons\n🔸 **Answer Questions** with A/B/C/D buttons during games",
+            value="🔸 **Select Difficulty** using the dropdown above\n🔸 **Choose Game Mode** using the colorful buttons\n🔸 **View Stats/Achievements** with the action buttons\n🔸 **Answer Questions** with A/B/C buttons during games",
             inline=False
         )
         
@@ -1021,10 +1024,10 @@ class AvatarPlaySystem(commands.Cog):
         )
         
         # Enhanced options with styled formatting
-        option_emojis = ["🇦", "🇧", "🇨", "🇩"]
-        option_styles = ["🔸", "🔹", "🔶", "🔷"]
+        option_emojis = ["🇦", "🇧", "🇨"]
+        option_styles = ["🔸", "🔹", "🔶"]
         
-        for i, option in enumerate(question_data["options"][:4]):
+        for i, option in enumerate(question_data["options"][:3]):
             embed.add_field(
                 name=f"{option_emojis[i]} Option {chr(65+i)}",
                 value=f"{option_styles[i]} **{option}**",
@@ -1205,7 +1208,7 @@ class AvatarPlaySystem(commands.Cog):
         embed = EmbedGenerator.create_embed(title=title, description=description, color=color)
         
         # Show correct answer
-        option_letters = ["A", "B", "C", "D"]
+        option_letters = ["A", "B", "C"]
         correct_letter = option_letters[question_data["answer_index"]]
         correct_option = question_data["options"][question_data["answer_index"]]
         
