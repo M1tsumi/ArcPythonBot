@@ -549,7 +549,21 @@ class MinigameDaily(commands.Cog):
                 await interaction.response.send_message("I couldn't open your DMs. Please enable DMs from this server and try again.", ephemeral=True)
                 return
 
-            await interaction.response.send_message("Opened a DM with you for a 5-question Trivia!", ephemeral=True)
+            # Show current stats in an ephemeral embed
+            tstats = player.get("stats", {}).get("trivia", {})
+            stats_embed = EmbedGenerator.create_embed(
+                title="Trivia Stats",
+                description=(
+                    f"Correct Answers: **{int(tstats.get('correct_total', 0))}**\n"
+                    f"Incorrect Answers: **{int(tstats.get('incorrect_total', 0))}**\n"
+                    f"Ace Attempts: **{int(tstats.get('ace_attempts', 0))}**\n\n"
+                    "Starting a 5-question Trivia in your DMs."
+                ),
+                color=discord.Color.purple(),
+            )
+            stats_embed = EmbedGenerator.finalize_embed(stats_embed)
+            await interaction.response.send_message(embed=stats_embed, ephemeral=True)
+
             await self.parent.run_trivia_session(dm, interaction.user, self.guild_id, self.user_id)
             # Set cooldown timestamp
             player = load_player(self.guild_id, self.user_id)
@@ -765,20 +779,22 @@ class MinigameDaily(commands.Cog):
         incorrect_count = 0
 
         for index, q in enumerate(session_questions, start=1):
+            # Build fields dynamically for available options
+            option_fields: List[Dict[str, Any]] = []
+            option_letters = ["A", "B", "C", "D"]
+            for idx, opt_text in enumerate(q["options"]):
+                letter = option_letters[idx] if idx < len(option_letters) else str(idx + 1)
+                option_fields.append({"name": letter, "value": opt_text, "inline": False})
+
             embed = EmbedGenerator.create_embed(
                 title=f"Trivia Question {index}/{len(session_questions)}",
                 description=q["question"],
                 color=discord.Color.blue(),
-                fields=[
-                    {"name": "A", "value": q["options"][0], "inline": False},
-                    {"name": "B", "value": q["options"][1], "inline": False},
-                    {"name": "C", "value": q["options"][2], "inline": False},
-                    {"name": "D", "value": q["options"][3], "inline": False},
-                ],
+                fields=option_fields,
             )
             embed = EmbedGenerator.finalize_embed(embed)
 
-            view = self._build_trivia_question_view(correct_index=q["answer_index"], user_id=user_id)
+            view = self._build_trivia_question_view(correct_index=q["answer_index"], user_id=user_id, options_count=len(q["options"]))
             await dm_channel.send(embed=embed, view=view)
 
             # Wait for the view to complete (button disables on answer)
@@ -844,52 +860,38 @@ class MinigameDaily(commands.Cog):
         # Also update the original Play panel in guild with refreshed stats if desired (skipped here)
 
     class _TriviaQuestionView(discord.ui.View):
-        def __init__(self, correct_index: int, user_id: int):
+        def __init__(self, correct_index: int, user_id: int, options_count: int):
             super().__init__(timeout=60)
             self.correct_index = correct_index
             self.user_id = user_id
             self.answer_correct: Optional[bool] = None
 
-        async def _check_user(self, interaction: discord.Interaction) -> bool:
-            if interaction.user is None or interaction.user.id != self.user_id:
-                await interaction.response.send_message("This question is not for you.", ephemeral=True)
-                return False
-            return True
+            option_letters = ["A", "B", "C", "D"]
 
-        async def _handle_answer(self, interaction: discord.Interaction, choice_index: int):
-            if not await self._check_user(interaction):
-                return
-            is_correct = (choice_index == self.correct_index)
-            self.answer_correct = is_correct
-            # Disable all buttons
-            for item in self.children:
-                if isinstance(item, discord.ui.Button):
-                    item.disabled = True
-            if is_correct:
-                await interaction.response.edit_message(content="✅ Correct!", view=self)
-            else:
-                await interaction.response.edit_message(content="❌ Incorrect.", view=self)
+            for idx in range(options_count):
+                label = option_letters[idx] if idx < len(option_letters) else str(idx + 1)
+                button = discord.ui.Button(label=label, style=discord.ButtonStyle.secondary)
 
-            self.stop()
+                async def callback(interaction: discord.Interaction, choice_idx: int = idx):
+                    if interaction.user is None or interaction.user.id != self.user_id:
+                        await interaction.response.send_message("This question is not for you.", ephemeral=True)
+                        return
+                    is_correct = (choice_idx == self.correct_index)
+                    self.answer_correct = is_correct
+                    for item in self.children:
+                        if isinstance(item, discord.ui.Button):
+                            item.disabled = True
+                    if is_correct:
+                        await interaction.response.edit_message(content="✅ Correct!", view=self)
+                    else:
+                        await interaction.response.edit_message(content="❌ Incorrect.", view=self)
+                    self.stop()
 
-        @discord.ui.button(label="A", style=discord.ButtonStyle.secondary)
-        async def a(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
-            await self._handle_answer(interaction, 0)
+                button.callback = callback  # type: ignore[assignment]
+                self.add_item(button)
 
-        @discord.ui.button(label="B", style=discord.ButtonStyle.secondary)
-        async def b(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
-            await self._handle_answer(interaction, 1)
-
-        @discord.ui.button(label="C", style=discord.ButtonStyle.secondary)
-        async def c(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
-            await self._handle_answer(interaction, 2)
-
-        @discord.ui.button(label="D", style=discord.ButtonStyle.secondary)
-        async def d(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
-            await self._handle_answer(interaction, 3)
-
-    def _build_trivia_question_view(self, correct_index: int, user_id: int) -> "MinigameDaily._TriviaQuestionView":
-        return self._TriviaQuestionView(correct_index, user_id)
+    def _build_trivia_question_view(self, correct_index: int, user_id: int, options_count: int) -> "MinigameDaily._TriviaQuestionView":
+        return self._TriviaQuestionView(correct_index, user_id, options_count)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MinigameDaily(bot))
