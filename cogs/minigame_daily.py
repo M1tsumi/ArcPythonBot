@@ -530,7 +530,7 @@ class MinigameDaily(commands.Cog):
         async def trivia(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
             if not await self.interaction_guard(interaction):
                 return
-            # Start a trivia session in DMs
+            # Start a trivia session in-channel using ephemeral messages
             player = load_player(self.guild_id, self.user_id)
             # 1-minute cooldown per user for trivia
             now = datetime.now(timezone.utc)
@@ -545,33 +545,22 @@ class MinigameDaily(commands.Cog):
                     secs = int(remaining.total_seconds())
                     await interaction.response.send_message(f"Trivia is on cooldown for {secs}s.", ephemeral=True)
                     return
-            try:
-                dm = await interaction.user.create_dm()  # type: ignore[union-attr]
-            except Exception:
-                await interaction.response.send_message("I couldn't open your DMs. Please enable DMs from this server and try again.", ephemeral=True)
+
+            questions = parse_trivia_questions()
+            if not questions:
+                await interaction.response.send_message("No trivia questions are configured yet.", ephemeral=True)
                 return
 
-            # Show current stats in an ephemeral embed
-            tstats = player.get("stats", {}).get("trivia", {})
-            stats_embed = EmbedGenerator.create_embed(
-                title="Trivia Stats",
-                description=(
-                    f"Correct Answers: **{int(tstats.get('correct_total', 0))}**\n"
-                    f"Incorrect Answers: **{int(tstats.get('incorrect_total', 0))}**\n"
-                    f"Ace Attempts: **{int(tstats.get('ace_attempts', 0))}**\n\n"
-                    "Starting a 5-question Trivia in your DMs."
-                ),
-                color=discord.Color.purple(),
-            )
-            stats_embed = EmbedGenerator.finalize_embed(stats_embed)
-            await interaction.response.send_message(embed=stats_embed, ephemeral=True)
+            session_questions = random.sample(questions, k=min(TRIVIA_QUESTIONS_PER_SESSION, len(questions)))
+            view = self.parent._EphemeralTriviaView(self.parent, self.guild_id, self.user_id, session_questions)
+            first_embed = view.build_current_embed()
 
-            await self.parent.run_trivia_session(dm, interaction.user, self.guild_id, self.user_id)
-            # Set cooldown timestamp
-            player = load_player(self.guild_id, self.user_id)
+            # Set cooldown timestamp at start
             stats = player.setdefault("stats", {})
             stats["last_trivia_at"] = now.isoformat()
             save_player(self.guild_id, self.user_id, player)
+
+            await interaction.response.send_message(embed=first_embed, view=view, ephemeral=True)
 
     class RollChoiceView(discord.ui.View):
         def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int):
@@ -806,6 +795,114 @@ class MinigameDaily(commands.Cog):
         await self.trivia_validate.callback(self, interaction)  # reuse same logic
 
     # ---------- Trivia game loop ----------
+
+    class _EphemeralTriviaView(discord.ui.View):
+        def __init__(self, parent: "MinigameDaily", guild_id: int, user_id: int, questions: List[Dict[str, Any]]):
+            super().__init__(timeout=300)
+            self.parent = parent
+            self.guild_id = guild_id
+            self.user_id = user_id
+            self.questions = questions
+            self.index = 0
+            self.correct_count = 0
+            self.incorrect_count = 0
+            self._rebuild_buttons()
+
+        def _option_letters(self) -> List[str]:
+            return ["A", "B", "C", "D"]
+
+        def current_question(self) -> Dict[str, Any]:
+            return self.questions[self.index]
+
+        def build_current_embed(self) -> discord.Embed:
+            q = self.current_question()
+            option_fields: List[Dict[str, Any]] = []
+            letters = self._option_letters()
+            for idx, opt_text in enumerate(q["options"]):
+                letter = letters[idx] if idx < len(letters) else str(idx + 1)
+                option_fields.append({"name": letter, "value": opt_text, "inline": False})
+            embed = EmbedGenerator.create_embed(
+                title=f"Trivia Question {self.index + 1}/{len(self.questions)}",
+                description=q["question"],
+                color=discord.Color.blue(),
+                fields=option_fields,
+            )
+            return EmbedGenerator.finalize_embed(embed)
+
+        def _rebuild_buttons(self) -> None:
+            # Clear existing
+            for item in list(self.children):
+                self.remove_item(item)
+            # Build buttons for current question
+            q = self.current_question()
+            letters = self._option_letters()
+            for idx in range(len(q["options"])):
+                label = letters[idx] if idx < len(letters) else str(idx + 1)
+                btn = discord.ui.Button(label=label, style=discord.ButtonStyle.secondary)
+
+                async def on_click(interaction: discord.Interaction, choice_idx: int = idx):
+                    if interaction.user is None or interaction.user.id != self.user_id:
+                        await interaction.response.send_message("This question is not for you.", ephemeral=True)
+                        return
+                    is_correct = (choice_idx == self.current_question()["answer_index"])
+                    if is_correct:
+                        self.correct_count += 1
+                    else:
+                        self.incorrect_count += 1
+
+                    # Next question or finish
+                    self.index += 1
+                    if self.index < len(self.questions):
+                        # Rebuild for next question
+                        self._rebuild_buttons()
+                        await interaction.response.edit_message(embed=self.build_current_embed(), view=self)
+                    else:
+                        # Finish: update stats, compute rewards, show summary
+                        player = load_player(self.guild_id, self.user_id)
+                        player_stats = player.setdefault("stats", {}).setdefault("trivia", {})
+                        player_stats["correct_total"] = int(player_stats.get("correct_total", 0)) + self.correct_count
+                        player_stats["incorrect_total"] = int(player_stats.get("incorrect_total", 0)) + self.incorrect_count
+                        player_stats["sessions_played"] = int(player_stats.get("sessions_played", 0)) + 1
+                        if self.incorrect_count == 0 and self.correct_count > 0:
+                            player_stats["ace_attempts"] = int(player_stats.get("ace_attempts", 0)) + 1
+
+                        gained_xp = TRIVIA_XP_PER_CORRECT * self.correct_count
+                        level_result = apply_xp_and_level(player, gained_xp)
+
+                        drops: List[str] = []
+                        if random.random() < TRIVIA_BASIC_SCROLL_CHANCE:
+                            player.setdefault("scrolls", {}).setdefault("basic", 0)
+                            player["scrolls"]["basic"] += 1
+                            drops.append("Basic Scroll 📜")
+                        if random.random() < TRIVIA_EPIC_SCROLL_CHANCE:
+                            player.setdefault("scrolls", {}).setdefault("epic", 0)
+                            player["scrolls"]["epic"] += 1
+                            drops.append("Epic Scroll 🟣📜")
+
+                        save_player(self.guild_id, self.user_id, player)
+
+                        summary_lines = [
+                            f"Correct: **{self.correct_count}**",
+                            f"Incorrect: **{self.incorrect_count}**",
+                            f"XP gained: **{gained_xp}**",
+                        ]
+                        summary_lines.append("Drops: " + (", ".join(drops) if drops else "None"))
+                        summary = EmbedGenerator.create_embed(
+                            title="Trivia Results",
+                            description="\n".join(summary_lines),
+                            color=discord.Color.green(),
+                        )
+                        summary = EmbedGenerator.finalize_embed(summary)
+
+                        # Remove buttons on completion
+                        for item in list(self.children):
+                            self.remove_item(item)
+
+                        await interaction.response.edit_message(embed=summary, view=self)
+                        self.stop()
+
+                btn.callback = on_click  # type: ignore[assignment]
+                self.add_item(btn)
 
     async def run_trivia_session(self, dm_channel: discord.DMChannel, user: discord.User | discord.Member, guild_id: int, user_id: int):
         questions = parse_trivia_questions()
