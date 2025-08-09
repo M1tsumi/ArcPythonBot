@@ -1,0 +1,240 @@
+{
+  "duel_achievements": {
+    "first_blood": {
+      "name": "First Blood",
+      "description": "Win your first duel",
+      "icon": "⚔️",
+      "rarity": "common",
+      "requirement": "1 duel win",
+      "rewards": {
+        "basic_hero_shards": 2,
+        "title": "Duelist"
+      }
+    },
+    "dueling_novice": {
+      "name": "Dueling Novice", 
+      "description": "Play 10 duels",
+      "icon": "🎯",
+      "rarity": "common",
+      "requirement": "10 total duels",
+      "rewards": {
+        "epic_hero_shards": 2,
+        "skill_points": 1
+      }
+    },
+    "dueling_veteran": {
+      "name": "Dueling Veteran",
+      "description": "Play 50 duels",
+      "icon": "🏺",
+      "rarity": "uncommon", 
+      "requirement": "50 total duels",
+      "rewards": {
+        "epic_hero_shards": 5,
+        "skill_points": 3,
+        "title": "Veteran Duelist"
+      }
+    },
+    "dueling_master": {
+      "name": "Dueling Master",
+      "description": "Play 100 duels",
+      "icon": "👑",
+      "rarity": "rare",
+      "requirement": "100 total duels", 
+      "rewards": {
+        "epic_hero_shards": 10,
+        "skill_points": 5,
+        "title": "Master Duelist"
+      }
+    },
+    "unstoppable": {
+      "name": "Unstoppable",
+      "description": "Win 5 duels in a row",
+      "icon": "🔥",
+      "rarity": "uncommon",
+      "requirement": "5 win streak",
+      "rewards": {
+        "epic_hero_shards": 3,
+        "skill_points": 2
+      }
+    },
+    "dominator": {
+      "name": "Dominator", 
+      "description": "Win 10 duels in a row",
+      "icon": "⚡",
+      "rarity": "rare",
+      "requirement": "10 win streak",
+      "rewards": {
+        "epic_hero_shards": 8,
+        "skill_points": 4,
+        "title": "Dominator"
+      }
+    },
+    "legend": {
+      "name": "Living Legend",
+      "description": "Win 15 duels in a row", 
+      "icon": "🌟",
+      "rarity": "legendary",
+      "requirement": "15 win streak",
+      "rewards": {
+        "epic_hero_shards": 15,
+        "skill_points": 8,
+        "title": "Living Legend"
+      }
+    },
+    "element_master_fire": {
+      "name": "Fire Master",
+      "description": "Win 10 duels using Fire heroes",
+      "icon": "🔥",
+      "rarity": "uncommon",
+      "requirement": "10 wins with Fire element",
+      "rewards": {
+        "epic_hero_shards": 4,
+        "skill_points": 2,
+        "title": "Fire Master"
+      }
+    },
+    "element_master_water": {
+      "name": "Water Master", 
+      "description": "Win 10 duels using Water heroes",
+      "icon": "💧",
+      "rarity": "uncommon",
+      "requirement": "10 wins with Water element",
+      "rewards": {
+        "epic_hero_shards": 4,
+        "skill_points": 2,
+        "title": "Water Master"
+      }
+    },
+    "element_master_earth": {
+      "name": "Earth Master",
+      "description": "Win 10 duels using Earth heroes", 
+      "icon": "🌍",
+      "rarity": "uncommon",
+      "requirement": "10 wins with Earth element",
+      "rewards": {
+        "epic_hero_shards": 4,
+        "skill_points": 2,
+        "title": "Earth Master"
+      }
+    },
+    "element_master_air": {
+      "name": "Air Master",
+      "description": "Win 10 duels using Air heroes",
+      "icon": "💨", 
+      "rarity": "uncommon",
+      "requirement": "10 wins with Air element",
+      "rewards": {
+        "epic_hero_shards": 4,
+        "skill_points": 2,
+        "title": "Air Master"
+      }
+    },
+    "silver_rank": {
+      "name": "Silver Rank",
+      "description": "Reach Silver tier (1200+ rating)",
+      "icon": "🥈",
+      "rarity": "common",
+      "requirement": "1200+ duel rating",
+      "rewards": {
+        "epic_hero_shards": 3,
+        "skill_points": 1,
+        "title": "Silver Duelist"
+      }
+    },
+    "gold_rank": {
+      "name": "Gold Rank", 
+      "description": "Reach Gold tier (1400+ rating)",
+      "icon": "🥇",
+      "rarity": "uncommon",
+      "requirement": "1400+ duel rating",
+      "rewards": {
+        "epic_hero_shards": 6,
+        "skill_points": 3,
+        "title": "Gold Duelist"
+      }
+    },
+    "platinum_rank": {
+      "name": "Platinum Rank",
+      "description": "Reach Platinum tier (1600+ rating)",
+      "icon": "💎",
+      "rarity": "rare", 
+      "requirement": "1600+ duel rating",
+      "rewards": {
+        "epic_hero_shards": 10,
+        "skill_points": 5,
+        "title": "Platinum Duelist"
+      }
+    },
+    "diamond_rank": {
+      "name": "Diamond Rank",
+      "description": "Reach Diamond tier (1800+ rating)",
+      "icon": "💠",
+      "rarity": "epic",
+      "requirement": "1800+ duel rating", 
+      "rewards": {
+        "epic_hero_shards": 15,
+        "skill_points": 8,
+        "title": "Diamond Duelist"
+      }
+    },
+    "master_rank": {
+      "name": "Master Rank",
+      "description": "Reach Master tier (2000+ rating)",
+      "icon": "👑",
+      "rarity": "legendary",
+      "requirement": "2000+ duel rating",
+      "rewards": {
+        "epic_hero_shards": 25,
+        "skill_points": 12,
+        "title": "Grandmaster"
+      }
+    },
+    "giant_slayer": {
+      "name": "Giant Slayer",
+      "description": "Defeat someone 200+ rating higher",
+      "icon": "🗡️",
+      "rarity": "rare",
+      "requirement": "Win against +200 rating opponent",
+      "rewards": {
+        "epic_hero_shards": 6,
+        "skill_points": 3
+      }
+    },
+    "underdog": {
+      "name": "Underdog",
+      "description": "Win 5 duels against higher rated opponents",
+      "icon": "🐕",
+      "rarity": "uncommon", 
+      "requirement": "5 wins vs higher rated",
+      "rewards": {
+        "epic_hero_shards": 4,
+        "skill_points": 2
+      }
+    },
+    "perfect_victory": {
+      "name": "Perfect Victory",
+      "description": "Win a duel without taking damage",
+      "icon": "✨",
+      "rarity": "rare",
+      "requirement": "Win with 100% HP remaining",
+      "rewards": {
+        "epic_hero_shards": 5,
+        "skill_points": 3
+      }
+    }
+  },
+  "achievement_categories": {
+    "participation": ["first_blood", "dueling_novice", "dueling_veteran", "dueling_master"],
+    "streaks": ["unstoppable", "dominator", "legend"],
+    "elements": ["element_master_fire", "element_master_water", "element_master_earth", "element_master_air"],
+    "ranking": ["silver_rank", "gold_rank", "platinum_rank", "diamond_rank", "master_rank"],
+    "special": ["giant_slayer", "underdog", "perfect_victory"]
+  },
+  "rarity_colors": {
+    "common": "#95A5A6",
+    "uncommon": "#27AE60", 
+    "rare": "#3498DB",
+    "epic": "#9B59B6",
+    "legendary": "#F39C12"
+  }
+}

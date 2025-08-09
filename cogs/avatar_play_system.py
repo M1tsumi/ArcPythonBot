@@ -19,10 +19,11 @@ from discord import app_commands
 from discord.ext import commands
 
 from utils.embed_generator import EmbedGenerator
+from utils.global_profile_manager import global_profile_manager
 
 # ---------- Configuration ----------
-PLAY_DATA_ROOT = Path("data") / "avatar_play" / "servers"
-TRIVIA_FILE = Path("text files") / "trivia-questions.txt"
+PLAY_DATA_ROOT = Path("data") / "servers" / "avatar_play" / "servers"
+TRIVIA_FILE = Path("data") / "game" / "text_data" / "trivia-questions.txt"
 
 # Game Configuration
 GAME_MODES = {
@@ -1288,6 +1289,17 @@ class AvatarPlaySystem(commands.Cog):
         
         # Save player data
         save_play_player(session.guild_id, session.player_id, player)
+        
+        # Update global profile
+        game_stats = {
+            "games_played": 1,
+            "questions_answered": total_questions,
+            "correct_answers": session.correct_answers,
+            "xp_gained": xp_result["total_gained"],
+            "best_streak": session.streak,
+            "perfect_games": 1 if is_perfect else 0
+        }
+        global_profile_manager.update_global_stats(session.player_id, session.guild_id, game_stats)
         
         # Create results embed
         results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus)

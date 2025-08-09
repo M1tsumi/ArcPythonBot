@@ -1,0 +1,74 @@
+{
+  "rarity_progression": {
+    "rare": {
+      "name": "Rare",
+      "color": "#3498db",
+      "max_stars": 2,
+      "description": "Basic player with moderate stats"
+    },
+    "epic": {
+      "name": "Epic", 
+      "color": "#9b59b6",
+      "max_stars": 3,
+      "description": "Enhanced player with good stats"
+    },
+    "legendary": {
+      "name": "Legendary",
+      "color": "#f39c12", 
+      "max_stars": 6,
+      "description": "Elite player with exceptional stats"
+    }
+  },
+  "upgrade_costs": {
+    "rare_1_to_rare_2": {
+      "basic_hero_shards": 10,
+      "epic_hero_shards": 0
+    },
+    "rare_2_to_epic_1": {
+      "basic_hero_shards": 15,
+      "epic_hero_shards": 5
+    },
+    "epic_1_to_epic_2": {
+      "basic_hero_shards": 20,
+      "epic_hero_shards": 8
+    },
+    "epic_2_to_epic_3": {
+      "basic_hero_shards": 25,
+      "epic_hero_shards": 12
+    },
+    "epic_3_to_legendary_1": {
+      "basic_hero_shards": 30,
+      "epic_hero_shards": 20
+    },
+    "legendary_1_to_legendary_2": {
+      "basic_hero_shards": 0,
+      "epic_hero_shards": 15
+    },
+    "legendary_2_to_legendary_3": {
+      "basic_hero_shards": 0,
+      "epic_hero_shards": 20
+    },
+    "legendary_3_to_legendary_4": {
+      "basic_hero_shards": 0,
+      "epic_hero_shards": 25
+    },
+    "legendary_4_to_legendary_5": {
+      "basic_hero_shards": 0,
+      "epic_hero_shards": 30
+    },
+    "legendary_5_to_legendary_6": {
+      "basic_hero_shards": 0,
+      "epic_hero_shards": 40
+    }
+  },
+  "total_costs": {
+    "basic_hero_shards": 100,
+    "epic_hero_shards": 130,
+    "note": "Total cost to reach Legendary 6★ from Rare 1★"
+  },
+  "stat_scaling": {
+    "formula": "Base * (1 + (star_level - 1) * 0.15)",
+    "multiplier_per_star": 0.15,
+    "description": "Stats increase by 15% per star level"
+  }
+}

@@ -34,10 +34,10 @@ def check_dependencies():
 def check_data_files():
     """Check if data files exist."""
     required_files = [
-        'data/characters/character_list.json',
-        'data/characters/character_1.json',
-        'data/events/current_events.json',
-        'data/events/past_events.json'
+        'data/game/characters/character_list.json',
+        'data/game/characters/character_1.json',
+        'data/game/events/current_events.json',
+        'data/game/events/past_events.json'
     ]
     
     missing_files = []

@@ -20,7 +20,7 @@ class RallySystem(commands.Cog):
         self.logger = bot.logger
         self.rally_channels = {}  # {guild_id: channel_id}
         self.active_rallies = {}  # {message_id: rally_data}
-        self.user_stats_file = "data/rally_stats.json"
+        self.user_stats_file = "data/system/rally_stats.json"
         self.load_rally_channels()
         self.load_user_stats()
         
@@ -45,8 +45,8 @@ class RallySystem(commands.Cog):
     def load_rally_channels(self):
         """Load rally channel configurations from file."""
         try:
-            if os.path.exists("data/rally_channels.json"):
-                with open("data/rally_channels.json", "r") as f:
+            if os.path.exists("data/system/rally_channels.json"):
+                with open("data/system/rally_channels.json", "r") as f:
                     self.rally_channels = json.load(f)
         except Exception as e:
             self.logger.error(f"Error loading rally channels: {e}")
@@ -55,8 +55,8 @@ class RallySystem(commands.Cog):
     def save_rally_channels(self):
         """Save rally channel configurations to file."""
         try:
-            os.makedirs("data", exist_ok=True)
-            with open("data/rally_channels.json", "w") as f:
+            os.makedirs("data/system", exist_ok=True)
+            with open("data/system/rally_channels.json", "w") as f:
                 json.dump(self.rally_channels, f, indent=2)
         except Exception as e:
             self.logger.error(f"Error saving rally channels: {e}")

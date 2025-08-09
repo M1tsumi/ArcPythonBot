@@ -96,6 +96,9 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.game_info',
             'cogs.minigame_daily',
             'cogs.avatar_play_system',  # Enhanced Avatar Play System
+            'cogs.player_system',       # Hero upgrade system
+            'cogs.skill_system',        # Skill tree system
+            'cogs.duel_system',         # PvP duel system
             'cogs.player_tools',
             'cogs.rally_system',
             'cogs.tgl_system',

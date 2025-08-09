@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "description": "Talent tree types and general information for Avatar Realms Collide heroes",
+    "total_points": 89,
+    "dual_purpose_note": "Talent trees can have dual purposes, meaning they don't always focus solely on a hero's primary specialty",
+    "activation_note": "Talents marked with gold and blue are unlocked/activated",
+    "ignore_note": "Talents marked with red X should be ignored as they represent placement mistakes"
+  },
+  "talent_types": {
+    "Kyoshi": "Normal PvP Based Tree",
+    "Bumi": "Normal PvP Based Tree",
+    "Korra": "Normal PvP Based Tree",
+    "Toph": "Normal PvP Based Tree",
+    "Azula": "Normal PvP Based Tree",
+    "Iroh": "Normal PvP Based Tree",
+    "Asami": "Normal PvP Based Tree",
+    "Sokka": "Normal PvP Based Tree",
+    "Suki": "Normal PvP Based Tree",
+    "Zuko": "Normal PvP Based Tree",
+    "Katara": "Normal PvP Based Tree",
+    "Tenzin": "Garrison Based Tree",
+    "Teo": "Siege Based Tree",
+    "Borte": "Shattered Skulls Based Tree",
+    "Aang": "Normal PvP Based Tree",
+    "Kuei": "Gathering Based Tree",
+    "Meelo": "Gathering Based Tree",
+    "Piandao": "Gathering Based Tree",
+    "Yue": "Gathering Based Tree",
+    "Amon": "Normal PvP Based Tree",
+    "King Bumi": "Normal PvP Based Tree",
+    "Yangchen": "Normal PvP Based Tree",
+    "Katara (Painted Lady)": "Normal PvP Based Tree",
+    "Unalaq": "Normal PvP Based Tree",
+    "Roku": "Normal PvP Based Tree",
+    "Lin Beifong": "Normal PvP Based Tree"
+  },
+  "tree_categories": {
+    "Normal PvP Based Tree": {
+      "description": "Standard PvP-focused talent tree for combat effectiveness",
+      "characters": ["Kyoshi", "Bumi", "Korra", "Toph", "Azula", "Iroh", "Asami", "Sokka", "Suki", "Zuko", "Katara", "Aang", "Amon", "King Bumi", "Yangchen", "Katara (Painted Lady)", "Unalaq", "Roku", "Lin Beifong"]
+    },
+    "Garrison Based Tree": {
+      "description": "Specialized for defensive garrison operations",
+      "characters": ["Tenzin"]
+    },
+    "Siege Based Tree": {
+      "description": "Optimized for siege warfare and offensive operations",
+      "characters": ["Teo"]
+    },
+    "Shattered Skulls Based Tree": {
+      "description": "Specialized tree for Shattered Skulls game mode",
+      "characters": ["Borte"]
+    },
+    "Gathering Based Tree": {
+      "description": "Focused on resource gathering and economic benefits",
+      "characters": ["Kuei", "Meelo", "Piandao", "Yue"]
+    }
+  }
+}

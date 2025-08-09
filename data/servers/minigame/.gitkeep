@@ -1,0 +1,2 @@
+# This file ensures the minigame directory is tracked by git
+# The actual server and user data files are ignored by .gitignore

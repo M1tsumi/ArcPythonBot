@@ -17,7 +17,7 @@ class Leaderboards(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
-        self.leaderboard_state_file = "data/leaderboard_state.json"
+        self.leaderboard_state_file = "data/system/leaderboard_state.json"
         self.load_leaderboard_state()
     
     def load_leaderboard_state(self):

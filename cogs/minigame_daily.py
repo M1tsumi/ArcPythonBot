@@ -23,14 +23,14 @@ from utils.embed_generator import EmbedGenerator
 
 # ---------- Storage helpers ----------
 
-MINIGAME_ROOT = Path("data") / "minigame" / "servers"
+MINIGAME_ROOT = Path("data") / "servers" / "minigame" / "servers"
 # Resolve trivia file relative to repo root (parent of cogs/)
 _BASE_DIR = Path(__file__).resolve().parents[1]
-TRIVIA_FILE = _BASE_DIR / "text files" / "trivia-questions.txt"
+TRIVIA_FILE = _BASE_DIR / "data" / "game" / "text_data" / "trivia-questions.txt"
 TRIVIA_QUESTIONS_PER_SESSION = 5
 TRIVIA_XP_PER_CORRECT = 50
 TRIVIA_BASIC_SCROLL_CHANCE = 0.10  # 10%
-TRIVIA_EPIC_SCROLL_CHANCE = 0.02   # 2%
+TRIVIA_EPIC_SCROLL_CHANCE = 0.05   # 5% (increased from 2%)
 
 
 def ensure_server_storage(guild_id: int) -> Path:
@@ -381,9 +381,9 @@ class MinigameDaily(commands.Cog):
         gained_xp = random.randint(1, 100)
         level_result = apply_xp_and_level(player, gained_xp)
 
-        # Scroll rolls: 35% Basic, 15% Epic (independent)
+        # Scroll rolls: 35% Basic, 20% Epic (improved rates)
         basic_drop = random.random() < 0.35
-        epic_drop = random.random() < 0.15
+        epic_drop = random.random() < 0.20
         if basic_drop:
             player.setdefault("scrolls", {}).setdefault("basic", 0)
             player["scrolls"]["basic"] += 1
@@ -638,8 +638,51 @@ class MinigameDaily(commands.Cog):
                 await interaction.response.send_message("You have no Epic Scrolls.", ephemeral=True)
                 return
 
-            # Placeholder: Epic rolls to be defined later
-            await interaction.response.send_message("Epic Scroll rewards are coming soon!", ephemeral=True)
+            # Consume one Epic scroll
+            player["scrolls"]["epic"] = player["scrolls"].get("epic", 0) - 1
+
+            # Epic scroll rewards (better than basic)
+            reward_type = random.choice(["xp_large", "basic_large", "epic_medium", "skill_multiple", "mixed"])
+            reward_text: str
+            if reward_type == "xp_large":
+                gained = random.randint(500, 1500)
+                self.parent._apply_xp(player, gained)
+                reward_text = f"Gained **{gained} XP**!"
+            elif reward_type == "basic_large":
+                amount = random.randint(8, 15)
+                player["inventory"]["basic_hero_shards"] = player["inventory"].get("basic_hero_shards", 0) + amount
+                reward_text = f"Received **{amount} Basic Hero Shards**!"
+            elif reward_type == "epic_medium":
+                amount = random.randint(3, 8)
+                player["inventory"]["epic_hero_shards"] = player["inventory"].get("epic_hero_shards", 0) + amount
+                reward_text = f"Received **{amount} Epic Hero Shards**!"
+            elif reward_type == "skill_multiple":
+                amount = random.randint(2, 5)
+                player["inventory"]["skill_points"] = player["inventory"].get("skill_points", 0) + amount
+                reward_text = f"Received **{amount} Skill Points**!"
+            else:  # mixed
+                basic_shards = random.randint(3, 6)
+                epic_shards = random.randint(1, 3)
+                skill_points = random.randint(1, 2)
+                player["inventory"]["basic_hero_shards"] = player["inventory"].get("basic_hero_shards", 0) + basic_shards
+                player["inventory"]["epic_hero_shards"] = player["inventory"].get("epic_hero_shards", 0) + epic_shards
+                player["inventory"]["skill_points"] = player["inventory"].get("skill_points", 0) + skill_points
+                reward_text = f"Received **{basic_shards} Basic Shards**, **{epic_shards} Epic Shards**, and **{skill_points} Skill Points**!"
+
+            save_player(self.guild_id, self.user_id, player)
+
+            # Show summary and return to play view
+            summary_embed = EmbedGenerator.create_embed(
+                title="Roll Result (Epic)",
+                description=reward_text,
+                color=discord.Color.purple(),
+            )
+            summary_embed = EmbedGenerator.finalize_embed(summary_embed)
+
+            view = self.parent.PlayView(self.parent, self.guild_id, self.user_id)
+            await interaction.response.edit_message(embed=self.parent.build_play_embed(player), view=view)
+            # Send a separate message with the reward text (public)
+            await interaction.followup.send(embed=summary_embed)
 
         @discord.ui.button(label="Back", style=discord.ButtonStyle.secondary, emoji="⬅️")
         async def back(self, interaction: discord.Interaction, button: discord.ui.Button):  # type: ignore[override]
@@ -1072,6 +1115,15 @@ class MinigameDaily(commands.Cog):
             player.setdefault("scrolls", {}).setdefault("epic", 0)
             player["scrolls"]["epic"] += 1
             drops.append("Epic Scroll 🟣📜")
+
+        # Bonus duel participation reward
+        if self.correct_count >= 4:  # Near perfect score
+            from utils.global_profile_manager import global_profile_manager
+            duel_stats = global_profile_manager.get_duel_stats(user_id)
+            if duel_stats.get("total_duels", 0) > 0:  # Has dueled before
+                if random.random() < 0.1:  # 10% chance for duelists
+                    player["inventory"]["skill_points"] = player["inventory"].get("skill_points", 0) + 1
+                    drops.append("Bonus Skill Point (Duelist Reward) ⭐")
 
         save_player(guild_id, user_id, player)
 

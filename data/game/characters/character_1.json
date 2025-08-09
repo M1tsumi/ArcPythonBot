@@ -1,0 +1,14 @@
+{
+  "character_data": {
+    "metadata": {
+      "description": "Extended character data for Avatar Realms Collide",
+      "version": "2.0",
+      "last_updated": "2025-01-08",
+      "note": "Skill priorities moved to data/game/characters/skill_priorities/skill_priorities.json"
+    },
+    "future_data": {
+      "character_skills": "Individual character skills will be organized here when needed",
+      "character_talents": "Individual character talent data will be organized here when needed"
+    }
+  }
+}

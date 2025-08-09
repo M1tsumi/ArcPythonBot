@@ -1,0 +1,2 @@
+# This file ensures the avatar_play servers directory is tracked by git
+# Individual server directories and their contents are ignored by .gitignore

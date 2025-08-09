@@ -21,7 +21,7 @@ class Statistics(commands.Cog):
         self.logger = getattr(bot, "logger", None) or discord.utils.setup_logging()
 
         # Storage
-        self.data_file_path: Path = Path("data/usage_stats.json")
+        self.data_file_path: Path = Path("data/system/usage_stats.json")
         self.data_file_path.parent.mkdir(parents=True, exist_ok=True)
         self._io_lock: asyncio.Lock = asyncio.Lock()
 

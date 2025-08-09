@@ -20,7 +20,7 @@ class PlayerTools(commands.Cog):
         self.data_parser = DataParser()
         
         # Create data directory for user profiles
-        self.profiles_dir = Path("data/profiles")
+        self.profiles_dir = Path("data/users/profiles")
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
     
     def _load_user_profile(self, user_id: int) -> Dict[str, Any]:

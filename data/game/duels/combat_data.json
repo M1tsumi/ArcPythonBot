@@ -1,0 +1,107 @@
+{
+  "element_advantages": {
+    "description": "Element advantage multipliers in combat",
+    "fire": {
+      "air": 1.15,
+      "water": 0.9,
+      "earth": 1.0,
+      "fire": 1.0
+    },
+    "water": {
+      "fire": 1.15,
+      "earth": 0.9,
+      "air": 1.0,
+      "water": 1.0
+    },
+    "earth": {
+      "water": 1.15,
+      "air": 0.9,
+      "fire": 1.0,
+      "earth": 1.0
+    },
+    "air": {
+      "earth": 1.15,
+      "fire": 0.9,
+      "water": 1.0,
+      "air": 1.0
+    }
+  },
+  "combat_constants": {
+    "base_accuracy": 0.95,
+    "min_damage_ratio": 0.1,
+    "critical_multiplier": 1.5,
+    "defense_reduction": 0.6,
+    "max_turns": 15,
+    "turn_timeout_seconds": 30,
+    "challenge_timeout_seconds": 300
+  },
+  "damage_formulas": {
+    "base_damage": "attacker_atk - (defender_def * defense_reduction)",
+    "minimum_damage": "attacker_atk * min_damage_ratio",
+    "critical_damage": "base_damage * critical_multiplier",
+    "element_damage": "base_damage * element_multiplier",
+    "final_damage": "damage * (1 - damage_reduction_bonus)"
+  },
+  "status_effects": {
+    "burn": {
+      "name": "Burn",
+      "description": "Takes damage each turn",
+      "duration": 3,
+      "effect": "5% max HP damage per turn"
+    },
+    "freeze": {
+      "name": "Freeze",
+      "description": "Skip next turn",
+      "duration": 1,
+      "effect": "Skip turn"
+    },
+    "poison": {
+      "name": "Poison", 
+      "description": "Reduces healing",
+      "duration": 2,
+      "effect": "50% reduced healing"
+    },
+    "stun": {
+      "name": "Stun",
+      "description": "Cannot act",
+      "duration": 1,
+      "effect": "Skip turn"
+    }
+  },
+  "special_abilities": {
+    "fire": {
+      "name": "Flame Burst",
+      "description": "10% chance to inflict burn on hit",
+      "trigger": "on_attack_hit",
+      "chance": 0.1,
+      "effect": "apply_burn"
+    },
+    "water": {
+      "name": "Healing Waters",
+      "description": "5% chance to heal 10% HP on turn start",
+      "trigger": "turn_start",
+      "chance": 0.05,
+      "effect": "heal_10_percent"
+    },
+    "earth": {
+      "name": "Stone Skin",
+      "description": "15% chance to negate critical hits",
+      "trigger": "on_receive_crit",
+      "chance": 0.15,
+      "effect": "negate_critical"
+    },
+    "air": {
+      "name": "Lightning Strike",
+      "description": "8% chance for extra turn on critical hit",
+      "trigger": "on_critical_hit",
+      "chance": 0.08,
+      "effect": "extra_turn"
+    }
+  },
+  "balance_notes": {
+    "design_philosophy": "Combat should favor strategy over raw stats",
+    "element_balance": "Each element has 25% win rate against others in ideal conditions",
+    "stat_scaling": "Higher tier heroes get advantages but lower tier can still win with good strategy",
+    "rng_factors": "Enough randomness to keep battles exciting but not frustrating"
+  }
+}
