@@ -789,7 +789,7 @@ class AvatarPlaySystem(commands.Cog):
     
     @app_commands.command(name="map", description="🗺️ View the complete Avatar world map")
     async def map_command(self, interaction: discord.Interaction):
-        """Display the Avatar world map with detailed information."""
+        """Display the Avatar world map."""
         try:
             map_path = Path("assets/images/map/map.webp")
             
@@ -797,61 +797,14 @@ class AvatarPlaySystem(commands.Cog):
                 await interaction.response.send_message("❌ Map file not found!", ephemeral=True)
                 return
             
-            # Create detailed map embed
+            # Create simple map embed
             embed = EmbedGenerator.create_embed(
                 title="🗺️ Avatar World Map",
-                description="**The Complete Avatar Universe**\n\nExplore the vast world where the Avatar's journey unfolds across two legendary series!",
+                description="The complete Avatar universe map.",
                 color=discord.Color.from_rgb(70, 130, 180)  # Steel blue for map
             )
             
-            embed.add_field(
-                name="🌍 Four Nations Overview",
-                value=(
-                    "🔥 **Fire Nation** - Advanced technology and military might\n"
-                    "🌊 **Water Tribes** - Southern and Northern polar regions\n" 
-                    "🗻 **Earth Kingdom** - Vast territories and strong defenses\n"
-                    "💨 **Air Nomads** - Four temples in mountain peaks"
-                ),
-                inline=False
-            )
-            
-            embed.add_field(
-                name="🏙️ Key Locations",
-                value=(
-                    "🏛️ **Ba Sing Se** - Impenetrable Earth Kingdom capital\n"
-                    "🌺 **Republic City** - Modern multicultural metropolis\n"
-                    "❄️ **Northern Water Tribe** - Fortress city of ice\n"
-                    "🔥 **Fire Nation Capital** - Industrial powerhouse\n"
-                    "⛰️ **Air Temples** - Sacred spiritual sanctuaries"
-                ),
-                inline=True
-            )
-            
-            embed.add_field(
-                name="🎯 Trivia Coverage",
-                value=(
-                    "📍 **All Locations** included in Avatar trivia\n"
-                    "🏰 **Cities, temples, and landmarks**\n"
-                    "🗺️ **Geography and culture questions**\n"
-                    "⚔️ **Historical battles and events**\n"
-                    "👥 **Characters from every region**"
-                ),
-                inline=True
-            )
-            
-            embed.add_field(
-                name="🎮 Avatar Play Integration",
-                value=(
-                    "Use `/play` to test your knowledge of:\n"
-                    "• **Regional specialties** and customs\n"
-                    "• **Geographic relationships** between locations\n"
-                    "• **Cultural differences** across nations\n"
-                    "• **Historical significance** of landmarks"
-                ),
-                inline=False
-            )
-            
-            embed.set_footer(text="🎯 Master the geography to excel in Avatar trivia! | Use /play to start your journey")
+            embed.set_footer(text="Made by marshmallow (@sophremacy)")
             embed = EmbedGenerator.finalize_embed(embed)
             
             # Send map with embed
