@@ -111,7 +111,8 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.troops',
             'cogs.troop_calculator',
             'cogs.tier_list',
-            'cogs.vote_system'           # Vote system with XP bonuses
+            'cogs.vote_system',          # Vote system with XP bonuses
+            'cogs.profile_images'        # Profile image management system
         ]
         
         for cog in cog_files:

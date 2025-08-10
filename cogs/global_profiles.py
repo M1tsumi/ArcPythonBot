@@ -20,27 +20,7 @@ class GlobalProfiles(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
     
-    @app_commands.command(name="profile", description="View your global or server-specific profile")
-    @app_commands.describe(
-        user="User to view profile for (default: yourself)",
-        scope="Profile scope to display"
-    )
-    async def profile(
-        self, 
-        interaction: discord.Interaction, 
-        user: Optional[discord.Member] = None,
-        scope: Literal["global", "server"] = "global"
-    ):
-        """View global or server-specific user profile."""
-        target_user = user or interaction.user
-        user_id = target_user.id
-        
-        await interaction.response.defer()
-        
-        if scope == "global":
-            await self._show_global_profile(interaction, target_user)
-        else:
-            await self._show_server_profile(interaction, target_user)
+    # Profile command moved to profile_images.py to include custom profile images
     
     async def _show_global_profile(self, interaction: discord.Interaction, user: discord.Member):
         """Show global profile for a user."""
