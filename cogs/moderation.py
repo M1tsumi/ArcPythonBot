@@ -4,11 +4,17 @@ Moderation commands cog for the Avatar Realms Collide Discord Bot.
 
 import discord
 from discord.ext import commands
+from discord import app_commands
 from typing import Optional
 from utils.embed_generator import EmbedGenerator
+import json
+from pathlib import Path
 
 class Moderation(commands.Cog):
     """Basic moderation commands for the bot."""
+    
+    # Keep in sync with the owner check used in other cogs
+    AUTHORIZED_USER_ID: int = 1051142172130422884
     
     def __init__(self, bot):
         self.bot = bot
@@ -338,6 +344,182 @@ class Moderation(commands.Cog):
             embed.set_thumbnail(url=member.avatar.url)
         
         await ctx.send(embed=embed)
+
+    @commands.command(name="addxp")
+    async def add_xp(self, ctx, levels: int, user: discord.Member):
+        """Add XP (whole levels) to a user (Owner only)."""
+        # Check if the user is the authorized owner
+        if ctx.author.id != self.AUTHORIZED_USER_ID:
+            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            await ctx.send(embed=embed)
+            return
+        
+        # Validate input
+        if levels <= 0:
+            embed = EmbedGenerator.create_error_embed("Please specify a positive number of levels.")
+            await ctx.send(embed=embed)
+            return
+        
+        if levels > 100:
+            embed = EmbedGenerator.create_error_embed("Cannot add more than 100 levels at once.")
+            await ctx.send(embed=embed)
+            return
+        
+        try:
+            # Load the user's avatar play data
+            from cogs.avatar_play_system import load_play_player, save_play_player, calculate_xp_for_level, calculate_level_from_xp
+            
+            guild_id = ctx.guild.id
+            user_id = user.id
+            
+            # Load current player data
+            player_data = load_play_player(guild_id, user_id)
+            
+            # Get current level and XP
+            current_level = player_data.get("level", 1)
+            current_total_xp = player_data.get("total_xp", 0)
+            
+            # Calculate target level and XP needed
+            target_level = current_level + levels
+            target_total_xp = calculate_xp_for_level(target_level)
+            
+            # Calculate XP to add
+            xp_to_add = target_total_xp - current_total_xp
+            
+            # Apply the XP gain
+            from cogs.avatar_play_system import apply_xp_gain
+            xp_result = apply_xp_gain(player_data, xp_to_add, {"admin_bonus": 1.0})
+            
+            # Save the updated player data
+            save_play_player(guild_id, user_id, player_data)
+            
+            # Create success embed
+            embed = EmbedGenerator.create_success_embed(
+                f"Successfully added {levels} level(s) to {user.mention}!"
+            )
+            
+            embed.add_field(
+                name="Level Progress",
+                value=f"**Previous Level**: {current_level}\n"
+                      f"**New Level**: {target_level}\n"
+                      f"**XP Added**: {xp_to_add:,}\n"
+                      f"**Total XP**: {player_data.get('total_xp', 0):,}",
+                inline=True
+            )
+            
+            embed.add_field(
+                name="Avatar Tokens",
+                value=f"**Tokens Awarded**: {xp_result['levels_gained'] * 10}\n"
+                      f"**Total Tokens**: {player_data.get('avatar_tokens', 0)}",
+                inline=True
+            )
+            
+            embed.set_footer(text=f"Admin action by {ctx.author.display_name}")
+            
+            await ctx.send(embed=embed)
+            
+        except Exception as e:
+            self.logger.error(f"Error adding XP to user {user.id}: {e}")
+            embed = EmbedGenerator.create_error_embed(f"An error occurred while adding XP: {str(e)}")
+            await ctx.send(embed=embed)
+    
+    @add_xp.error
+    async def add_xp_error(self, ctx, error):
+        """Error handler for addxp command."""
+        if isinstance(error, commands.MissingRequiredArgument):
+            embed = EmbedGenerator.create_error_embed("Please specify the number of levels and the user.\nUsage: `!addxp <levels> <user>`")
+            await ctx.send(embed=embed)
+        elif isinstance(error, commands.BadArgument):
+            embed = EmbedGenerator.create_error_embed("Please provide valid arguments.\nUsage: `!addxp <levels> <user>`")
+            await ctx.send(embed=embed)
+        else:
+            embed = EmbedGenerator.create_error_embed(f"An error occurred: {str(error)}")
+            await ctx.send(embed=embed)
+    
+    @app_commands.command(name="addxp", description="Add XP (whole levels) to a user (Owner only)")
+    @app_commands.describe(
+        levels="Number of levels to add (1-100)",
+        user="The user to add levels to"
+    )
+    async def add_xp_slash(self, interaction: discord.Interaction, levels: int, user: discord.Member):
+        """Add XP (whole levels) to a user (Owner only)."""
+        # Check if the user is the authorized owner
+        if interaction.user.id != self.AUTHORIZED_USER_ID:
+            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        # Validate input
+        if levels <= 0:
+            embed = EmbedGenerator.create_error_embed("Please specify a positive number of levels.")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        if levels > 100:
+            embed = EmbedGenerator.create_error_embed("Cannot add more than 100 levels at once.")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+        
+        try:
+            # Defer the response since this might take a moment
+            await interaction.response.defer(ephemeral=True)
+            
+            # Load the user's avatar play data
+            from cogs.avatar_play_system import load_play_player, save_play_player, calculate_xp_for_level, calculate_level_from_xp
+            
+            guild_id = interaction.guild_id
+            user_id = user.id
+            
+            # Load current player data
+            player_data = load_play_player(guild_id, user_id)
+            
+            # Get current level and XP
+            current_level = player_data.get("level", 1)
+            current_total_xp = player_data.get("total_xp", 0)
+            
+            # Calculate target level and XP needed
+            target_level = current_level + levels
+            target_total_xp = calculate_xp_for_level(target_level)
+            
+            # Calculate XP to add
+            xp_to_add = target_total_xp - current_total_xp
+            
+            # Apply the XP gain
+            from cogs.avatar_play_system import apply_xp_gain
+            xp_result = apply_xp_gain(player_data, xp_to_add, {"admin_bonus": 1.0})
+            
+            # Save the updated player data
+            save_play_player(guild_id, user_id, player_data)
+            
+            # Create success embed
+            embed = EmbedGenerator.create_success_embed(
+                f"Successfully added {levels} level(s) to {user.mention}!"
+            )
+            
+            embed.add_field(
+                name="Level Progress",
+                value=f"**Previous Level**: {current_level}\n"
+                      f"**New Level**: {target_level}\n"
+                      f"**XP Added**: {xp_to_add:,}\n"
+                      f"**Total XP**: {player_data.get('total_xp', 0):,}",
+                inline=True
+            )
+            
+            embed.add_field(
+                name="Avatar Tokens",
+                value=f"**Tokens Awarded**: {xp_result['levels_gained'] * 10}\n"
+                      f"**Total Tokens**: {player_data.get('avatar_tokens', 0)}",
+                inline=True
+            )
+            
+            embed.set_footer(text=f"Admin action by {interaction.user.display_name}")
+            
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            
+        except Exception as e:
+            self.logger.error(f"Error adding XP to user {user.id}: {e}")
+            embed = EmbedGenerator.create_error_embed(f"An error occurred while adding XP: {str(e)}")
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
 async def setup(bot):
     """Setup function to add the cog to the bot."""

@@ -278,6 +278,8 @@ The Greatest Leader event tools:
 | `/info` | Bot information and contribution details | Development server and features |
 | `/setup` | Configure rally system (Admin) | Set rally channel for server |
 | `/leader` | Admin leaderboard management | Pause/resume/clear leaderboards |
+| `!addxp` | Add XP levels to user (Owner only) | Add whole levels to player progression |
+| `/addxp` | Add XP levels to user (Owner only) | Add whole levels to player progression |
 | `/tgl` | The Greatest Leader event information | Event details, stages, rewards |
 | `/tgl_calc` | Calculate TGL points for activities | Point calculation tool |
 | `/events` | List current and upcoming events | View all available events (dates/times WIP) |
@@ -285,6 +287,30 @@ The Greatest Leader event tools:
 | `/upcoming` | Show upcoming events only | Future event information (dates/times WIP) |
 | `/event_search` | Search for events by name or description | Find specific events (dates/times WIP) |
 | `/event_rewards` | Show rewards for a specific event | Detailed reward breakdown (dates/times WIP) |
+
+## 🔧 Admin Commands
+
+| Command | Description | Usage | Permission |
+|---------|-------------|-------|------------|
+| `/setup` | Configure rally system | Set rally channel for server | Administrator |
+| `/leader` | Leaderboard management | Pause/resume/clear leaderboards | Administrator |
+| `!addxp` | Add XP levels to user | Add whole levels to player progression | Owner only |
+| `/addxp` | Add XP levels to user | Add whole levels to player progression | Owner only |
+
+### Admin Command Details
+
+#### XP Management (`!addxp` / `/addxp`)
+- **Owner-only access**: Only the bot owner can use these commands
+- **Whole level progression**: Adds complete levels (not partial XP)
+- **Avatar tokens**: Automatically awards tokens for level ups (10 tokens per level)
+- **Safety limits**: Maximum 100 levels per command to prevent abuse
+- **Detailed feedback**: Shows before/after levels, XP added, and tokens awarded
+
+**Usage Examples:**
+```bash
+!addxp 5 @username    # Add 5 levels to user
+/addxp levels:5 user:@username  # Slash command version
+```
 
 ## 👥 Character Database
 

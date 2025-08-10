@@ -1,0 +1,475 @@
+[1mdiff --git a/CHANGELOG.md b/CHANGELOG.md[m
+[1mindex aa8ed13..2d9d1ff 100644[m
+[1m--- a/CHANGELOG.md[m
+[1m+++ b/CHANGELOG.md[m
+[36m@@ -1,4 +1,16 @@[m
+ # Changelog[m
+[32m+[m[32m## [1.7.2] - 2025-08-09[m
+[32m+[m
+[32m+[m[32m### Fixed[m
+[32m+[m[32m- **TGL System**: Fixed corrupted emoji encodings throughout the TGL command system[m
+[32m+[m[32m  - All emojis now display correctly (🏆, 📊, 🎯, ⛏️, 👥, ⚡, 🗡️, 💪, etc.)[m
+[32m+[m[32m  - Fixed bullet point character corruption in command outputs[m
+[32m+[m[32m  - Verified all 5 daily stages are properly included in overview and dropdown navigation[m
+[32m+[m
+[32m+[m[32m### Improved[m
+[32m+[m[32m- **TGL Overview**: Enhanced interactive dropdown functionality with proper emoji display[m
+[32m+[m[32m- **Code Quality**: Improved readability and formatting of TGL system code[m
+[32m+[m
+ ## [1.7.1] - 2025-08-08[m
+ [m
+ ### Fixed[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 6bdc1b8..93675e8 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -8,12 +8,12 @@[m
+ [m
+ # 🌟 Avatar Realms Collide Discord Bot[m
+ [m
+[31m-[![Version](https://img.shields.io/badge/version-1.7.1-blue.svg)](https://github.com/yourusername/ArcPythonBot)[m
+[32m+[m[32m[![Version](https://img.shields.io/badge/version-1.7.2-blue.svg)](https://github.com/yourusername/ArcPythonBot)[m
+ [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)[m
+ [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)[m
+ [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)[m
+ [m
+[31m-> **🎮 Version 1.7.1 - Avatar Realms Collide Discord Bot**  [m
+[32m+[m[32m> **🎮 Version 1.7.2 - Avatar Realms Collide Discord Bot**[m[41m  [m
+ > An interactive Discord bot for exploring character talent trees, leaderboards, rally system, troops calculator, and game information in the Avatar Realms Collide universe.[m
+ [m
+ ## 📋 Table of Contents[m
+[36m@@ -341,7 +341,7 @@[m [mWe welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.[m
+ [m
+ ## 🗺️ Roadmap[m
+ [m
+[31m-### Version 1.7.1 (Current)[m
+[32m+[m[32m### Version 1.7.2 (Current)[m
+ - ✅ Interactive talent tree browser[m
+ - ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing[m
+ - ✅ **Rally System**: Complete Shattered Skulls Fortress management[m
+[1mdiff --git a/VERSION b/VERSION[m
+[1mindex 081af9a..0a182f2 100644[m
+[1m--- a/VERSION[m
+[1m+++ b/VERSION[m
+[36m@@ -1 +1 @@[m
+[31m-1.7.1[m
+\ No newline at end of file[m
+[32m+[m[32m1.7.2[m
+\ No newline at end of file[m
+[1mdiff --git a/assets/images/map/map.webp b/assets/images/map/map.webp[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8029d09[m
+Binary files /dev/null and b/assets/images/map/map.webp differ
+[1mdiff --git a/cogs/tgl_system.py b/cogs/tgl_system.py[m
+[1mindex 4716639..261bdf0 100644[m
+[1m--- a/cogs/tgl_system.py[m
+[1m+++ b/cogs/tgl_system.py[m
+[36m@@ -187,22 +187,22 @@[m [mclass TGLSystem(commands.Cog):[m
+             await self.show_specific_stage(interaction, "single_server", stage)[m
+         else:[m
+             embed = discord.Embed([m
+[31m-                title="ðŸ† TGL Single Server",[m
+[32m+[m[32m                title="🏆 TGL Single Server",[m
+                 description="Single server event details",[m
+                 color=discord.Color.blue()[m
+             )[m
+             [m
+             embed.add_field([m
+[31m-                name="ðŸ“Š Event Structure",[m
+[31m-                value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Scope**: Single Server Only",[m
+[32m+[m[32m                name="📊 Event Structure",[m
+[32m+[m[32m                value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Scope**: Single Server Only",[m
+                 inline=False[m
+             )[m
+             [m
+             embed.add_field([m
+[31m-            name="ðŸŽ¯ Available Commands",[m
+[31m-            value="â€¢ `/tgl single_server 1` - Resource Gathering\nâ€¢ `/tgl single_server 2` - Bender Recruitment\nâ€¢ `/tgl single_server 3` - Hero Growth\nâ€¢ `/tgl single_server 4` - Shattered Skulls\nâ€¢ `/tgl single_server 5` - Power Increase",[m
+[31m-            inline=False[m
+[31m-        )[m
+[32m+[m[32m                name="🎯 Available Commands",[m
+[32m+[m[32m                value="• `/tgl single_server 1` - Resource Gathering\n• `/tgl single_server 2` - Bender Recruitment\n• `/tgl single_server 3` - Hero Growth\n• `/tgl single_server 4` - Shattered Skulls\n• `/tgl single_server 5` - Power Increase",[m
+[32m+[m[32m                inline=False[m
+[32m+[m[32m            )[m
+             [m
+             embed.set_footer(text="Use stage numbers (1-5) for specific details")[m
+             await interaction.response.send_message(embed=embed)[m
+[36m@@ -213,20 +213,20 @@[m [mclass TGLSystem(commands.Cog):[m
+             await self.show_specific_stage(interaction, "cross_server", stage)[m
+         else:[m
+             embed = discord.Embed([m
+[31m-                title="ðŸ† TGL Cross Server",[m
+[32m+[m[32m                title="🏆 TGL Cross Server",[m
+                 description="Cross server event details",[m
+                 color=discord.Color.purple()[m
+             )[m
+             [m
+             embed.add_field([m
+[31m-                name="ðŸ“Š Event Structure",[m
+[31m-                value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Scope**: Multiple Servers",[m
+[32m+[m[32m                name="📊 Event Structure",[m
+[32m+[m[32m                value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Scope**: Multiple Servers",[m
+                 inline=False[m
+             )[m
+             [m
+             embed.add_field([m
+[31m-                name="ðŸŽ¯ Available Commands",[m
+[31m-                value="â€¢ `/tgl cross_server 1` - Resource Gathering\nâ€¢ `/tgl cross_server 2` - Bender Recruitment\nâ€¢ `/tgl cross_server 3` - Hero Growth\nâ€¢ `/tgl cross_server 4` - Shattered Skulls\nâ€¢ `/tgl cross_server 5` - Power Increase",[m
+[32m+[m[32m                name="🎯 Available Commands",[m
+[32m+[m[32m                value="• `/tgl cross_server 1` - Resource Gathering\n• `/tgl cross_server 2` - Bender Recruitment\n• `/tgl cross_server 3` - Hero Growth\n• `/tgl cross_server 4` - Shattered Skulls\n• `/tgl cross_server 5` - Power Increase",[m
+                 inline=False[m
+             )[m
+             [m
+[36m@@ -239,7 +239,7 @@[m [mclass TGLSystem(commands.Cog):[m
+         stage_data = self.tgl_data[event_type]["stages"][stage_key][m
+         [m
+         embed = discord.Embed([m
+[31m-            title=f"ðŸ† TGL {event_type.replace('_', ' ').title()} - Stage {stage}",[m
+[32m+[m[32m            title=f"🏆 TGL {event_type.replace('_', ' ').title()} - Stage {stage}",[m
+             description=f"**{stage_data['name']}**",[m
+             color=discord.Color.gold()[m
+         )[m
+[36m@@ -247,39 +247,39 @@[m [mclass TGLSystem(commands.Cog):[m
+         # Create task list[m
+         tasks_text = ""[m
+         for task, points in stage_data['tasks'].items():[m
+[31m-            tasks_text += f"â€¢ **{task}**: {points:,} points\n"[m
+[32m+[m[32m            tasks_text += f"• **{task}**: {points:,} points\n"[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“‹ Tasks & Points",[m
+[32m+[m[32m            name="📋 Tasks & Points",[m
+             value=tasks_text,[m
+             inline=False[m
+         )[m
+         [m
+[31m-        embed.set_footer(text=f"Stage {stage} of 5 â€¢ {event_type.replace('_', ' ').title()}")[m
+[32m+[m[32m        embed.set_footer(text=f"Stage {stage} of 5 • {event_type.replace('_', ' ').title()}")[m
+         await interaction.response.send_message(embed=embed)[m
+     [m
+     async def show_tgl_rewards(self, interaction: discord.Interaction):[m
+         """Show TGL ranking rewards."""[m
+         embed = discord.Embed([m
+[31m-            title="ðŸ† TGL Ranking Rewards",[m
+[32m+[m[32m            title="🏆 TGL Ranking Rewards",[m
+             description="Daily and Overall rewards",[m
+             color=discord.Color.gold()[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“… Daily Rewards (Top 3)",[m
+[31m-            value="â€¢ **1st**: 10-20x Hero Shard, 500x Gem, Resources\nâ€¢ **2nd**: 5-10x Hero Shard, 300x Gem, Resources\nâ€¢ **3rd**: 2-5x Hero Shard, 200x Gem, Resources",[m
+[32m+[m[32m            name="📅 Daily Rewards (Top 3)",[m
+[32m+[m[32m            value="• **1st**: 10-20x Hero Shard, 500x Gem, Resources\n• **2nd**: 5-10x Hero Shard, 300x Gem, Resources\n• **3rd**: 2-5x Hero Shard, 200x Gem, Resources",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ† Overall Rewards (Top 3)",[m
+[31m-            value="â€¢ **1st**: 200-250x Hero Shard, 2,000-2,500x Gem\nâ€¢ **2nd**: 150-200x Hero Shard, 1,500-2,000x Gem\nâ€¢ **3rd**: 100-150x Hero Shard, 1,000-1,500x Gem",[m
+[32m+[m[32m            name="🏆 Overall Rewards (Top 3)",[m
+[32m+[m[32m            value="• **1st**: 200-250x Hero Shard, 2,000-2,500x Gem\n• **2nd**: 150-200x Hero Shard, 1,500-2,000x Gem\n• **3rd**: 100-150x Hero Shard, 1,000-1,500x Gem",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ’Ž Hero Shards",[m
+[32m+[m[32m            name="💎 Hero Shards",[m
+             value="Rotates between: Aang, Amon, Korra, Kyoshi, Yangchen, Roku",[m
+             inline=False[m
+         )[m
+[36m@@ -290,26 +290,26 @@[m [mclass TGLSystem(commands.Cog):[m
+     async def show_tgl_tips(self, interaction: discord.Interaction):[m
+         """Show TGL event tips and strategies."""[m
+         embed = discord.Embed([m
+[31m-            title="ðŸ’¡ TGL Event Tips",[m
+[32m+[m[32m            title="💡 TGL Event Tips",[m
+             description="Strategies for The Greatest Leader event",[m
+             color=discord.Color.green()[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸŽ¯ General Strategy",[m
+[31m-            value="â€¢ Focus on high-point activities\nâ€¢ Use Lucky Tickets strategically\nâ€¢ Plan resource gathering efficiently\nâ€¢ Coordinate with alliance members",[m
+[32m+[m[32m            name="🎯 General Strategy",[m
+[32m+[m[32m            value="• Focus on high-point activities\n• Use Lucky Tickets strategically\n• Plan resource gathering efficiently\n• Coordinate with alliance members",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“Š Point Optimization",[m
+[31m-            value="â€¢ **Day 1**: Focus on research power increases\nâ€¢ **Day 2**: Recruit higher tier benders\nâ€¢ **Day 3**: Use scrolls and shards strategically\nâ€¢ **Day 4**: Target higher level skulls and fortresses\nâ€¢ **Day 5**: Maximize construction power gains",[m
+[32m+[m[32m            name="📊 Point Optimization",[m
+[32m+[m[32m            value="• **Day 1**: Focus on research power increases\n• **Day 2**: Recruit higher tier benders\n• **Day 3**: Use scrolls and shards strategically\n• **Day 4**: Target higher level skulls and fortresses\n• **Day 5**: Maximize construction power gains",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="âš¡ Quick Tips",[m
+[31m-            value="â€¢ Construction power only counts while online\nâ€¢ Hero power is excluded from final day\nâ€¢ Cross-server events have better rewards\nâ€¢ Coordinate with your alliance for maximum efficiency",[m
+[32m+[m[32m            name="⚡ Quick Tips",[m
+[32m+[m[32m            value="• Construction power only counts while online\n• Hero power is excluded from final day\n• Cross-server events have better rewards\n• Coordinate with your alliance for maximum efficiency",[m
+             inline=False[m
+         )[m
+         [m
+[36m@@ -372,7 +372,7 @@[m [mclass TGLSystem(commands.Cog):[m
+         }[m
+         [m
+         if activity not in point_values:[m
+[31m-            await interaction.response.send_message("âŒ Invalid activity selected.", ephemeral=True)[m
+[32m+[m[32m            await interaction.response.send_message("❌ Invalid activity selected.", ephemeral=True)[m
+             return[m
+         [m
+         points_per = point_values[activity][m
+[36m@@ -404,14 +404,14 @@[m [mclass TGLSystem(commands.Cog):[m
+         }[m
+         [m
+         embed = discord.Embed([m
+[31m-            title="ðŸ§® TGL Points Calculator",[m
+[32m+[m[32m            title="🧮 TGL Points Calculator",[m
+             description=f"Calculating points for {activity_names[activity]}",[m
+             color=discord.Color.blue()[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“Š Calculation",[m
+[31m-            value=f"â€¢ **Activity**: {activity_names[activity]}\nâ€¢ **Quantity**: {quantity:,}\nâ€¢ **Points Per**: {points_per:,}\nâ€¢ **Total Points**: {total_points:,}",[m
+[32m+[m[32m            name="📊 Calculation",[m
+[32m+[m[32m            value=f"• **Activity**: {activity_names[activity]}\n• **Quantity**: {quantity:,}\n• **Points Per**: {points_per:,}\n• **Total Points**: {total_points:,}",[m
+             inline=False[m
+         )[m
+         [m
+[36m@@ -430,7 +430,7 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+         """Setup the daily stages dropdown."""[m
+         options = [[m
+             discord.SelectOption([m
+[31m-                label="ðŸ“‹ Overview",[m
+[32m+[m[32m                label="📋 Overview",[m
+                 value="overview",[m
+                 description="Main event overview and information",[m
+                 emoji="📋",[m
+[36m@@ -440,7 +440,7 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+                 label="Day 1: Resource Gathering & Research",[m
+                 value="stage_1",[m
+                 description="Gather resources and increase research power",[m
+[31m-                emoji="â›ï¸"[m
+[32m+[m[32m                emoji="⛏️"[m
+             ),[m
+             discord.SelectOption([m
+                 label="Day 2: Bender Recruitment",[m
+[36m@@ -458,7 +458,7 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+                 label="Day 4: Shattered Skulls & Construction",[m
+                 value="stage_4",[m
+                 description="Clear skulls and build fortress levels",[m
+[31m-                emoji="ðŸ—ï¸"[m
+[32m+[m[32m                emoji="🗡️"[m
+             ),[m
+             discord.SelectOption([m
+                 label="Day 5: Power Increase",[m
+[36m@@ -507,48 +507,48 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+     def _create_overview_embed(self) -> discord.Embed:[m
+         """Create the main overview embed."""[m
+         embed = EmbedGenerator.create_embed([m
+[31m-            title="ðŸ† The Greatest Leader Event - Interactive Overview",[m
+[31m-            description="ðŸŽ¯ **Prove you are the greatest leader in the world!**\nUse the dropdown below to explore each daily stage.",[m
+[32m+[m[32m            title="🏆 The Greatest Leader Event - Interactive Overview",[m
+[32m+[m[32m            description="🎯 **Prove you are the greatest leader in the world!**\nUse the dropdown below to explore each daily stage.",[m
+             color=discord.Color.gold()[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="â° Event Details",[m
+[31m-            value="â€¢ **Duration**: 5 Days\nâ€¢ **Repeats**: Every 2 Weeks\nâ€¢ **Type**: Single Server â†’ Cross Server",[m
+[32m+[m[32m            name="⏰ Event Details",[m
+[32m+[m[32m            value="• **Duration**: 5 Days\n• **Repeats**: Every 2 Weeks\n• **Type**: Single Server → Cross Server",[m
+             inline=True[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸŽ® Event Types",[m
+[31m-            value="â€¢ **Single Server**: Compete within your server\nâ€¢ **Cross Server**: Compete across multiple servers\nâ€¢ **Higher Rewards**: Cross-server events",[m
+[32m+[m[32m            name="🎮 Event Types",[m
+[32m+[m[32m            value="• **Single Server**: Compete within your server\n• **Cross Server**: Compete across multiple servers\n• **Higher Rewards**: Cross-server events",[m
+             inline=True[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“‹ Daily Stages",[m
+[31m-            value="ðŸ”¸ **Day 1**: Resource Gathering & Research\nðŸ”¸ **Day 2**: Bender Recruitment\nðŸ”¸ **Day 3**: Hero Growth\nðŸ”¸ **Day 4**: Shattered Skulls & Construction\nðŸ”¸ **Day 5**: Power Increase",[m
+[32m+[m[32m            name="📋 Daily Stages",[m
+[32m+[m[32m            value="🔸 **Day 1**: Resource Gathering & Research\n🔸 **Day 2**: Bender Recruitment\n🔸 **Day 3**: Hero Growth\n🔸 **Day 4**: Shattered Skulls & Construction\n🔸 **Day 5**: Power Increase",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸŽ¯ Quick Commands",[m
+[31m-            value="â€¢ `/tgl single_server` - Single server details\nâ€¢ `/tgl cross_server` - Cross server details\nâ€¢ `/tgl rewards` - Ranking rewards\nâ€¢ `/tgl tips` - Event strategies\nâ€¢ `/tgl_calc` - Points calculator",[m
+[32m+[m[32m            name="🎯 Quick Commands",[m
+[32m+[m[32m            value="• `/tgl single_server` - Single server details\n• `/tgl cross_server` - Cross server details\n• `/tgl rewards` - Ranking rewards\n• `/tgl tips` - Event strategies\n• `/tgl_calc` - Points calculator",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ’¡ Pro Tip",[m
+[31m-            value="ðŸ“± **Use the dropdown above** to explore detailed information about each daily stage and plan your strategy!",[m
+[32m+[m[32m            name="💡 Pro Tip",[m
+[32m+[m[32m            value="📱 **Use the dropdown above** to explore detailed information about each daily stage and plan your strategy!",[m
+             inline=False[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“ Information Source",[m
+[32m+[m[32m            name="📝 Information Source",[m
+             value="Event information gathered by **Lycaris** (@lycaris_1)",[m
+             inline=False[m
+         )[m
+         [m
+[31m-        embed.set_footer(text="ðŸŽ¯ Select a daily stage from the dropdown to view detailed tasks and points!")[m
+[32m+[m[32m        embed.set_footer(text="🎯 Select a daily stage from the dropdown to view detailed tasks and points!")[m
+         return EmbedGenerator.finalize_embed(embed)[m
+     [m
+     async def _create_stage_embed(self, stage_num: int) -> discord.Embed:[m
+[36m@@ -560,11 +560,11 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+         [m
+         # Stage-specific emojis and colors[m
+         stage_info = {[m
+[31m-            1: {"emoji": "â›ï¸", "color": discord.Color.green()},[m
+[31m-            2: {"emoji": "ðŸ‘¥", "color": discord.Color.blue()},[m
+[31m-            3: {"emoji": "âš¡", "color": discord.Color.purple()},[m
+[31m-            4: {"emoji": "ðŸ—ï¸", "color": discord.Color.orange()},[m
+[31m-            5: {"emoji": "ðŸ’ª", "color": discord.Color.red()}[m
+[32m+[m[32m            1: {"emoji": "⛏️", "color": discord.Color.green()},[m
+[32m+[m[32m            2: {"emoji": "👥", "color": discord.Color.blue()},[m
+[32m+[m[32m            3: {"emoji": "⚡", "color": discord.Color.purple()},[m
+[32m+[m[32m            4: {"emoji": "🗡️", "color": discord.Color.orange()},[m
+[32m+[m[32m            5: {"emoji": "💪", "color": discord.Color.red()}[m
+         }[m
+         [m
+         info = stage_info[stage_num][m
+[36m@@ -581,49 +581,49 @@[m [mclass TGLOverviewView(discord.ui.View):[m
+         [m
+         for task, points in stage_data['tasks'].items():[m
+             if task == "Lucky Ticket":[m
+[31m-                tasks_text += f"ðŸŽŸï¸ **{task}**: {points:,} points *(Special)*\n"[m
+[32m+[m[32m                tasks_text += f"🎟️ **{task}**: {points:,} points *(Special)*\n"[m
+             else:[m
+[31m-                tasks_text += f"â€¢ **{task}**: {points:,} points\n"[m
+[32m+[m[32m                tasks_text += f"• **{task}**: {points:,} points\n"[m
+                 if task != "Lucky Ticket":[m
+                     total_possible_points += points[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ“‹ Tasks & Points",[m
+[32m+[m[32m            name="📋 Tasks & Points",[m
+             value=tasks_text,[m
+             inline=False[m
+         )[m
+         [m
+         # Add strategic tips based on stage[m
+         tips = {[m
+[31m-            1: "ðŸŽ¯ Focus on research power increases for maximum points!\nResource gathering has lower points but is easier to complete.",[m
+[31m-            2: "ðŸŽ¯ Higher tier benders give significantly more points!\nTier 6 benders are worth 350 points vs 25 for Tier 1.",[m
+[31m-            3: "ðŸŽ¯ Legendary items give massive points (50,000 each)!\nSilver/Golden scrolls are more affordable options.",[m
+[31m-            4: "ðŸŽ¯ Higher level skulls and fortress levels give more points!\nSkull levels 26-30 give 3,000 points each.",[m
+[31m-            5: "ðŸŽ¯ Construction power only counts while online!\nHero power is excluded from this final day."[m
+[32m+[m[32m            1: "🎯 Focus on research power increases for maximum points!\nResource gathering has lower points but is easier to complete.",[m
+[32m+[m[32m            2: "🎯 Higher tier benders give significantly more points!\nTier 6 benders are worth 350 points vs 25 for Tier 1.",[m
+[32m+[m[32m            3: "🎯 Legendary items give massive points (50,000 each)!\nSilver/Golden scrolls are more affordable options.",[m
+[32m+[m[32m            4: "🎯 Higher level skulls and fortress levels give more points!\nSkull levels 26-30 give 3,000 points each.",[m
+[32m+[m[32m            5: "🎯 Construction power only counts while online!\nHero power is excluded from this final day."[m
+         }[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ’¡ Strategy Tips",[m
+[32m+[m[32m            name="💡 Strategy Tips",[m
+             value=tips[stage_num],[m
+             inline=False[m
+         )[m
+         [m
+         # Add point summary[m
+         embed.add_field([m
+[31m-            name="ðŸ“Š Point Summary",[m
+[32m+[m[32m            name="📊 Point Summary",[m
+             value=f"Regular tasks: **{total_possible_points:,}** points\nLucky Ticket: **150,000** points *(if available)*",[m
+             inline=True[m
+         )[m
+         [m
+         embed.add_field([m
+[31m-            name="ðŸ”„ Navigation",[m
+[32m+[m[32m            name="🔄 Navigation",[m
+             value="Use the dropdown above to explore other daily stages!",[m
+             inline=True[m
+         )[m
+         [m
+[31m-        embed.set_footer(text=f"Day {stage_num}/5 â€¢ Use /tgl_calc to calculate your potential points!")[m
+[32m+[m[32m        embed.set_footer(text=f"Day {stage_num}/5 • Use /tgl_calc to calculate your potential points!")[m
+         return EmbedGenerator.finalize_embed(embed)[m
+ [m
+ async def setup(bot):[m
+     """Setup function to add the cog to the bot."""[m
+[31m-    await bot.add_cog(TGLSystem(bot))[m
+[32m+[m[32m    await bot.add_cog(TGLSystem(bot))[m
+\ No newline at end of file[m
+[1mdiff --git a/config/settings.py b/config/settings.py[m
+[1mindex f94fa98..8ed8d07 100644[m
+[1m--- a/config/settings.py[m
+[1m+++ b/config/settings.py[m
+[36m@@ -6,7 +6,7 @@[m [mimport discord[m
+ [m
+ # Bot Configuration[m
+ BOT_NAME = "Avatar Realms Collide Bot"[m
+[31m-BOT_VERSION = "1.7.1"[m
+[32m+[m[32mBOT_VERSION = "1.7.2"[m
+ BOT_DESCRIPTION = "Unofficial community bot for Avatar Realms Collide"[m
+ [m
+ # Discord Links[m
+[1mdiff --git a/data/minigame/servers/1379180423862816788/players/758151493681020948.json b/data/minigame/servers/1379180423862816788/players/758151493681020948.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..71f4a49[m
+[1m--- /dev/null[m
+[1m+++ b/data/minigame/servers/1379180423862816788/players/758151493681020948.json[m
+[36m@@ -0,0 +1,30 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m  "user_id": 758151493681020948,[m
+[32m+[m[32m  "guild_id": 1379180423862816788,[m
+[32m+[m[32m  "created_at": "2025-08-09T03:38:45.955900+00:00",[m
+[32m+[m[32m  "verified": true,[m
+[32m+[m[32m  "accepted_terms": true,[m
+[32m+[m[32m  "verified_at": "2025-08-09T03:38:50.925499+00:00",[m
+[32m+[m[32m  "xp": 341,[m
+[32m+[m[32m  "level": 5,[m
+[32m+[m[32m  "scrolls": {[m
+[32m+[m[32m    "basic": 1,[m
+[32m+[m[32m    "epic": 0[m
+[32m+[m[32m  },[m
+[32m+[m[32m  "inventory": {[m
+[32m+[m[32m    "basic_hero_shards": 0,[m
+[32m+[m[32m    "epic_hero_shards": 0,[m
+[32m+[m[32m    "skill_points": 0[m
+[32m+[m[32m  },[m
+[32m+[m[32m  "stats": {[m
+[32m+[m[32m    "daily_uses": 1,[m
+[32m+[m[32m    "last_daily_at": "2025-08-09T03:39:06.673433+00:00",[m
+[32m+[m[32m    "trivia": {[m
+[32m+[m[32m      "correct_total": 17,[m
+[32m+[m[32m      "incorrect_total": 8,[m
+[32m+[m[32m      "ace_attempts": 1,[m
+[32m+[m[32m      "sessions_played": 5[m
+[32m+[m[32m    },[m
+[32m+[m[32m    "last_trivia_at": "2025-08-09T03:44:13.385003+00:00"[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/data/minigame/servers/1379180423862816788/server.json b/data/minigame/servers/1379180423862816788/server.json[m
+[1mnew file mode 100644[m
+[1mindex 0000000..339294d[m
+[1m--- /dev/null[m
+[1m+++ b/data/minigame/servers/1379180423862816788/server.json[m
+[36m@@ -0,0 +1,6 @@[m
+[32m+[m[32m{[m
+[32m+[m[32m  "guild_id": 1379180423862816788,[m
+[32m+[m[32m  "created_at": "2025-08-09T03:38:45.955053+00:00",[m
+[32m+[m[32m  "notes": "Storage for the Minigame system (not affiliated with Avatar Realms Collide)",[m
+[32m+[m[32m  "schema_version": 1[m
+[32m+[m[32m}[m
+\ No newline at end of file[m

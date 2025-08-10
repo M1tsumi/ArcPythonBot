@@ -1,0 +1,30 @@
+{
+  "user_id": 1051142172130422884,
+  "guild_id": 1402452315671232602,
+  "created_at": "2025-08-09T15:09:46.969743+00:00",
+  "level": 3,
+  "xp": 336,
+  "total_xp": 336,
+  "avatar_tokens": 20,
+  "spirit_energy": 100,
+  "stats": {
+    "games_played": 2,
+    "questions_answered": 8,
+    "correct_answers": 2,
+    "perfect_games": 0,
+    "best_streak": 1,
+    "current_streak": 0,
+    "favorite_mode": "standard",
+    "last_played": "2025-08-09T15:16:54.532518+00:00",
+    "daily_streak": 1,
+    "last_daily": "2025-08-09T15:10:29.639813+00:00"
+  },
+  "achievements": [],
+  "unlocked_modes": [
+    "quick",
+    "standard"
+  ],
+  "custom_title": null,
+  "preferred_difficulty": "easy",
+  "game_history": []
+}

@@ -24,6 +24,7 @@
 - ✅ **`/profile global`**: View comprehensive global user profiles
 - ✅ **`/leaderboard global`**: Cross-server rankings with multiple categories
 - ✅ **`/migrate_data`**: Admin command for data migration
+- ✅ **`!addxp` / `/addxp`**: Owner-only XP management commands
 - ✅ **Privacy Settings**: User control over data visibility
 
 ### **5. Integration**

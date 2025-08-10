@@ -88,6 +88,14 @@
 - **Profile Schema**: Updated to version 1.1 with new data structures
 - **Command Count**: Expanded from ~25 to 35+ commands total
 
+### Admin Features
+- **XP Management Commands**: Owner-only admin commands for player progression
+  - `!addxp` / `/addxp`: Add whole levels to user progression (Owner only)
+  - Automatic avatar token distribution (10 tokens per level)
+  - Safety limits: Maximum 100 levels per command
+  - Comprehensive error handling and validation
+  - Detailed feedback with before/after statistics
+
 ## [1.7.2] - 2025-08-09
 
 ### Fixed
