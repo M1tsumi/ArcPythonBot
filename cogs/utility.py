@@ -59,7 +59,8 @@ class Utility(commands.Cog):
         embed = EmbedGenerator.create_embed(
             title="Help",
             description="Available commands organized by category.",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
+            use_cache=False  # Disable caching to prevent field duplication
         )
 
         embed.add_field(
@@ -103,7 +104,8 @@ class Utility(commands.Cog):
         embed = EmbedGenerator.create_embed(
             title="Bot Information",
             description="Unofficial community bot providing game tools and information.",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
+            use_cache=False  # Disable caching to prevent field duplication
         )
         embed.add_field(
             name="🎮 Key Features",
@@ -168,7 +170,8 @@ class Utility(commands.Cog):
         embed = EmbedGenerator.create_embed(
             title="Bot Information",
             description="Unofficial community bot providing game tools and information.",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
+            use_cache=False  # Disable caching to prevent field duplication
         )
         embed.add_field(
             name="Key Features",
@@ -230,7 +233,8 @@ class Utility(commands.Cog):
         embed = EmbedGenerator.create_embed(
             title="🎮 Complete Bot Guide & Commands",
             description="Everything you need to know about Avatar Realms Collide Bot!",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
+            use_cache=False  # Disable caching to prevent field duplication
         )
         
         embed.add_field(
