@@ -1,4 +1,9 @@
 <p align="center">
+  <strong>🤝 Need a Custom Discord Bot? I'm Here to Help!</strong><br><br>
+  <a href="https://www.fiverr.com/s/XLzopGe">
+    <img alt="Custom Bot Development on Fiverr" src="https://img.shields.io/badge/Custom%20Bot%20Development-00b22d?style=for-the-badge&logo=fiverr&logoColor=white">
+  </a>
+  <br><br>
   <strong>🚀 Add the Avatar Realms Collide Bot to Your Server!</strong><br><br>
   <a href="https://discord.com/oauth2/authorize?client_id=1242988284347420673&permissions=274877910016&scope=bot%20applications.commands">
     <img alt="Add Bot to Server" src="https://img.shields.io/badge/Add%20Bot%20to%20Server-5865F2?style=for-the-badge&logo=discord&logoColor=white">

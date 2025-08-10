@@ -789,7 +789,7 @@ class AvatarPlaySystem(commands.Cog):
     
     @app_commands.command(name="map", description="🗺️ View the complete Avatar world map")
     async def map_command(self, interaction: discord.Interaction):
-        """Display the Avatar world map with detailed information."""
+        """Display the Avatar world map."""
         try:
             map_path = Path("assets/images/map/map.webp")
             
@@ -797,61 +797,14 @@ class AvatarPlaySystem(commands.Cog):
                 await interaction.response.send_message("❌ Map file not found!", ephemeral=True)
                 return
             
-            # Create detailed map embed
+            # Create simple map embed
             embed = EmbedGenerator.create_embed(
                 title="🗺️ Avatar World Map",
-                description="**The Complete Avatar Universe**\n\nExplore the vast world where the Avatar's journey unfolds across two legendary series!",
+                description="The complete Avatar universe map.",
                 color=discord.Color.from_rgb(70, 130, 180)  # Steel blue for map
             )
             
-            embed.add_field(
-                name="🌍 Four Nations Overview",
-                value=(
-                    "🔥 **Fire Nation** - Advanced technology and military might\n"
-                    "🌊 **Water Tribes** - Southern and Northern polar regions\n" 
-                    "🗻 **Earth Kingdom** - Vast territories and strong defenses\n"
-                    "💨 **Air Nomads** - Four temples in mountain peaks"
-                ),
-                inline=False
-            )
-            
-            embed.add_field(
-                name="🏙️ Key Locations",
-                value=(
-                    "🏛️ **Ba Sing Se** - Impenetrable Earth Kingdom capital\n"
-                    "🌺 **Republic City** - Modern multicultural metropolis\n"
-                    "❄️ **Northern Water Tribe** - Fortress city of ice\n"
-                    "🔥 **Fire Nation Capital** - Industrial powerhouse\n"
-                    "⛰️ **Air Temples** - Sacred spiritual sanctuaries"
-                ),
-                inline=True
-            )
-            
-            embed.add_field(
-                name="🎯 Trivia Coverage",
-                value=(
-                    "📍 **All Locations** included in Avatar trivia\n"
-                    "🏰 **Cities, temples, and landmarks**\n"
-                    "🗺️ **Geography and culture questions**\n"
-                    "⚔️ **Historical battles and events**\n"
-                    "👥 **Characters from every region**"
-                ),
-                inline=True
-            )
-            
-            embed.add_field(
-                name="🎮 Avatar Play Integration",
-                value=(
-                    "Use `/play` to test your knowledge of:\n"
-                    "• **Regional specialties** and customs\n"
-                    "• **Geographic relationships** between locations\n"
-                    "• **Cultural differences** across nations\n"
-                    "• **Historical significance** of landmarks"
-                ),
-                inline=False
-            )
-            
-            embed.set_footer(text="🎯 Master the geography to excel in Avatar trivia! | Use /play to start your journey")
+            embed.set_footer(text="Made by marshmallow (@sophremacy)")
             embed = EmbedGenerator.finalize_embed(embed)
             
             # Send map with embed
@@ -1013,6 +966,9 @@ class AvatarPlaySystem(commands.Cog):
                 inline=False
             )
         
+        # Add vote reminder footer
+        embed.set_footer(text="💡 Tip: Use /vote to get up to 13x XP bonuses! Support the server and earn massive rewards!")
+        
         return EmbedGenerator.finalize_embed(embed)
     
     def _get_mode_unlock_requirement(self, mode: str) -> str:
@@ -1070,7 +1026,7 @@ class AvatarPlaySystem(commands.Cog):
         await self._show_question(interaction, session)
     
     async def _show_question(self, interaction: discord.Interaction, session: GameSession):
-        """Display current question with enhanced engaging details."""
+        """Display current question with clean, professional formatting."""
         question_data = session.questions[session.current_question]
         question_num = session.current_question + 1
         total_questions = len(session.questions)
@@ -1078,104 +1034,95 @@ class AvatarPlaySystem(commands.Cog):
         # Dynamic colors based on progress and streaks
         if session.streak >= 5:
             color = discord.Color.gold()  # Gold for hot streak
-            streak_emoji = "🔥"
         elif session.streak >= 3:
             color = discord.Color.orange()  # Orange for good streak
-            streak_emoji = "⚡"
         else:
             color = discord.Color.blue()  # Blue for normal
-            streak_emoji = "📝"
         
-        # Enhanced title with dynamic elements
-        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        # Clean title
+        title = f"Question {question_num}/{total_questions}"
         if session.streak >= 3:
-            title_parts.append(f"• {session.streak} STREAK!")
+            title += f" • {session.streak} Streak!"
         
         embed = EmbedGenerator.create_embed(
-            title=" ".join(title_parts),
-            description=f"🎯 **{question_data['question']}**",
+            title=title,
+            description=f"**{question_data['question']}**",
             color=color
         )
         
-        # Enhanced options with styled formatting
-        option_emojis = ["🇦", "🇧", "🇨"]
-        option_styles = ["🔸", "🔹", "🔶"]
+        # Clean options formatting
+        option_letters = ["A", "B", "C", "D"]
         
-        for i, option in enumerate(question_data["options"][:3]):
+        for i, option in enumerate(question_data["options"][:4]):
             embed.add_field(
-                name=f"{option_emojis[i]} Option {chr(65+i)}",
-                value=f"{option_styles[i]} **{option}**",
+                name=f"{option_letters[i]})",
+                value=option,
                 inline=False
             )
         
-        # Dynamic progress section with achievements
-        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        # Progress section
+        progress_value = f"**{session.mode.title()}** Mode"
         if session.streak > 0:
-            progress_value += f"\n🔥 **{session.streak}** Question Streak"
-        else:
-            progress_value += f"\n📍 Build your streak!"
-        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+            progress_value += f"\n**{session.streak}** Question Streak"
+        progress_value += f"\n**{session.correct_answers}**/{max(question_num-1, 0)} Correct"
         
         embed.add_field(
-            name="📊 Performance",
+            name="📊 Progress",
             value=progress_value,
             inline=True
         )
         
-        # Enhanced timer with urgency indicators
-        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
-        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
-        
+        # Timer section
         embed.add_field(
-            name=f"{time_emoji} Time Challenge",
-            value=f"**{session.time_per_question}** seconds\n{timer_style}",
+            name="⏱️ Time Limit",
+            value=f"**{session.time_per_question}** seconds",
             inline=True
         )
         
-        # Enhanced category with lore elements
+        # Category and difficulty
         category = question_data.get("category", "General")
         difficulty = question_data.get("difficulty", "normal")
         
-        # Map categories to Avatar elements
-        category_elements = {
-            "Characters": "👥 Heroes & Villains",
-            "Locations": "🗺️ Four Nations",
-            "Elements": "🔥💧🗻💨 Bending Arts",
-            "History": "📜 Ancient Wisdom",
-            "Culture": "🏮 Traditions",
-            "General": "🌟 Avatar Lore"
-        }
+        # Simplified category mapping
+        category_display = {
+            "Characters": "Heroes & Villains",
+            "Locations": "Four Nations", 
+            "Elements": "Bending Arts",
+            "History": "Ancient Wisdom",
+            "Culture": "Traditions",
+            "General": "Avatar Lore"
+        }.get(category, category)
         
-        difficulty_indicators = {
-            "easy": "🟢 Novice Level",
-            "normal": "🟡 Adept Level", 
-            "hard": "🟠 Master Level",
-            "expert": "🔴 Avatar Level"
-        }
+        difficulty_display = {
+            "easy": "Novice",
+            "normal": "Adept", 
+            "hard": "Master",
+            "expert": "Avatar"
+        }.get(difficulty, difficulty.title())
         
         embed.add_field(
-            name="🏷️ Challenge Details",
-            value=f"{category_elements.get(category, f'🌟 {category}')}\n{difficulty_indicators.get(difficulty, f'⚪ {difficulty.title()}')}",
+            name="📚 Category",
+            value=f"{category_display}\n{difficulty_display} Level",
             inline=True
         )
         
-        # Add motivational footer based on performance
+        # Motivational footer - reduced emoji usage
         if session.streak >= 5:
-            footer_text = f"🔥 ON FIRE! {session.streak} questions in a row! Keep it up, Avatar!"
+            footer_text = f"Amazing! {session.streak} questions in a row! Keep it up, Avatar!"
         elif session.streak >= 3:
-            footer_text = f"⚡ Great streak! You're {5-session.streak} away from being on fire!"
+            footer_text = f"Great streak! You're {5-session.streak} away from being on fire!"
         elif session.correct_answers > 0:
-            footer_text = f"💪 You've got this! {session.correct_answers} correct so far!"
+            footer_text = f"You've got this! {session.correct_answers} correct so far!"
         else:
-            footer_text = "🎯 Every master was once a beginner. Choose wisely!"
+            footer_text = "Every master was once a beginner. Choose wisely!"
         
         embed.set_footer(text=footer_text)
         
-        # Add streak bonus indicator
+        # Streak bonus indicator - simplified
         if session.streak >= 3:
             embed.add_field(
-                name="🎁 Streak Bonus Active!",
-                value=f"🔥 **+{session.streak}0% XP** for this question!\nKeep the streak alive for massive rewards!",
+                name="🔥 Streak Bonus",
+                value=f"**+{session.streak}0% XP** for this question!",
                 inline=False
             )
         
@@ -1213,69 +1160,97 @@ class AvatarPlaySystem(commands.Cog):
         # Dynamic colors based on progress and streaks
         if session.streak >= 5:
             color = discord.Color.gold()  # Gold for hot streak
-            streak_emoji = "🔥"
         elif session.streak >= 3:
             color = discord.Color.orange()  # Orange for good streak
-            streak_emoji = "⚡"
         else:
             color = discord.Color.blue()  # Blue for normal
-            streak_emoji = "📝"
         
-        # Enhanced title with dynamic elements
-        title_parts = [f"{streak_emoji} Question {question_num}/{total_questions}"]
+        # Clean title
+        title = f"Question {question_num}/{total_questions}"
         if session.streak >= 3:
-            title_parts.append(f"• {session.streak} STREAK!")
+            title += f" • {session.streak} Streak!"
         
         embed = EmbedGenerator.create_embed(
-            title=" ".join(title_parts),
-            description=f"🎯 **{question_data['question']}**",
+            title=title,
+            description=f"**{question_data['question']}**",
             color=color
         )
         
-        # Enhanced options with styled formatting
-        option_emojis = ["🇦", "🇧", "🇨"]
-        option_styles = ["🔸", "🔹", "🔶"]
+        # Clean options formatting
+        option_letters = ["A", "B", "C", "D"]
         
-        for i, option in enumerate(question_data["options"][:3]):
+        for i, option in enumerate(question_data["options"][:4]):
             embed.add_field(
-                name=f"{option_emojis[i]} Option {chr(65+i)}",
-                value=f"{option_styles[i]} **{option}**",
+                name=f"{option_letters[i]})",
+                value=option,
                 inline=False
             )
         
-        # Dynamic progress section with achievements
-        progress_value = f"🎮 **{session.mode.title()}** Mode"
+        # Progress section
+        progress_value = f"**{session.mode.title()}** Mode"
         if session.streak > 0:
-            progress_value += f"\n🔥 **{session.streak}** Question Streak"
-        else:
-            progress_value += f"\n📍 Build your streak!"
-        progress_value += f"\n✅ **{session.correct_answers}**/{question_num-1} Correct"
+            progress_value += f"\n**{session.streak}** Question Streak"
+        progress_value += f"\n**{session.correct_answers}**/{max(question_num-1, 0)} Correct"
         
         embed.add_field(
-            name="📊 Performance",
+            name="📊 Progress",
             value=progress_value,
             inline=True
         )
         
-        # Enhanced timer with urgency indicators
-        time_emoji = "⏰" if session.time_per_question >= 20 else "⏱️" if session.time_per_question >= 10 else "⚡"
-        timer_style = "⏳ Think carefully" if session.time_per_question >= 20 else "💨 Quick thinking" if session.time_per_question >= 10 else "🚀 Lightning fast"
-        
+        # Timer section
         embed.add_field(
-            name=f"{time_emoji} Timer",
-            value=f"{timer_style}\n⏰ **{session.time_per_question}** seconds",
+            name="⏱️ Time Limit",
+            value=f"**{session.time_per_question}** seconds",
             inline=True
         )
         
-        # Enhanced category and difficulty display with visual elements
-        category_emoji = "🌟" if question_data.get("category") == "Avatar & Airbending" else "💧" if "Water" in question_data.get("category", "") else "🌍" if "Earth" in question_data.get("category", "") else "🔥" if "Fire" in question_data.get("category", "") else "✨"
-        difficulty_color = "🟢" if question_data.get("difficulty", "normal") == "easy" else "🟡" if question_data.get("difficulty", "normal") == "normal" else "🟠" if question_data.get("difficulty", "normal") == "hard" else "🔴"
+        # Category and difficulty
+        category = question_data.get("category", "General")
+        difficulty = question_data.get("difficulty", "normal")
+        
+        # Simplified category mapping
+        category_display = {
+            "Characters": "Heroes & Villains",
+            "Locations": "Four Nations", 
+            "Elements": "Bending Arts",
+            "History": "Ancient Wisdom",
+            "Culture": "Traditions",
+            "General": "Avatar Lore"
+        }.get(category, category)
+        
+        difficulty_display = {
+            "easy": "Novice",
+            "normal": "Adept", 
+            "hard": "Master",
+            "expert": "Avatar"
+        }.get(difficulty, difficulty.title())
         
         embed.add_field(
-            name="📖 Question Info",
-            value=f"{category_emoji} **{question_data.get('category', 'General Knowledge')}**\n{difficulty_color} **{question_data.get('difficulty', 'normal').title()}** Difficulty",
+            name="📚 Category",
+            value=f"{category_display}\n{difficulty_display} Level",
             inline=True
         )
+        
+        # Motivational footer - reduced emoji usage
+        if session.streak >= 5:
+            footer_text = f"Amazing! {session.streak} questions in a row! Keep it up, Avatar!"
+        elif session.streak >= 3:
+            footer_text = f"Great streak! You're {5-session.streak} away from being on fire!"
+        elif session.correct_answers > 0:
+            footer_text = f"You've got this! {session.correct_answers} correct so far!"
+        else:
+            footer_text = "Every master was once a beginner. Choose wisely!"
+        
+        embed.set_footer(text=footer_text)
+        
+        # Streak bonus indicator - simplified
+        if session.streak >= 3:
+            embed.add_field(
+                name="🔥 Streak Bonus",
+                value=f"**+{session.streak}0% XP** for this question!",
+                inline=False
+            )
         
         embed = EmbedGenerator.finalize_embed(embed)
         
@@ -1334,7 +1309,7 @@ class AvatarPlaySystem(commands.Cog):
             await self._finish_game(interaction, session)
     
     def _create_answer_result_embed(self, question_data: Dict[str, Any], choice: Optional[int], is_correct: bool, timeout: bool, session: GameSession) -> discord.Embed:
-        """Create engaging embed showing answer result with Avatar flair."""
+        """Create clean answer result embed."""
         # Dynamic responses based on streaks and performance
         if timeout:
             title = "⏰ Time's Up!"
@@ -1345,20 +1320,20 @@ class AvatarPlaySystem(commands.Cog):
                 "The spirits are patient, but time waits for no one!",
                 "Master Iroh would say: 'Slow down and think carefully next time.'"
             ]
-            description = f"🏃‍♂️ **{random.choice(timeout_messages)}**"
+            description = f"**{random.choice(timeout_messages)}**"
         elif is_correct:
             if session.streak >= 10:
-                title = "🔥 LEGENDARY STREAK! ✅"
+                title = "🔥 Legendary Streak!"
                 color = discord.Color.gold()
-                description = f"**🏆 AVATAR STATE ACTIVATED! {session.streak} in a row!**\n\nYou're channeling the wisdom of all past Avatars!"
+                description = f"**Avatar State Activated! {session.streak} in a row!**\n\nYou're channeling the wisdom of all past Avatars!"
             elif session.streak >= 5:
-                title = "🔥 ON FIRE! ✅"
+                title = "🔥 On Fire!"
                 color = discord.Color.gold()
-                description = f"**⚡ {session.streak} QUESTION STREAK!**\n\nYour knowledge burns bright like the eternal flame!"
+                description = f"**{session.streak} Question Streak!**\n\nYour knowledge burns bright like the eternal flame!"
             elif session.streak >= 3:
-                title = "⚡ GREAT STREAK! ✅"
+                title = "⚡ Great Streak!"
                 color = discord.Color.orange()
-                description = f"**🌟 {session.streak} in a row!**\n\nYou're mastering the Avatar lore like a true scholar!"
+                description = f"**{session.streak} in a row!**\n\nYou're mastering the Avatar lore like a true scholar!"
             else:
                 title = "✅ Correct!"
                 color = discord.Color.green()
@@ -1371,7 +1346,7 @@ class AvatarPlaySystem(commands.Cog):
                     "Sharp as Sokka's strategy!",
                     "Brilliant as Katara's waterbending!"
                 ]
-                description = f"🎯 **{random.choice(correct_messages)}**"
+                description = f"**{random.choice(correct_messages)}**"
         else:
             title = "❌ Incorrect"
             color = discord.Color.red()
@@ -1384,11 +1359,11 @@ class AvatarPlaySystem(commands.Cog):
                 "Like learning to bend, knowledge takes time!",
                 "The Avatar's journey has many lessons to learn!"
             ]
-            description = f"📚 **{random.choice(incorrect_messages)}**"
+            description = f"**{random.choice(incorrect_messages)}**"
             
             # Add streak broken message if applicable
             if hasattr(session, 'previous_streak') and session.previous_streak > 0:
-                description += f"\n\n💔 Your {session.previous_streak}-question streak was broken, but you can start a new one!"
+                description += f"\n\nYour {session.previous_streak}-question streak was broken, but you can start a new one!"
         
         embed = EmbedGenerator.create_embed(title=title, description=description, color=color)
         
@@ -1398,7 +1373,7 @@ class AvatarPlaySystem(commands.Cog):
         correct_option = question_data["options"][question_data["answer_index"]]
         
         embed.add_field(
-            name="✅ Correct Answer",
+            name="Correct Answer",
             value=f"**{correct_letter}) {correct_option}**",
             inline=False
         )
@@ -1407,7 +1382,7 @@ class AvatarPlaySystem(commands.Cog):
             chosen_letter = option_letters[choice] if choice < len(option_letters) else str(choice + 1)
             chosen_option = question_data["options"][choice] if choice < len(question_data["options"]) else "Invalid"
             embed.add_field(
-                name="❌ Your Answer",
+                name="Your Answer",
                 value=f"**{chosen_letter}) {chosen_option}**",
                 inline=False
             )
@@ -1415,7 +1390,7 @@ class AvatarPlaySystem(commands.Cog):
         # Show current streak
         if session.streak > 0:
             embed.add_field(
-                name="🔥 Current Streak",
+                name="Current Streak",
                 value=f"**{session.streak}** correct in a row!",
                 inline=True
             )
@@ -1443,6 +1418,13 @@ class AvatarPlaySystem(commands.Cog):
             "difficulty": DIFFICULTY_MODIFIERS[session.difficulty]["xp_multiplier"],
             "streak": 1 + (session.streak * STREAK_BONUS_MULTIPLIER)
         }
+        
+        # Check for vote bonus multiplier
+        vote_cog = self.bot.get_cog("VoteSystem")
+        if vote_cog:
+            vote_multiplier = vote_cog.get_user_vote_bonus(session.player_id)
+            if vote_multiplier > 1.0:
+                multipliers["vote_bonus"] = vote_multiplier
         
         # Daily bonus check
         daily_bonus = self._check_daily_bonus(player)
@@ -1489,8 +1471,14 @@ class AvatarPlaySystem(commands.Cog):
         }
         global_profile_manager.update_global_stats(session.player_id, session.guild_id, game_stats)
         
+        # Get vote multiplier for display
+        vote_cog = self.bot.get_cog("VoteSystem")
+        vote_multiplier = 1.0
+        if vote_cog:
+            vote_multiplier = vote_cog.get_user_vote_bonus(session.player_id)
+        
         # Create results embed
-        results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus)
+        results_embed = self._create_game_results_embed(session, xp_result, accuracy, is_perfect, new_achievements, daily_bonus, vote_multiplier)
         
         if interaction:
             try:
@@ -1575,7 +1563,7 @@ class AvatarPlaySystem(commands.Cog):
         
         player["unlocked_modes"] = list(unlocked_modes)
     
-    def _create_game_results_embed(self, session: GameSession, xp_result: Dict[str, Any], accuracy: float, is_perfect: bool, new_achievements: List[str], daily_bonus: bool) -> discord.Embed:
+    def _create_game_results_embed(self, session: GameSession, xp_result: Dict[str, Any], accuracy: float, is_perfect: bool, new_achievements: List[str], daily_bonus: bool, vote_multiplier: float = 1.0) -> discord.Embed:
         """Create comprehensive game results embed."""
         if is_perfect:
             title = "🏆 PERFECT GAME!"
@@ -1630,6 +1618,8 @@ class AvatarPlaySystem(commands.Cog):
             bonuses.append(f"🏆 Perfect Game: +{PERFECT_GAME_BONUS} XP")
         if daily_bonus:
             bonuses.append("🎁 Daily Bonus: 2x XP")
+        if vote_multiplier > 1.0:
+            bonuses.append(f"🗳️ Vote Bonus: {vote_multiplier:.1f}x XP")
         
         if bonuses:
             embed.add_field(name="🎁 Bonuses", value="\n".join(bonuses), inline=False)

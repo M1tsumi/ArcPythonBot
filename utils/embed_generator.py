@@ -98,7 +98,30 @@ class EmbedGenerator:
             if cache_key in EmbedGenerator._embed_cache:
                 cached_data = EmbedGenerator._embed_cache[cache_key]
                 if EmbedGenerator._is_cache_valid(cached_data['timestamp']):
-                    return cached_data['embed']
+                    # Return a copy of the cached embed to prevent field duplication
+                    cached_embed = cached_data['embed']
+                    embed_copy = discord.Embed(
+                        title=cached_embed.title,
+                        description=cached_embed.description,
+                        color=cached_embed.color,
+                        timestamp=cached_embed.timestamp
+                    )
+                    
+                    # Copy fields
+                    for field in cached_embed.fields:
+                        embed_copy.add_field(name=field.name, value=field.value, inline=field.inline)
+                    
+                    # Copy footer
+                    if cached_embed.footer:
+                        embed_copy.set_footer(text=cached_embed.footer.text, icon_url=cached_embed.footer.icon_url)
+                    
+                    # Copy thumbnail and image
+                    if cached_embed.thumbnail:
+                        embed_copy.set_thumbnail(url=cached_embed.thumbnail.url)
+                    if cached_embed.image:
+                        embed_copy.set_image(url=cached_embed.image.url)
+                    
+                    return embed_copy
         
         # Create new embed
         embed = discord.Embed(
