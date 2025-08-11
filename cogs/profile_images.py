@@ -338,6 +338,14 @@ class ProfileImages(commands.Cog):
                 except Exception as e:
                     self.logger.error(f"Error setting avatar thumbnail for user {user.id}: {e}")
         
+        except Exception as e:
+            self.logger.error(f"Error in _show_global_profile_with_image for user {user.id}: {e}")
+            embed = EmbedGenerator.create_error_embed(
+                "❌ An error occurred while loading the profile. Please try again."
+            )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+        
         # Basic stats
         total_questions = global_stats.get("total_questions_answered", 0)
         correct_answers = global_stats.get("total_correct_answers", 0)
