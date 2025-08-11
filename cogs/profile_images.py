@@ -25,8 +25,21 @@ class ProfileImages(commands.Cog):
         self.logger = bot.logger
         self.owner_id = 1051142172130422884  # Bot owner ID for approvals
         self.pending_approvals = {}  # Store pending approvals: {user_id: approval_data}
+        
+        # Ensure all necessary directories exist
         self.images_dir = Path("data/users/profile_images")
-        self.images_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.images_dir.mkdir(parents=True, exist_ok=True)
+            self.logger.info(f"Profile images directory ready: {self.images_dir}")
+        except Exception as e:
+            self.logger.error(f"Error creating profile images directory: {e}")
+        
+        # Ensure global profiles directory exists
+        global_profiles_dir = Path("data/users/global_profiles")
+        try:
+            global_profiles_dir.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            self.logger.error(f"Error creating global profiles directory: {e}")
     
     @app_commands.command(name="setprofile", description="Submit your Avatar Realms profile image for approval")
     @app_commands.describe(
@@ -57,6 +70,9 @@ class ProfileImages(commands.Cog):
             return
         
         try:
+            # Ensure directories exist
+            self.images_dir.mkdir(parents=True, exist_ok=True)
+            
             # Download and save the image
             async with aiohttp.ClientSession() as session:
                 async with session.get(image.url) as resp:
@@ -71,8 +87,17 @@ class ProfileImages(commands.Cog):
             
             # Save image temporarily
             temp_image_path = self.images_dir / f"temp_{interaction.user.id}.png"
-            with open(temp_image_path, 'wb') as f:
-                f.write(image_data)
+            try:
+                with open(temp_image_path, 'wb') as f:
+                    f.write(image_data)
+                self.logger.info(f"Temporary image saved for user {interaction.user.id}: {temp_image_path}")
+            except Exception as e:
+                self.logger.error(f"Error saving temporary image for user {interaction.user.id}: {e}")
+                embed = EmbedGenerator.create_error_embed(
+                    "❌ Failed to save image. Please try again."
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+                return
             
             # Store approval request
             approval_data = {
@@ -88,7 +113,11 @@ class ProfileImages(commands.Cog):
             self.pending_approvals[interaction.user.id] = approval_data
             
             # Send approval request to owner
-            await self._send_approval_request(interaction.user, approval_data)
+            try:
+                await self._send_approval_request(interaction.user, approval_data)
+            except Exception as e:
+                self.logger.error(f"Error sending approval request for user {interaction.user.id}: {e}")
+                # Still show success to user, but log the error
             
             # Confirm submission to user
             embed = EmbedGenerator.create_embed(
@@ -393,12 +422,24 @@ class ProfileImages(commands.Cog):
             )
         
         # Account info
-        embed.add_field(
-            name="📅 Account Info",
-            value=f"**Created:** <t:{int(discord.utils.parse_time(profile['created_at']).timestamp())}:R>\n"
-                  f"**Last Active:** <t:{int(discord.utils.parse_time(global_stats.get('last_global_activity', profile['created_at'])).timestamp())}:R>",
-            inline=False
-        )
+        try:
+            created_timestamp = discord.utils.parse_time(profile['created_at'])
+            last_active = global_stats.get('last_global_activity', profile['created_at'])
+            last_active_timestamp = discord.utils.parse_time(last_active) if last_active else created_timestamp
+            
+            embed.add_field(
+                name="📅 Account Info",
+                value=f"**Created:** <t:{int(created_timestamp.timestamp())}:R>\n"
+                      f"**Last Active:** <t:{int(last_active_timestamp.timestamp())}:R>",
+                inline=False
+            )
+        except Exception as e:
+            self.logger.error(f"Error parsing timestamps for user {user.id}: {e}")
+            embed.add_field(
+                name="📅 Account Info",
+                value="**Created:** Unknown\n**Last Active:** Unknown",
+                inline=False
+            )
         
         embed = EmbedGenerator.finalize_embed(embed)
         
@@ -731,45 +772,52 @@ class ProfileApprovalView(discord.ui.View):
         
         await interaction.response.defer()
         
-        # Get file information before approval
-        temp_path = Path(self.approval_data['image_path'])
-        file_size = temp_path.stat().st_size if temp_path.exists() else 0
-        file_size_mb = file_size / (1024 * 1024)
-        
-        await self.cog.approve_profile_image(self.approval_data["user_id"], self.approval_data)
-        
-        # Get permanent file path after approval
-        permanent_path = self.cog.images_dir / f"{self.approval_data['user_id']}.png"
-        
-        embed = EmbedGenerator.create_embed(
-            title="✅ Profile Image Approved",
-            description=f"Profile image for **{self.approval_data['user_name']}** has been approved and is now active!",
-            color=discord.Color.green()
-        )
-        
-        embed.add_field(
-            name="📁 File Information",
-            value=f"**Location:** `{permanent_path}`\n"
-                  f"**Size:** {file_size_mb:.2f} MB\n"
-                  f"**User ID:** {self.approval_data['user_id']}\n"
-                  f"**Server:** {self.approval_data['guild_name']}",
-            inline=False
-        )
-        
-        embed.add_field(
-            name="✅ Status",
-            value="• Image moved to permanent storage\n"
-                  "• User profile updated\n"
-                  "• User notified via DM\n"
-                  "• Image will now appear on their profile",
-            inline=False
-        )
-        
-        # Disable buttons
-        for child in self.children:
-            child.disabled = True
-        
-        await interaction.followup.edit_message(embed=embed, view=self)
+        try:
+            # Get file information before approval
+            temp_path = Path(self.approval_data['image_path'])
+            file_size = temp_path.stat().st_size if temp_path.exists() else 0
+            file_size_mb = file_size / (1024 * 1024)
+            
+            await self.cog.approve_profile_image(self.approval_data["user_id"], self.approval_data)
+            
+            # Get permanent file path after approval
+            permanent_path = self.cog.images_dir / f"{self.approval_data['user_id']}.png"
+            
+            embed = EmbedGenerator.create_embed(
+                title="✅ Profile Image Approved",
+                description=f"Profile image for **{self.approval_data['user_name']}** has been approved and is now active!",
+                color=discord.Color.green()
+            )
+            
+            embed.add_field(
+                name="📁 File Information",
+                value=f"**Location:** `{permanent_path}`\n"
+                      f"**Size:** {file_size_mb:.2f} MB\n"
+                      f"**User ID:** {self.approval_data['user_id']}\n"
+                      f"**Server:** {self.approval_data['guild_name']}",
+                inline=False
+            )
+            
+            embed.add_field(
+                name="✅ Status",
+                value="• Image moved to permanent storage\n"
+                      "• User profile updated\n"
+                      "• User notified via DM\n"
+                      "• Image will now appear on their profile",
+                inline=False
+            )
+            
+            # Disable buttons
+            for child in self.children:
+                child.disabled = True
+            
+            # Send a new message instead of trying to edit the original
+            await interaction.followup.send(embed=embed)
+            
+        except Exception as e:
+            self.cog.logger.error(f"Error in approve button: {e}")
+            error_embed = EmbedGenerator.create_error_embed(f"Error approving profile image: {str(e)}")
+            await interaction.followup.send(embed=error_embed, ephemeral=True)
     
     @discord.ui.button(label="❌ Reject", style=discord.ButtonStyle.red, custom_id="reject_profile")
     async def reject_button(self, interaction: discord.Interaction, button: discord.ui.Button):
