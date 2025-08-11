@@ -18,8 +18,8 @@ class BalanceAndOrderView(discord.ui.View):
     async def show_tasks(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show event tasks and rewards."""
         embed = discord.Embed(
-            title="⚖️ Balance and Order - Event Tasks",
-            description="Complete these tasks to earn rewards!",
+            title=self.get_text(interaction.user.id, "balance_and_order_tasks_title"),
+            description=self.get_text(interaction.user.id, "balance_and_order_tasks_desc"),
             color=discord.Color.blue()
         )
         
@@ -132,6 +132,21 @@ class BalanceAndOrder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="balance_and_order", description="Get comprehensive information about the Balance and Order event")
     async def balance_and_order(self, interaction: discord.Interaction):

@@ -23,6 +23,21 @@ class PlayerTools(commands.Cog):
         self.profiles_dir = Path("data/users/profiles")
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
     
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+    
     def _load_user_profile(self, user_id: int) -> Dict[str, Any]:
         """Load user profile from file."""
         profile_file = self.profiles_dir / f"{user_id}.json"
@@ -253,8 +268,8 @@ class PlayerTools(commands.Cog):
     async def player_stats(self, ctx):
         """Show player statistics (placeholder)."""
         embed = EmbedGenerator.create_embed(
-            title="Player Statistics",
-            description="This is a placeholder for player statistics.",
+            title=self.get_text(ctx.author.id, "player_statistics_title"),
+            description=self.get_text(ctx.author.id, "player_statistics_desc"),
             color=discord.Color.blue()
         )
         

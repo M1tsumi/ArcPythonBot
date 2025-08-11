@@ -17,6 +17,21 @@ class SkillPriorities(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
         self.data_parser = DataParser()
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="skill_priorities", description="View skill priorities for heroes")
     async def skill_priorities(self, interaction: discord.Interaction):
@@ -31,8 +46,8 @@ class SkillPriorities(commands.Cog):
         
         # Create main embed
         embed = EmbedGenerator.create_embed(
-            title="Hero Skill Priorities",
-            description="Choose an element to view skill priorities for heroes.",
+            title=self.get_text(interaction.user.id, "hero_skill_priorities_title"),
+            description=self.get_text(interaction.user.id, "hero_skill_priorities_desc"),
             color=discord.Color.purple()
         )
         

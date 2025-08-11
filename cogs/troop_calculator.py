@@ -135,8 +135,8 @@ class TroopCalculatorView(View):
     def create_calculator_embed(self) -> discord.Embed:
         """Create the calculator embed."""
         embed = EmbedGenerator.create_embed(
-            title="Troop Calculator",
-            description="Calculate recruitment costs for troops.",
+            title=self.get_text(interaction.user.id, "troop_calculator_title"),
+            description=self.get_text(interaction.user.id, "troop_calculator_desc"),
             color=discord.Color.blue()
         )
         
@@ -221,6 +221,22 @@ class TroopCalculator(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.data_parser = DataParser()
+        self.logger = bot.logger
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="troopcalc", description="Calculate troop recruitment costs")
     async def troop_calculator(self, interaction: discord.Interaction):

@@ -1,0 +1,17 @@
+{
+  "EN": {
+    "daily_bonus_active_desc": "Daily bonus is currently active!",
+    "daily_bonus_info": "Daily bonus information and rewards",
+    "vote_daily": "Vote daily with `/vote` for massive XP bonuses"
+  },
+  "DE": {
+    "daily_bonus_active_desc": "Täglicher Bonus ist derzeit aktiv!",
+    "daily_bonus_info": "Tägliche Bonus-Informationen und Belohnungen",
+    "vote_daily": "Stimme täglich mit `/vote` für massive XP-Boni ab"
+  },
+  "ES": {
+    "daily_bonus_active_desc": "¡El bono diario está actualmente activo!",
+    "daily_bonus_info": "Información y recompensas del bono diario",
+    "vote_daily": "Vota diariamente con `/vote` para bonificaciones masivas de XP"
+  }
+}

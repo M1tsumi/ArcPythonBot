@@ -18,12 +18,27 @@ class TalentTrees(commands.Cog):
         self.logger = bot.logger
         self.data_parser = DataParser()
     
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+    
     @app_commands.command(name="talent_trees", description="Interactive talent tree browser")
     async def talent_trees(self, interaction: discord.Interaction):
         """Interactive command to browse talent trees by element."""
         embed = EmbedGenerator.create_embed(
-            title="Talent Tree Browser",
-            description="Choose your element to discover characters and their talent trees.",
+            title=self.get_text(interaction.user.id, "talent_tree_browser_title"),
+            description=self.get_text(interaction.user.id, "talent_tree_browser_desc"),
             color=discord.Color.from_rgb(52, 152, 219)
         )
         

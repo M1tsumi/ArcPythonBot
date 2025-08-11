@@ -1,0 +1,53 @@
+{
+  "EN": {
+    "games_played": "Games Played",
+    "perfect_games": "Perfect Games",
+    "servers_played": "Servers Played",
+    "dedicated_player": "❤️ Dedicated Player",
+    "addicted_player": "🎮 Addicted Player",
+    "avatar_day_festival_tasks_title": "🎉 Avatar Day Festival Tasks",
+    "avatar_day_festival_tasks_desc": "Complete daily tasks to earn festival rewards",
+    "avatar_world_map_title": "🗺️ Avatar World Map",
+    "avatar_world_map_desc": "Explore the world of Avatar Realms Collide",
+    "player_statistics_title": "📊 Player Statistics",
+    "player_statistics_desc": "Your personal game statistics and achievements",
+    "game_info_commands": "Game Information Commands",
+    "minigame_systems": "Minigame Systems",
+    "play_daily": "Play daily for 2x XP bonus on first game",
+    "game_updates": "Game updates and announcements"
+  },
+  "DE": {
+    "games_played": "Gespielte Spiele",
+    "perfect_games": "Perfekte Spiele",
+    "servers_played": "Gespielte Server",
+    "dedicated_player": "❤️ Hingebungsvoller Spieler",
+    "addicted_player": "🎮 Spielsüchtiger Spieler",
+    "avatar_day_festival_tasks_title": "🎉 Avatar-Tag-Festival-Aufgaben",
+    "avatar_day_festival_tasks_desc": "Erfülle tägliche Aufgaben, um Festival-Belohnungen zu verdienen",
+    "avatar_world_map_title": "🗺️ Avatar-Weltkarte",
+    "avatar_world_map_desc": "Erkunde die Welt von Avatar Realms Collide",
+    "player_statistics_title": "📊 Spieler-Statistiken",
+    "player_statistics_desc": "Deine persönlichen Spielstatistiken und Erfolge",
+    "game_info_commands": "Spielinformations-Befehle",
+    "minigame_systems": "Minispiel-Systeme",
+    "play_daily": "Spiele täglich für 2x XP-Bonus beim ersten Spiel",
+    "game_updates": "Spiel-Updates und Ankündigungen"
+  },
+  "ES": {
+    "games_played": "Juegos Jugados",
+    "perfect_games": "Juegos Perfectos",
+    "servers_played": "Servidores Jugados",
+    "dedicated_player": "❤️ Jugador Dedicado",
+    "addicted_player": "🎮 Jugador Adicto",
+    "avatar_day_festival_tasks_title": "🎉 Tareas del Festival del Día del Avatar",
+    "avatar_day_festival_tasks_desc": "Completa tareas diarias para ganar recompensas del festival",
+    "avatar_world_map_title": "🗺️ Mapa Mundial de Avatar",
+    "avatar_world_map_desc": "Explora el mundo de Avatar Realms Collide",
+    "player_statistics_title": "📊 Estadísticas del Jugador",
+    "player_statistics_desc": "Tus estadísticas de juego personales y logros",
+    "game_info_commands": "Comandos de Información del Juego",
+    "minigame_systems": "Sistemas de Minijuegos",
+    "play_daily": "Juega diariamente para bonificación de XP x2 en el primer juego",
+    "game_updates": "Actualizaciones y anuncios del juego"
+  }
+}

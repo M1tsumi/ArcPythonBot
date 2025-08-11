@@ -1,0 +1,17 @@
+{
+  "EN": {
+    "alliance_rankings": "Alliance Rankings",
+    "top_10_alliances": "Top 10 Alliances",
+    "rally_commands": "Rally System Commands"
+  },
+  "DE": {
+    "alliance_rankings": "Allianz-Rankings",
+    "top_10_alliances": "Top 10 Allianzen",
+    "rally_commands": "Rally-System-Befehle"
+  },
+  "ES": {
+    "alliance_rankings": "Rankings de Alianzas",
+    "top_10_alliances": "Top 10 Alianzas",
+    "rally_commands": "Comandos del Sistema de Rally"
+  }
+}

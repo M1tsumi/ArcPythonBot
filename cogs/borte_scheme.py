@@ -18,8 +18,8 @@ class BorteSchemeView(discord.ui.View):
     async def show_mechanics(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show event mechanics and how to participate."""
         embed = discord.Embed(
-            title="🎭 Borte's Scheme - Event Mechanics",
-            description="How to participate in Borte's Scheme event",
+            title=self.get_text(interaction.user.id, "borte_scheme_mechanics_title"),
+            description=self.get_text(interaction.user.id, "borte_scheme_mechanics_desc"),
             color=discord.Color.purple()
         )
         
@@ -157,6 +157,21 @@ class BorteScheme(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="borte_scheme", description="Get comprehensive information about Borte's Scheme event")
     async def borte_scheme(self, interaction: discord.Interaction):

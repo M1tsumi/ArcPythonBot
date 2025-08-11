@@ -289,13 +289,28 @@ class MinigameDaily(commands.Cog):
         self.bot = bot
         self.logger = getattr(bot, "logger", None)
 
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+
     @app_commands.command(name="daily", description="Minigame: Verify and claim daily XP with a chance at Scrolls")
     @app_commands.checks.cooldown(1, 3.0)  # basic spam protection; not a per-day lockout
     async def daily(self, interaction: discord.Interaction):
         if interaction.guild is None:
             embed = EmbedGenerator.create_embed(
-                title="Guild Only",
-                description="This minigame can only be used inside a server.",
+                title=self.get_text(interaction.user.id, "guild_only_title"),
+                description=self.get_text(interaction.user.id, "guild_only_desc"),
                 color=discord.Color.red(),
             )
             embed = EmbedGenerator.finalize_embed(embed)
@@ -699,8 +714,8 @@ class MinigameDaily(commands.Cog):
     async def minigame(self, interaction: discord.Interaction):
         if interaction.guild is None:
             embed = EmbedGenerator.create_embed(
-                title="Guild Only",
-                description="This minigame can only be used inside a server.",
+                title=self.get_text(interaction.user.id, "guild_only_title"),
+                description=self.get_text(interaction.user.id, "guild_only_desc"),
                 color=discord.Color.red(),
             )
             embed = EmbedGenerator.finalize_embed(embed)

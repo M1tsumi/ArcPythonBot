@@ -1,0 +1,87 @@
+{
+  "modules": {
+    "core": {
+      "key_count": 23,
+      "file_path": "core/translations.json",
+      "description": "Core bot functionality and basic commands"
+    },
+    "profile_images": {
+      "key_count": 53,
+      "file_path": "profile_images/translations.json",
+      "description": "Profile image submission and approval system"
+    },
+    "profiles": {
+      "key_count": 12,
+      "file_path": "profiles/translations.json",
+      "description": "User profile and statistics system"
+    },
+    "avatar_play": {
+      "key_count": 15,
+      "file_path": "avatar_play/translations.json",
+      "description": "Avatar Play system and game mechanics"
+    },
+    "rally_system": {
+      "key_count": 3,
+      "file_path": "rally_system/translations.json",
+      "description": "Rally system and alliance mechanics"
+    },
+    "events": {
+      "key_count": 3,
+      "file_path": "events/translations.json",
+      "description": "Event system and special game modes"
+    },
+    "heroes": {
+      "key_count": 11,
+      "file_path": "heroes/translations.json",
+      "description": "Hero management and information system"
+    },
+    "skills": {
+      "key_count": 4,
+      "file_path": "skills/translations.json",
+      "description": "Skill system and talent trees"
+    },
+    "troops": {
+      "key_count": 3,
+      "file_path": "troops/translations.json",
+      "description": "Troop management and calculator"
+    },
+    "leaderboards": {
+      "key_count": 8,
+      "file_path": "leaderboards/translations.json",
+      "description": "Leaderboard and ranking system"
+    },
+    "minigame": {
+      "key_count": 3,
+      "file_path": "minigame/translations.json",
+      "description": "Minigame and daily reward system"
+    },
+    "timer": {
+      "key_count": 1,
+      "file_path": "timer/translations.json",
+      "description": "Timer and reminder system"
+    },
+    "statistics": {
+      "key_count": 28,
+      "file_path": "statistics/translations.json",
+      "description": "Bot statistics and analytics"
+    },
+    "command_descriptions": {
+      "key_count": 53,
+      "file_path": "command_descriptions/translations.json",
+      "description": "Command descriptions and help text"
+    },
+    "ui": {
+      "key_count": 1,
+      "file_path": "ui/translations.json",
+      "description": "User interface and interaction elements"
+    },
+    "uncategorized": {
+      "key_count": 77,
+      "file_path": "uncategorized/translations.json",
+      "description": ""
+    }
+  },
+  "total_keys": 298,
+  "created_at": "2025-08-11 14:52:43.535475",
+  "version": "1.0"
+}

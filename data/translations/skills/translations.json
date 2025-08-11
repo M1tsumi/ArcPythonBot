@@ -1,0 +1,20 @@
+{
+  "EN": {
+    "talent_tree_browser_title": "🌳 Talent Tree Browser",
+    "talent_tree_browser_desc": "Browse character talent trees by element",
+    "talent_tree_browser": "Talent Tree Browser",
+    "skill_priorities": "Skill Priorities"
+  },
+  "DE": {
+    "talent_tree_browser_title": "🌳 Talentbaum-Browser",
+    "talent_tree_browser_desc": "Durchsuche Charakter-Talentbäume nach Element",
+    "talent_tree_browser": "Talentbaum-Browser",
+    "skill_priorities": "Fertigkeits-Prioritäten"
+  },
+  "ES": {
+    "talent_tree_browser_title": "🌳 Navegador de Árboles de Talento",
+    "talent_tree_browser_desc": "Navega por árboles de talento de personajes por elemento",
+    "talent_tree_browser": "Navegador de Árboles de Talento",
+    "skill_priorities": "Prioridades de Habilidades"
+  }
+}

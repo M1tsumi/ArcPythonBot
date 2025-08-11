@@ -17,6 +17,21 @@ class Utility(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
 
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+
     # ===== Prefix commands =====
 
     @commands.command(name="ping", description="Check bot latency and status")
@@ -26,8 +41,8 @@ class Utility(commands.Cog):
         start_time = time.time()
 
         embed = EmbedGenerator.create_embed(
-            title="Pong!",
-            description="Checking bot status and latency...",
+            title=self.get_text(ctx.author.id, "pong_title"),
+            description=self.get_text(ctx.author.id, "checking_bot_status"),
             color=discord.Color.blue()
         )
         message = await ctx.send(embed=embed)
@@ -37,16 +52,16 @@ class Utility(commands.Cog):
         api_latency = round(self.bot.latency * 1000, 2)
 
         embed = EmbedGenerator.create_embed(
-            title="Pong!",
-            description="Bot is online and responding.",
+            title=self.get_text(ctx.author.id, "pong_title"),
+            description=self.get_text(ctx.author.id, "bot_online_responding"),
             color=discord.Color.green()
         )
-        embed.add_field(name="📊 Response Time", value=f"**{latency:.1f}ms**", inline=True)
-        embed.add_field(name="🌐 API Latency", value=f"**{api_latency}ms**", inline=True)
-        embed.add_field(name="🆔 Bot Status", value="✅ Online and Ready", inline=True)
-        embed.add_field(name="🏠 Servers", value=f"**{len(self.bot.guilds)}** servers", inline=True)
-        embed.add_field(name="👥 Users", value=f"**{len(self.bot.users)}** users", inline=True)
-        embed.add_field(name="⚡ Commands", value=f"**{len(self.bot.tree.get_commands())}** slash commands", inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "response_time"), value=f"**{latency:.1f}ms**", inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "api_latency"), value=f"**{api_latency}ms**", inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "bot_status"), value=self.get_text(ctx.author.id, "online_ready"), inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "servers"), value=f"**{len(self.bot.guilds)}** {self.get_text(ctx.author.id, 'servers_plural')}", inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "users"), value=f"**{len(self.bot.users)}** {self.get_text(ctx.author.id, 'users_plural')}", inline=True)
+        embed.add_field(name=self.get_text(ctx.author.id, "commands"), value=f"**{len(self.bot.tree.get_commands())}** {self.get_text(ctx.author.id, 'slash_commands')}", inline=True)
 
         embed = EmbedGenerator.finalize_embed(embed)
         await message.edit(embed=embed)
@@ -57,25 +72,25 @@ class Utility(commands.Cog):
     async def help_prefix(self, ctx):
         """Traditional prefix command to provide help and command information."""
         embed = EmbedGenerator.create_embed(
-            title="Help",
-            description="Available commands organized by category.",
+            title=self.get_text(ctx.author.id, "help_title"),
+            description=self.get_text(ctx.author.id, "help_description"),
             color=discord.Color.blue(),
             use_cache=False  # Disable caching to prevent field duplication
         )
 
         embed.add_field(
-            name="🎮 Game Information Commands",
-            value="• `!talent_trees` - Browse character talent trees\n• `!skill_priorities` - View hero skill priorities\n• `!hero_info` - Get detailed hero information\n• `!hero_rankup` - View hero rankup guide and costs\n• `!townhall` - View town hall requirements\n• `!leaderboard` - Check top players and alliances",
+            name="🎮 " + self.get_text(ctx.author.id, "game_info_commands"),
+            value=f"• `!talent_trees` - {self.get_text(ctx.author.id, 'talent_trees_desc')}\n• `!skill_priorities` - {self.get_text(ctx.author.id, 'skill_priorities_desc')}\n• `!hero_info` - {self.get_text(ctx.author.id, 'hero_info_desc')}\n• `!hero_rankup` - {self.get_text(ctx.author.id, 'hero_rankup_desc')}\n• `!townhall` - {self.get_text(ctx.author.id, 'townhall_desc')}\n• `!leaderboard` - {self.get_text(ctx.author.id, 'leaderboard_desc')}",
             inline=False
         )
         embed.add_field(
-            name="🎭 Event Commands",
-            value="• `!events` - View current and upcoming events\n• `!avatar_day_festival` - Avatar Day Festival information\n• `!festival_tasks` - View all festival tasks by day\n• `!festival_shop` - View festival exchange shop\n• `!festival_guide` - Get festival tips and strategy\n• `!festival_rewards` - View all festival rewards\n• `!balance_and_order` - Balance and Order event information\n• `!balance_tasks` - View Balance and Order tasks\n• `!balance_guide` - Get Balance and Order tips\n• `!borte_scheme` - Borte's Scheme event information\n• `!borte_mechanics` - View Borte's Scheme mechanics\n• `!borte_rewards` - View Borte's Scheme rewards\n• `!borte_guide` - Get Borte's Scheme tips",
+            name="🎭 " + self.get_text(ctx.author.id, "event_commands"),
+            value=f"• `!events` - {self.get_text(ctx.author.id, 'events_desc')}\n• `!avatar_day_festival` - {self.get_text(ctx.author.id, 'avatar_day_festival_desc')}\n• `!festival_tasks` - {self.get_text(ctx.author.id, 'festival_tasks_desc')}\n• `!festival_shop` - {self.get_text(ctx.author.id, 'festival_shop_desc')}\n• `!festival_guide` - {self.get_text(ctx.author.id, 'festival_guide_desc')}\n• `!festival_rewards` - {self.get_text(ctx.author.id, 'festival_rewards_desc')}\n• `!balance_and_order` - {self.get_text(ctx.author.id, 'balance_and_order_desc')}\n• `!balance_tasks` - {self.get_text(ctx.author.id, 'balance_tasks_desc')}\n• `!balance_guide` - {self.get_text(ctx.author.id, 'balance_guide_desc')}\n• `!borte_scheme` - {self.get_text(ctx.author.id, 'borte_scheme_desc')}\n• `!borte_mechanics` - {self.get_text(ctx.author.id, 'borte_mechanics_desc')}\n• `!borte_rewards` - {self.get_text(ctx.author.id, 'borte_rewards_desc')}\n• `!borte_guide` - {self.get_text(ctx.author.id, 'borte_guide_desc')}",
             inline=False
         )
         embed.add_field(
-            name="⚔️ Rally System Commands",
-            value="• `!setup` - Setup rally system (Admin)\n• `!rally` - Create a new rally (level + time limit)\n• `!rally_stats` - View your rally statistics\n• `!rally_leaderboard` - View rally leaderboard\n• `!leader` - Admin leaderboard management (pause/resume/clear)",
+            name="⚔️ " + self.get_text(ctx.author.id, "rally_commands"),
+            value=f"• `!setup` - {self.get_text(ctx.author.id, 'setup_desc')}\n• `!rally` - {self.get_text(ctx.author.id, 'rally_desc')}\n• `!rally_stats` - {self.get_text(ctx.author.id, 'rally_stats_desc')}\n• `!rally_leaderboard` - {self.get_text(ctx.author.id, 'rally_leaderboard_desc')}\n• `!leader` - {self.get_text(ctx.author.id, 'leader_desc')}",
             inline=False
         )
         embed.add_field(
@@ -89,8 +104,8 @@ class Utility(commands.Cog):
             inline=False
         )
         embed.add_field(
-            name="📱 Join Our Discord Server",
-            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
+            name="📱 " + self.get_text(ctx.author.id, "join_discord_message"),
+            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\n{self.get_text(ctx.author.id, 'get_help_questions')}!",
             inline=False
         )
 
@@ -102,8 +117,8 @@ class Utility(commands.Cog):
     async def info_prefix(self, ctx):
         """Traditional prefix command to provide comprehensive bot information and contribution details."""
         embed = EmbedGenerator.create_embed(
-            title="Bot Information",
-            description="Unofficial community bot providing game tools and information.",
+            title=self.get_text(interaction.user.id, "bot_information_title"),
+            description=self.get_text(interaction.user.id, "bot_information_desc"),
             color=discord.Color.blue(),
             use_cache=False  # Disable caching to prevent field duplication
         )
@@ -168,8 +183,8 @@ class Utility(commands.Cog):
     async def info(self, interaction: discord.Interaction):
         """Slash command to provide comprehensive bot information and contribution details."""
         embed = EmbedGenerator.create_embed(
-            title="Bot Information",
-            description="Unofficial community bot providing game tools and information.",
+            title=self.get_text(interaction.user.id, "bot_information_title"),
+            description=self.get_text(interaction.user.id, "bot_information_desc"),
             color=discord.Color.blue(),
             use_cache=False  # Disable caching to prevent field duplication
         )
@@ -211,16 +226,16 @@ class Utility(commands.Cog):
     async def links(self, interaction: discord.Interaction):
         """Slash command to provide bot links and information."""
         embed = EmbedGenerator.create_embed(
-            title="Links & Information",
-            description="Connect with the Avatar Realms Collide community.",
+            title=self.get_text(interaction.user.id, "links_title"),
+            description=self.get_text(interaction.user.id, "links_description"),
             color=discord.Color.blue()
         )
-        embed.add_field(name="Join Our Discord Server", value=f"[Join Server]({DISCORD_SERVER_LINK})", inline=True)
-        embed.add_field(name="Add Bot to Your Server", value=f"[Add to Server]({BOT_INVITE_LINK})", inline=True)
-        embed.add_field(name="Developer", value="**Developed by Quefep**", inline=False)
+        embed.add_field(name=self.get_text(interaction.user.id, "join_discord_server"), value=f"[Join Server]({DISCORD_SERVER_LINK})", inline=True)
+        embed.add_field(name=self.get_text(interaction.user.id, "add_bot_to_server"), value=f"[Add to Server]({BOT_INVITE_LINK})", inline=True)
+        embed.add_field(name=self.get_text(interaction.user.id, "developer"), value="**Developed by Quefep**", inline=False)
         embed.add_field(
-            name="Bot Features",
-            value="• Talent Tree Browser\n• Skill Priorities\n• Leaderboards\n• Town Hall Info\n• Hero Rankup Guide\n• Interactive Commands",
+            name=self.get_text(interaction.user.id, "bot_features"),
+            value=f"• {self.get_text(interaction.user.id, 'talent_tree_browser')}\n• {self.get_text(interaction.user.id, 'skill_priorities')}\n• {self.get_text(interaction.user.id, 'leaderboards')}\n• {self.get_text(interaction.user.id, 'town_hall_info')}\n• {self.get_text(interaction.user.id, 'hero_rankup_guide')}\n• {self.get_text(interaction.user.id, 'interactive_commands')}",
             inline=False
         )
         embed = EmbedGenerator.finalize_embed(embed)
@@ -231,69 +246,69 @@ class Utility(commands.Cog):
     async def help(self, interaction: discord.Interaction):
         """Comprehensive help command with all bot features and commands."""
         embed = EmbedGenerator.create_embed(
-            title="🎮 Complete Bot Guide & Commands",
-            description="Everything you need to know about Avatar Realms Collide Bot!",
+            title=self.get_text(interaction.user.id, "help_title"),
+            description=self.get_text(interaction.user.id, "help_description"),
             color=discord.Color.blue(),
             use_cache=False  # Disable caching to prevent field duplication
         )
         
         embed.add_field(
-            name="📱 Join Our Discord Server",
-            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\nGet help, ask questions, and connect with other players!",
+            name="📱 " + self.get_text(interaction.user.id, "join_discord_message"),
+            value=f"[Click here to join our Discord!]({DISCORD_SERVER_LINK})\n{self.get_text(interaction.user.id, 'get_help_questions')}!",
             inline=False
         )
         
         embed.add_field(
-            name="🎮 Game Information Commands",
-            value="• `/talent_trees` - Browse character talent trees\n• `/skill_priorities` - View hero skill priorities\n• `/hero_info` - Get detailed hero information\n• `/hero_rankup` - View hero rankup guide and costs\n• `/townhall` - View town hall requirements\n• `/leaderboard` - Check top players and alliances\n• `/map` - View game map\n• `/troops` - Troop information and stats\n• `/troopcalc` - Calculate troop costs\n• `/tierlist` - View hero tier lists",
+            name="🎮 " + self.get_text(interaction.user.id, "game_info_commands"),
+            value=f"• `/talent_trees` - {self.get_text(interaction.user.id, 'talent_trees_desc')}\n• `/skill_priorities` - {self.get_text(interaction.user.id, 'skill_priorities_desc')}\n• `/hero_info` - {self.get_text(interaction.user.id, 'hero_info_desc')}\n• `/hero_rankup` - {self.get_text(interaction.user.id, 'hero_rankup_desc')}\n• `/townhall` - {self.get_text(interaction.user.id, 'townhall_desc')}\n• `/leaderboard` - {self.get_text(interaction.user.id, 'leaderboard_desc')}\n• `/map` - {self.get_text(interaction.user.id, 'map_desc')}\n• `/troops` - {self.get_text(interaction.user.id, 'troops_desc')}\n• `/troopcalc` - {self.get_text(interaction.user.id, 'troopcalc_desc')}\n• `/tierlist` - {self.get_text(interaction.user.id, 'tierlist_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="🎭 Event Commands",
-            value="• `/events` - View current and upcoming events\n• `/avatar_day_festival` - Avatar Day Festival information\n• `/festival_tasks` - View all festival tasks by day\n• `/festival_shop` - View festival exchange shop\n• `/festival_guide` - Get festival tips and strategy\n• `/festival_rewards` - View all festival rewards\n• `/balance_and_order` - Balance and Order event information\n• `/balance_tasks` - View Balance and Order tasks\n• `/balance_guide` - Get Balance and Order tips\n• `/borte_scheme` - Borte's Scheme event information\n• `/borte_mechanics` - View Borte's Scheme mechanics\n• `/borte_rewards` - View Borte's Scheme rewards\n• `/borte_guide` - Get Borte's Scheme tips",
+            name="🎭 " + self.get_text(interaction.user.id, "event_commands"),
+            value=f"• `/events` - {self.get_text(interaction.user.id, 'events_desc')}\n• `/avatar_day_festival` - {self.get_text(interaction.user.id, 'avatar_day_festival_desc')}\n• `/festival_tasks` - {self.get_text(interaction.user.id, 'festival_tasks_desc')}\n• `/festival_shop` - {self.get_text(interaction.user.id, 'festival_shop_desc')}\n• `/festival_guide` - {self.get_text(interaction.user.id, 'festival_guide_desc')}\n• `/festival_rewards` - {self.get_text(interaction.user.id, 'festival_rewards_desc')}\n• `/balance_and_order` - {self.get_text(interaction.user.id, 'balance_and_order_desc')}\n• `/balance_tasks` - {self.get_text(interaction.user.id, 'balance_tasks_desc')}\n• `/balance_guide` - {self.get_text(interaction.user.id, 'balance_guide_desc')}\n• `/borte_scheme` - {self.get_text(interaction.user.id, 'borte_scheme_desc')}\n• `/borte_mechanics` - {self.get_text(interaction.user.id, 'borte_mechanics_desc')}\n• `/borte_rewards` - {self.get_text(interaction.user.id, 'borte_rewards_desc')}\n• `/borte_guide` - {self.get_text(interaction.user.id, 'borte_guide_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="🎯 Minigame Systems",
-            value="• `/play` - Avatar trivia with multiple game modes (Quick, Standard, Challenge, Blitz, Master)\n• `/daily` - Daily verification and XP rewards\n• `/minigame` - Open game panel and roll scrolls\n• `/trivia` - Additional trivia questions\n• `/trivia_leaderboard` - View trivia rankings\n• `/inventory` - Check your items and resources\n• `/hero` - Manage and upgrade your heroes\n• `/skills` - View and upgrade elemental skills\n• `/duel` - Challenge other players to PvP combat",
+            name="🎯 " + self.get_text(interaction.user.id, "minigame_systems"),
+            value=f"• `/play` - {self.get_text(interaction.user.id, 'play_desc')}\n• `/daily` - {self.get_text(interaction.user.id, 'daily_desc')}\n• `/minigame` - {self.get_text(interaction.user.id, 'minigame_desc')}\n• `/trivia` - {self.get_text(interaction.user.id, 'trivia_desc')}\n• `/trivia_leaderboard` - {self.get_text(interaction.user.id, 'trivia_leaderboard_desc')}\n• `/inventory` - {self.get_text(interaction.user.id, 'inventory_desc')}\n• `/hero` - {self.get_text(interaction.user.id, 'hero_desc')}\n• `/skills` - {self.get_text(interaction.user.id, 'skills_desc')}\n• `/duel` - {self.get_text(interaction.user.id, 'duel_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="⚔️ Rally System Commands",
-            value="• `/setup` - Setup rally system (Admin)\n• `/rally` - Create a new rally (level + time limit)\n• `/rally_stats` - View your rally statistics\n• `/rally_leaderboard` - View rally leaderboard\n• `/leader` - Admin leaderboard management (pause/resume/clear)",
+            name="⚔️ " + self.get_text(interaction.user.id, "rally_commands"),
+            value=f"• `/setup` - {self.get_text(interaction.user.id, 'setup_desc')}\n• `/rally` - {self.get_text(interaction.user.id, 'rally_desc')}\n• `/rally_stats` - {self.get_text(interaction.user.id, 'rally_stats_desc')}\n• `/rally_leaderboard` - {self.get_text(interaction.user.id, 'rally_leaderboard_desc')}\n• `/leader` - {self.get_text(interaction.user.id, 'leader_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="🏆 TGL & Glorious Victory",
-            value="• `/tgl` - The Greatest Leader event information\n• `/tgl_calc` - Calculate TGL points for activities\n• `/glorious_victory` - Glorious Victory event info\n• `/gv_calc` - Calculate Glorious Victory points",
+            name="🏆 " + self.get_text(interaction.user.id, "tgl_glorious_victory"),
+            value=f"• `/tgl` - {self.get_text(interaction.user.id, 'tgl_desc')}\n• `/tgl_calc` - {self.get_text(interaction.user.id, 'tgl_calc_desc')}\n• `/glorious_victory` - {self.get_text(interaction.user.id, 'glorious_victory_desc')}\n• `/gv_calc` - {self.get_text(interaction.user.id, 'gv_calc_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="⏰ Timer & Voting",
-            value="• `/timer` - Set game timers and reminders\n• `/timers` - View active timers\n• `/cancel_timer` - Cancel specific timer\n• `/cancel_all_timers` - Cancel all timers\n• `/vote` - Vote for the bot to get XP bonuses\n• `/vote_status` - Check your voting status",
+            name="⏰ " + self.get_text(interaction.user.id, "timer_voting"),
+            value=f"• `/timer` - {self.get_text(interaction.user.id, 'timer_desc')}\n• `/timers` - {self.get_text(interaction.user.id, 'timers_desc')}\n• `/cancel_timer` - {self.get_text(interaction.user.id, 'cancel_timer_desc')}\n• `/cancel_all_timers` - {self.get_text(interaction.user.id, 'cancel_all_timers_desc')}\n• `/vote` - {self.get_text(interaction.user.id, 'vote_desc')}\n• `/vote_status` - {self.get_text(interaction.user.id, 'vote_status_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="🔧 Utility Commands",
-            value="• `/ping` - Check bot status and latency\n• `/info` - Comprehensive bot information\n• `/links` - Get bot links and information\n• `/addtoserver` - Add bot to your server\n• `/refresh` - Refresh slash commands (Admin)\n• `/statistics` - View bot usage statistics",
+            name="🔧 " + self.get_text(interaction.user.id, "utility_commands"),
+            value=f"• `/ping` - {self.get_text(interaction.user.id, 'ping_desc')}\n• `/info` - {self.get_text(interaction.user.id, 'info_desc')}\n• `/links` - {self.get_text(interaction.user.id, 'links_desc')}\n• `/addtoserver` - {self.get_text(interaction.user.id, 'addtoserver_desc')}\n• `/refresh` - {self.get_text(interaction.user.id, 'refresh_desc')}\n• `/statistics` - {self.get_text(interaction.user.id, 'statistics_desc')}",
             inline=False
         )
         
         embed.add_field(
-            name="💡 Pro Tips for Minigames",
-            value="🗳️ **Vote daily** with `/vote` for massive XP bonuses!\n🔥 **Maintain streaks** for +10% XP per correct answer\n👑 **Try Master mode** for 3x XP multiplier\n🎯 **Play daily** for 2x XP bonus on first game\n📊 **Check leaderboards** to see your ranking\n⚔️ **Upgrade your hero** before dueling for better stats\n🌟 **Complete achievements** for permanent rewards",
+            name="💡 " + self.get_text(interaction.user.id, "pro_tips"),
+            value=f"🗳️ **{self.get_text(interaction.user.id, 'vote_daily')}**\n🔥 **{self.get_text(interaction.user.id, 'maintain_streaks')}**\n👑 **{self.get_text(interaction.user.id, 'try_master_mode')}**\n🎯 **{self.get_text(interaction.user.id, 'play_daily')}**\n📊 **{self.get_text(interaction.user.id, 'check_leaderboards')}**\n⚔️ **{self.get_text(interaction.user.id, 'upgrade_hero')}**\n🌟 **{self.get_text(interaction.user.id, 'complete_achievements')}**",
             inline=False
         )
         
         embed.add_field(
-            name="💡 Need More Help?",
-            value="Join our Discord server for:\n• Real-time help and support\n• Game updates and announcements\n• Community discussions\n• Bug reports and suggestions\n• Contribution opportunities",
+            name="💡 " + self.get_text(interaction.user.id, "need_more_help"),
+            value=f"{self.get_text(interaction.user.id, 'join_discord_for')}\n• {self.get_text(interaction.user.id, 'real_time_help')}\n• {self.get_text(interaction.user.id, 'game_updates')}\n• {self.get_text(interaction.user.id, 'community_discussions')}\n• {self.get_text(interaction.user.id, 'bug_reports')}\n• {self.get_text(interaction.user.id, 'contribution_opportunities')}",
             inline=False
         )
         
@@ -305,22 +320,22 @@ class Utility(commands.Cog):
     async def addtoserver(self, interaction: discord.Interaction):
         """Slash command to add the bot to a server with an embed and button."""
         embed = EmbedGenerator.create_embed(
-            title="Add Bot to Your Server",
-            description="Enhance your server with powerful game tools and community features.",
+            title=self.get_text(interaction.user.id, "add_bot_title"),
+            description=self.get_text(interaction.user.id, "add_bot_description"),
             color=discord.Color.green()
         )
         embed.add_field(
-            name="🎮 Bot Features",
-            value="• **Talent Tree Browser** - View all character talent trees\n• **Skill Priorities** - Get optimal skill upgrade orders\n• **Leaderboards** - Track top players and alliances\n• **Town Hall Info** - View upgrade requirements\n• **Hero Rankup Guide** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Rally System** - Create and join Shattered Skulls Fortress rallies\n• **Interactive Commands** - Modern slash command interface",
+            name="🎮 " + self.get_text(interaction.user.id, "bot_features_detailed"),
+            value=f"• **{self.get_text(interaction.user.id, 'talent_tree_browser')}** - View all character talent trees\n• **{self.get_text(interaction.user.id, 'skill_priorities')}** - Get optimal skill upgrade orders\n• **{self.get_text(interaction.user.id, 'leaderboards')}** - Track top players and alliances\n• **{self.get_text(interaction.user.id, 'town_hall_info')}** - View upgrade requirements\n• **{self.get_text(interaction.user.id, 'hero_rankup_guide')}** - Complete rankup costs and guide\n• **Event System** - Current and upcoming events\n• **Rally System** - Create and join Shattered Skulls Fortress rallies\n• **{self.get_text(interaction.user.id, 'interactive_commands')}** - Modern slash command interface",
             inline=False
         )
         embed.add_field(
-            name="🔧 Permissions Required",
-            value="• Send Messages\n• Embed Links\n• Attach Files\n• Use Slash Commands\n• Read Message History",
+            name="🔧 " + self.get_text(interaction.user.id, "permissions_required"),
+            value=f"• {self.get_text(interaction.user.id, 'send_messages')}\n• {self.get_text(interaction.user.id, 'embed_links')}\n• {self.get_text(interaction.user.id, 'attach_files')}\n• {self.get_text(interaction.user.id, 'use_slash_commands')}\n• {self.get_text(interaction.user.id, 'read_message_history')}",
             inline=False
         )
         embed.add_field(
-            name="📱 Community",
+            name="📱 " + self.get_text(interaction.user.id, "community"),
             value=f"[Join our Discord server]({DISCORD_SERVER_LINK}) for support and updates!",
             inline=False
         )
@@ -344,8 +359,8 @@ class Utility(commands.Cog):
 
         if interaction.user.id != AUTHORIZED_USER_ID:
             embed = discord.Embed(
-                title="❌ Access Denied",
-                description="You don't have permission to use this command.",
+                title=self.get_text(interaction.user.id, "access_denied_title"),
+                description=self.get_text(interaction.user.id, "access_denied_desc"),
                 color=discord.Color.red()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -361,15 +376,15 @@ class Utility(commands.Cog):
             top_servers = sorted(self.bot.guilds, key=lambda g: g.member_count, reverse=True)[:10]
 
             embed = discord.Embed(
-                title="🏠 Bot Server Statistics",
-                description="Comprehensive overview of bot server distribution and performance",
+                title="🏠 " + self.get_text(interaction.user.id, "server_statistics"),
+                description=self.get_text(interaction.user.id, "comprehensive_overview"),
                 color=discord.Color.blue()
             )
             embed.add_field(
-                name="📊 Overview",
-                value=f"**Total Servers**: {total_servers:,}\n"
-                      f"**Total Members**: {total_members:,}\n"
-                      f"**Average Members/Server**: {avg_members:.0f}",
+                name="📊 " + self.get_text(interaction.user.id, "overview"),
+                value=f"**{self.get_text(interaction.user.id, 'total_servers')}**: {total_servers:,}\n"
+                      f"**{self.get_text(interaction.user.id, 'total_members')}**: {total_members:,}\n"
+                      f"**{self.get_text(interaction.user.id, 'average_members')}**: {avg_members:.0f}",
                 inline=True
             )
 
@@ -378,10 +393,10 @@ class Utility(commands.Cog):
             small_servers = len([g for g in self.bot.guilds if g.member_count < 100])
 
             embed.add_field(
-                name="📈 Distribution",
-                value=f"**Large Servers** (1k+): {large_servers}\n"
-                      f"**Medium Servers** (100-999): {medium_servers}\n"
-                      f"**Small Servers** (<100): {small_servers}",
+                name="📈 " + self.get_text(interaction.user.id, "distribution"),
+                value=f"**{self.get_text(interaction.user.id, 'large_servers')}** (1k+): {large_servers}\n"
+                      f"**{self.get_text(interaction.user.id, 'medium_servers')}** (100-999): {medium_servers}\n"
+                      f"**{self.get_text(interaction.user.id, 'small_servers')}** (<100): {small_servers}",
                 inline=True
             )
 
@@ -390,10 +405,10 @@ class Utility(commands.Cog):
                 if g.me.joined_at and (discord.utils.utcnow() - g.me.joined_at).days <= 30
             ]
             embed.add_field(
-                name="🆕 Recent Activity",
-                value=f"**Joined Last 30 Days**: {len(recent_servers)}\n"
-                      f"**Active Servers**: {len([g for g in self.bot.guilds if g.member_count > 0])}\n"
-                      f"**Bot Commands**: {len(self.bot.tree.get_commands())}",
+                name="🆕 " + self.get_text(interaction.user.id, "recent_activity"),
+                value=f"**{self.get_text(interaction.user.id, 'joined_last_30_days')}**: {len(recent_servers)}\n"
+                      f"**{self.get_text(interaction.user.id, 'active_servers')}**: {len([g for g in self.bot.guilds if g.member_count > 0])}\n"
+                      f"**{self.get_text(interaction.user.id, 'bot_commands')}**: {len(self.bot.tree.get_commands())}",
                 inline=True
             )
 
@@ -421,18 +436,18 @@ class Utility(commands.Cog):
                 top_servers_text += f"🔗 {invite_link}\n\n"
 
             embed.add_field(
-                name="🏆 Top 10 Servers",
-                value=top_servers_text if top_servers_text else "No servers found",
+                name="🏆 " + self.get_text(interaction.user.id, "top_10_servers"),
+                value=top_servers_text if top_servers_text else self.get_text(interaction.user.id, "no_servers_found"),
                 inline=False
             )
             embed.add_field(
-                name="⚡ Performance",
-                value=f"**Bot Latency**: {round(self.bot.latency * 1000, 1)}ms\n"
-                      f"**Uptime**: {self._format_uptime()}\n"
-                      f"**Memory Usage**: {self._get_memory_usage()}",
+                name="⚡ " + self.get_text(interaction.user.id, "performance"),
+                value=f"**{self.get_text(interaction.user.id, 'bot_latency')}**: {round(self.bot.latency * 1000, 1)}ms\n"
+                      f"**{self.get_text(interaction.user.id, 'uptime')}**: {self._format_uptime()}\n"
+                      f"**{self.get_text(interaction.user.id, 'memory_usage')}**: {self._get_memory_usage()}",
                 inline=True
             )
-            embed.set_footer(text="Server statistics generated by bot owner • Updated in real-time")
+            embed.set_footer(text=self.get_text(interaction.user.id, "server_statistics_generated"))
             embed.timestamp = discord.utils.utcnow()
 
             await interaction.followup.send(embed=embed, ephemeral=True)
@@ -440,7 +455,7 @@ class Utility(commands.Cog):
         except Exception as e:
             error_embed = discord.Embed(
                 title="❌ Error",
-                description=f"An error occurred while generating server statistics: {str(e)}",
+                description=f"{self.get_text(interaction.user.id, 'error_generating_statistics')}: {str(e)}",
                 color=discord.Color.red()
             )
             await interaction.followup.send(embed=error_embed, ephemeral=True)
@@ -486,26 +501,26 @@ class Utility(commands.Cog):
                     pass
 
             embed = discord.Embed(
-                title="✅ Commands Refreshed",
-                description=f"Successfully synced {len(synced)} slash command(s)",
+                title="✅ " + self.get_text(interaction.user.id, "commands_refreshed"),
+                description=f"{self.get_text(interaction.user.id, 'successfully_synced')} {len(synced)} slash command(s)",
                 color=discord.Color.green()
             )
             all_commands = [f"`/{cmd.name}`" for cmd in self.bot.tree.get_commands()]
-            embed.add_field(name="📋 Available Commands", value=", ".join(all_commands), inline=False)
-            embed.set_footer(text="Commands are now available in Discord!")
+            embed.add_field(name="📋 " + self.get_text(interaction.user.id, "available_commands"), value=", ".join(all_commands), inline=False)
+            embed.set_footer(text=self.get_text(interaction.user.id, "commands_now_available"))
             await interaction.followup.send(embed=embed, ephemeral=True)
 
         except Exception as e:
             try:
                 embed = discord.Embed(
-                    title="❌ Refresh Failed",
-                    description=f"Error refreshing commands: {str(e)}",
+                    title="❌ " + self.get_text(interaction.user.id, "refresh_failed"),
+                    description=f"{self.get_text(interaction.user.id, 'error_refreshing_commands')}: {str(e)}",
                     color=discord.Color.red()
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
             except:
                 try:
-                    await interaction.followup.send("❌ Failed to refresh commands. Please try again later.", ephemeral=True)
+                    await interaction.followup.send(f"❌ {self.get_text(interaction.user.id, 'failed_refresh_commands')}", ephemeral=True)
                 except:
                     pass
 

@@ -19,6 +19,21 @@ class Leaderboards(commands.Cog):
         self.logger = bot.logger
         self.leaderboard_state_file = "data/system/leaderboard_state.json"
         self.load_leaderboard_state()
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     def load_leaderboard_state(self):
         """Load leaderboard state from JSON file."""
@@ -58,44 +73,44 @@ class Leaderboards(commands.Cog):
         # Check if leaderboards are paused
         if self.leaderboard_state.get("paused", False):
             embed = EmbedGenerator.create_embed(
-                title="Leaderboards Paused",
-                description="Leaderboards are currently paused due to the Glorious Victory event not being active.",
+                title=self.get_text(interaction.user.id, "leaderboards_paused_title"),
+                description=self.get_text(interaction.user.id, "leaderboards_paused_desc"),
                 color=discord.Color.orange()
             )
             
             if self.leaderboard_state.get("paused_by"):
-                embed.add_field(
-                    name="Paused By",
-                    value=f"<@{self.leaderboard_state['paused_by']}>",
-                    inline=True
-                )
+                            embed.add_field(
+                name=self.get_text(interaction.user.id, "paused_by"),
+                value=f"<@{self.leaderboard_state['paused_by']}>",
+                inline=True
+            )
             
             if self.leaderboard_state.get("paused_at"):
-                embed.add_field(
-                    name="Paused At",
-                    value=self.leaderboard_state["paused_at"],
-                    inline=True
-                )
+                            embed.add_field(
+                name=self.get_text(interaction.user.id, "paused_at"),
+                value=self.leaderboard_state["paused_at"],
+                inline=True
+            )
             
             if self.leaderboard_state.get("paused_reason"):
-                embed.add_field(
-                    name="Reason",
-                    value=self.leaderboard_state["paused_reason"],
-                    inline=False
-                )
+                            embed.add_field(
+                name=self.get_text(interaction.user.id, "reason"),
+                value=self.leaderboard_state["paused_reason"],
+                inline=False
+            )
             
             embed = EmbedGenerator.finalize_embed(embed)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
         embed = EmbedGenerator.create_embed(
-            title="Leaderboard Rankings",
-            description="Track top performers in Avatar Realms Collide",
+            title=self.get_text(interaction.user.id, "leaderboard_rankings_title"),
+            description=self.get_text(interaction.user.id, "leaderboard_rankings_desc"),
             color=discord.Color.gold()
         )
         
-        embed.add_field(name="👑 Individual Rankings", value="Top 10 Leaders", inline=True)
-        embed.add_field(name="🤝 Alliance Rankings", value="Top 10 Alliances", inline=True)
+        embed.add_field(name=self.get_text(interaction.user.id, "individual_rankings"), value=self.get_text(interaction.user.id, "top_10_leaders"), inline=True)
+        embed.add_field(name=self.get_text(interaction.user.id, "alliance_rankings"), value=self.get_text(interaction.user.id, "top_10_alliances"), inline=True)
         
         embed = EmbedGenerator.finalize_embed(embed, default_footer="Provided by Deng (@2rk)")
         

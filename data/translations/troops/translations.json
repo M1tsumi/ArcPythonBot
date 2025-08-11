@@ -1,0 +1,17 @@
+{
+  "EN": {
+    "community": "Community",
+    "community_discussions": "Community discussions",
+    "contribution_opportunities": "Contribution opportunities"
+  },
+  "DE": {
+    "community": "Community",
+    "community_discussions": "Community-Diskussionen",
+    "contribution_opportunities": "Beitragsmöglichkeiten"
+  },
+  "ES": {
+    "community": "Comunidad",
+    "community_discussions": "Discusiones de la comunidad",
+    "contribution_opportunities": "Oportunidades de contribución"
+  }
+}

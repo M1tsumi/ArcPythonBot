@@ -95,6 +95,7 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.moderation',
             'cogs.game_info',
             'cogs.minigame_daily',
+            'cogs.language_system',      # Language system for translations
             'cogs.avatar_play_system',  # Enhanced Avatar Play System
             'cogs.player_system',       # Hero upgrade system
             'cogs.skill_system',        # Skill tree system

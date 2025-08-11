@@ -41,6 +41,21 @@ class Statistics(commands.Cog):
         # Load persisted stats if present
         self._load_stats_from_disk()
 
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+
     # ------------------------
     # Event Listeners
     # ------------------------
@@ -95,8 +110,8 @@ class Statistics(commands.Cog):
     async def statistics(self, interaction: discord.Interaction) -> None:
         if interaction.user.id != self.AUTHORIZED_USER_ID:
             embed = discord.Embed(
-                title="Access Denied",
-                description="You don't have permission to use this command.",
+                title=self.get_text(interaction.user.id, "access_denied_title"),
+                description=self.get_text(interaction.user.id, "access_denied_desc"),
                 color=discord.Color.red(),
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)

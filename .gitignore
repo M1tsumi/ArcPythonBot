@@ -6,6 +6,13 @@
 # Project specific files
 instructions.md
 
+# Translation system documentation files
+TRANSLATION_SYSTEM_RELEASE_*.md
+TRANSLATION_SYSTEM_GUIDE.md
+TRANSLATION_SYSTEM_COMPLETION.md
+TESTING_RESULTS.md
+LOCAL_TESTING_GUIDE.md
+
 # Game data files (prevent from being pushed to GitHub)
 *.txt
 !text files/trivia-questions.txt

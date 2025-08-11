@@ -27,6 +27,21 @@ class TierList(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
 
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+
     def _find_tierlist_file(self) -> Optional[Path]:
         for p in TIERLIST_DEFAULT_PATHS:
             if p.exists() and p.is_file():
@@ -41,11 +56,8 @@ class TierList(commands.Cog):
             file_path = self._find_tierlist_file()
 
             embed = EmbedGenerator.create_embed(
-                title="Community Hero Tier List",
-                description=(
-                    "Curated by the community. Criteria consider overall PvE/PvP performance, versatility, and availability.\n"
-                    "Note: Tier lists are subjective and may evolve with updates."
-                ),
+                title=self.get_text(interaction.user.id, "community_hero_tier_list_title"),
+                description=self.get_text(interaction.user.id, "community_hero_tier_list_desc"),
                 color=discord.Color.gold(),
             )
 

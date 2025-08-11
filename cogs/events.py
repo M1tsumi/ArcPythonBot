@@ -150,6 +150,21 @@ class Events(commands.Cog):
         self.bot = bot
         self.logger = bot.logger
         self.data_parser = DataParser()
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="events", description="List current and upcoming events")
     @app_commands.describe(event_type="Type of events to show (current, past, or all)")
@@ -172,8 +187,8 @@ class Events(commands.Cog):
         
         if not events:
             embed = EmbedGenerator.create_embed(
-                title="No Events Found",
-                description=f"No {event_type} events found in the database.\n\nNote: Event dates/times are a Work In Progress and may be incorrect.",
+                title=self.get_text(interaction.user.id, "no_events_found_title"),
+                description=self.get_text(interaction.user.id, "no_events_found_desc", event_type=event_type),
                 color=discord.Color.orange()
             )
             await interaction.response.send_message(embed=embed)

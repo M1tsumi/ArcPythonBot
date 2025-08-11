@@ -41,6 +41,20 @@ class ProfileImages(commands.Cog):
         except Exception as e:
             self.logger.error(f"Error creating global profiles directory: {e}")
     
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+    
     @app_commands.command(name="setprofile", description="Submit your Avatar Realms profile image for approval")
     @app_commands.describe(
         image="Screenshot of your Avatar Realms account (must be a valid image)"
@@ -56,7 +70,7 @@ class ProfileImages(commands.Cog):
         # Validate image
         if not image.content_type or not image.content_type.startswith('image/'):
             embed = EmbedGenerator.create_error_embed(
-                "❌ Invalid file type! Please upload an image file (PNG, JPG, etc.)."
+                self.get_text(interaction.user.id, "invalid_file_type")
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
@@ -64,7 +78,7 @@ class ProfileImages(commands.Cog):
         # Check file size (max 10MB)
         if image.size > 10 * 1024 * 1024:
             embed = EmbedGenerator.create_error_embed(
-                "❌ Image file too large! Please upload an image smaller than 10MB."
+                self.get_text(interaction.user.id, "file_too_large")
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
@@ -78,7 +92,7 @@ class ProfileImages(commands.Cog):
                 async with session.get(image.url) as resp:
                     if resp.status != 200:
                         embed = EmbedGenerator.create_error_embed(
-                            "❌ Failed to download image. Please try again."
+                            self.get_text(interaction.user.id, "download_failed")
                         )
                         await interaction.followup.send(embed=embed, ephemeral=True)
                         return
@@ -94,7 +108,7 @@ class ProfileImages(commands.Cog):
             except Exception as e:
                 self.logger.error(f"Error saving temporary image for user {interaction.user.id}: {e}")
                 embed = EmbedGenerator.create_error_embed(
-                    "❌ Failed to save image. Please try again."
+                    self.get_text(interaction.user.id, "save_failed")
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
                 return
@@ -121,20 +135,18 @@ class ProfileImages(commands.Cog):
             
             # Confirm submission to user
             embed = EmbedGenerator.create_embed(
-                title="📸 Profile Image Submitted",
-                description="Your profile image has been submitted for approval!",
+                title=self.get_text(interaction.user.id, "profile_image_submitted"),
+                description=self.get_text(interaction.user.id, "profile_image_submitted_desc"),
                 color=discord.Color.blue()
             )
             embed.add_field(
-                name="What happens next?",
-                value="• The bot owner will review your image\n"
-                      "• You'll receive a DM when it's approved or rejected\n"
-                      "• Once approved, your image will appear on your profile",
+                name=self.get_text(interaction.user.id, "what_happens_next"),
+                value=self.get_text(interaction.user.id, "what_happens_next_desc"),
                 inline=False
             )
             embed.add_field(
-                name="Note",
-                value="Please ensure your image shows a valid Avatar Realms account screenshot.",
+                name=self.get_text(interaction.user.id, "note"),
+                value=self.get_text(interaction.user.id, "note_desc"),
                 inline=False
             )
             
@@ -143,7 +155,7 @@ class ProfileImages(commands.Cog):
         except Exception as e:
             self.logger.error(f"Error processing profile image for user {interaction.user.id}: {e}")
             embed = EmbedGenerator.create_error_embed(
-                "❌ An error occurred while processing your image. Please try again."
+                self.get_text(interaction.user.id, "processing_error")
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
     
@@ -153,10 +165,13 @@ class ProfileImages(commands.Cog):
             owner = await self.bot.fetch_user(self.owner_id)
             
             embed = EmbedGenerator.create_embed(
-                title="🔍 Profile Image Approval Request",
-                description=f"**User:** {user.mention} (`{user.id}`)\n"
-                           f"**Server:** {approval_data['guild_name']}\n"
-                           f"**Submitted:** <t:{int(datetime.fromisoformat(approval_data['submitted_at']).timestamp())}:R>",
+                title=self.get_text(self.owner_id, "approval_request_title"),
+                description=self.get_text(self.owner_id, "approval_request_desc",
+                    user_mention=user.mention,
+                    user_id=user.id,
+                    guild_name=approval_data['guild_name'],
+                    submitted_time=f"<t:{int(datetime.fromisoformat(approval_data['submitted_at']).timestamp())}:R>"
+                ),
                 color=discord.Color.orange()
             )
             
@@ -247,24 +262,24 @@ class ProfileImages(commands.Cog):
             
             if approved:
                 embed = EmbedGenerator.create_embed(
-                    title="✅ Profile Image Approved!",
-                    description="Your profile image has been approved and is now active!",
+                    title=self.get_text(user_id, "profile_approved_title"),
+                    description=self.get_text(user_id, "profile_approved_desc"),
                     color=discord.Color.green()
                 )
                 embed.add_field(
-                    name="Next Steps",
-                    value="Use `/profile` to view your profile with the new image.",
+                    name=self.get_text(user_id, "next_steps"),
+                    value=self.get_text(user_id, "next_steps_desc"),
                     inline=False
                 )
             else:
                 embed = EmbedGenerator.create_embed(
-                    title="❌ Profile Image Rejected",
-                    description=f"Your profile image was not approved.\n\n**Reason:** {reason}",
+                    title=self.get_text(user_id, "profile_rejected_title"),
+                    description=self.get_text(user_id, "profile_rejected_desc", reason=reason),
                     color=discord.Color.red()
                 )
                 embed.add_field(
-                    name="What to do",
-                    value="Please submit a new image using `/setprofile` with a valid Avatar Realms account screenshot.",
+                    name=self.get_text(user_id, "what_to_do"),
+                    value=self.get_text(user_id, "what_to_do_desc"),
                     inline=False
                 )
             
@@ -304,7 +319,7 @@ class ProfileImages(commands.Cog):
         except Exception as e:
             self.logger.error(f"Error in profile command for user {interaction.user.id}: {e}")
             embed = EmbedGenerator.create_error_embed(
-                "❌ An error occurred while loading the profile. Please try again."
+                self.get_text(interaction.user.id, "profile_error")
             )
             try:
                 await interaction.followup.send(embed=embed, ephemeral=True)
@@ -324,7 +339,7 @@ class ProfileImages(commands.Cog):
                 privacy_settings = preferences.get("privacy_settings", {})
                 if not privacy_settings.get("show_on_global_leaderboard", True):
                     embed = EmbedGenerator.create_error_embed(
-                        "This user has chosen to keep their global profile private."
+                        self.get_text(interaction.user.id, "profile_private")
                     )
                     await interaction.followup.send(embed=embed, ephemeral=True)
                     return
@@ -334,8 +349,8 @@ class ProfileImages(commands.Cog):
             custom_title = preferences.get("custom_title")
             
             embed = EmbedGenerator.create_embed(
-                title=f"🌟 Global Profile - {display_name}",
-                description=f"**{custom_title}**" if custom_title else "Cross-server Avatar Trivia statistics",
+                title=self.get_text(interaction.user.id, "global_profile_title", display_name=display_name),
+                description=f"**{custom_title}**" if custom_title else self.get_text(interaction.user.id, "global_profile_desc"),
                 color=discord.Color.gold()
             )
             
@@ -370,7 +385,7 @@ class ProfileImages(commands.Cog):
         except Exception as e:
             self.logger.error(f"Error in _show_global_profile_with_image for user {user.id}: {e}")
             embed = EmbedGenerator.create_error_embed(
-                "❌ An error occurred while loading the profile. Please try again."
+                self.get_text(interaction.user.id, "profile_error")
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
@@ -381,20 +396,20 @@ class ProfileImages(commands.Cog):
         accuracy = (correct_answers / total_questions * 100) if total_questions > 0 else 0
         
         embed.add_field(
-            name="📊 Global Statistics",
-            value=f"**Level:** {global_stats.get('global_level', 1)}\n"
-                  f"**Total XP:** {global_stats.get('total_xp', 0):,}\n"
-                  f"**Games Played:** {global_stats.get('total_games_played', 0):,}\n"
-                  f"**Accuracy:** {accuracy:.1f}%",
+            name=self.get_text(interaction.user.id, "global_statistics"),
+            value=f"**{self.get_text(interaction.user.id, 'level')}:** {global_stats.get('global_level', 1)}\n"
+                  f"**{self.get_text(interaction.user.id, 'total_xp')}:** {global_stats.get('total_xp', 0):,}\n"
+                  f"**{self.get_text(interaction.user.id, 'games_played')}:** {global_stats.get('total_games_played', 0):,}\n"
+                  f"**{self.get_text(interaction.user.id, 'accuracy')}:** {accuracy:.1f}%",
             inline=True
         )
         
         embed.add_field(
-            name="🎯 Performance",
-            value=f"**Correct Answers:** {correct_answers:,}\n"
-                  f"**Best Streak:** {global_stats.get('best_streak_ever', 0)}\n"
-                  f"**Perfect Games:** {global_stats.get('perfect_games_total', 0)}\n"
-                  f"**Servers Played:** {len(global_stats.get('servers_played', []))}",
+            name=self.get_text(interaction.user.id, "performance"),
+            value=f"**{self.get_text(interaction.user.id, 'correct_answers')}:** {correct_answers:,}\n"
+                  f"**{self.get_text(interaction.user.id, 'best_streak')}:** {global_stats.get('best_streak_ever', 0)}\n"
+                  f"**{self.get_text(interaction.user.id, 'perfect_games')}:** {global_stats.get('perfect_games_total', 0)}\n"
+                  f"**{self.get_text(interaction.user.id, 'servers_played')}:** {len(global_stats.get('servers_played', []))}",
             inline=True
         )
         
@@ -403,20 +418,20 @@ class ProfileImages(commands.Cog):
         rank_text = f"#{global_rank}" if global_rank else "Unranked"
         
         embed.add_field(
-            name="🏆 Global Ranking",
-            value=f"**Rank:** {rank_text}\n"
-                  f"**Category:** Total XP",
+            name=self.get_text(interaction.user.id, "global_ranking"),
+            value=f"**{self.get_text(interaction.user.id, 'rank')}:** {rank_text}\n"
+                  f"**{self.get_text(interaction.user.id, 'category')}:** {self.get_text(interaction.user.id, 'total_xp')}",
             inline=True
         )
         
         # Achievements
         global_achievements = profile.get("achievements", {}).get("global", [])
         if global_achievements:
-            achievement_text = ", ".join([self._format_achievement(ach) for ach in global_achievements[:5]])
+            achievement_text = ", ".join([self._format_achievement(ach, interaction.user.id) for ach in global_achievements[:5]])
             if len(global_achievements) > 5:
                 achievement_text += f" and {len(global_achievements) - 5} more..."
             embed.add_field(
-                name="🏅 Global Achievements",
+                name=self.get_text(interaction.user.id, "global_achievements"),
                 value=achievement_text,
                 inline=False
             )
@@ -428,16 +443,16 @@ class ProfileImages(commands.Cog):
             last_active_timestamp = discord.utils.parse_time(last_active) if last_active else created_timestamp
             
             embed.add_field(
-                name="📅 Account Info",
-                value=f"**Created:** <t:{int(created_timestamp.timestamp())}:R>\n"
-                      f"**Last Active:** <t:{int(last_active_timestamp.timestamp())}:R>",
+                name=self.get_text(interaction.user.id, "account_info"),
+                value=f"**{self.get_text(interaction.user.id, 'created')}:** <t:{int(created_timestamp.timestamp())}:R>\n"
+                      f"**{self.get_text(interaction.user.id, 'last_active')}:** <t:{int(last_active_timestamp.timestamp())}:R>",
                 inline=False
             )
         except Exception as e:
             self.logger.error(f"Error parsing timestamps for user {user.id}: {e}")
             embed.add_field(
-                name="📅 Account Info",
-                value="**Created:** Unknown\n**Last Active:** Unknown",
+                name=self.get_text(interaction.user.id, "account_info"),
+                value=f"**{self.get_text(interaction.user.id, 'created')}:** {self.get_text(interaction.user.id, 'unknown')}\n**{self.get_text(interaction.user.id, 'last_active')}:** {self.get_text(interaction.user.id, 'unknown')}",
                 inline=False
             )
         
@@ -457,44 +472,30 @@ class ProfileImages(commands.Cog):
             except Exception as e2:
                 self.logger.error(f"Fallback profile send also failed for user {user.id}: {e2}")
                 error_embed = EmbedGenerator.create_error_embed(
-                    "❌ Failed to display profile. Please try again."
+                    self.get_text(interaction.user.id, "profile_display_error")
                 )
                 await interaction.followup.send(embed=error_embed, ephemeral=True)
     
     async def _show_server_profile(self, interaction: discord.Interaction, user: discord.Member):
         """Show server-specific profile for a user."""
         embed = EmbedGenerator.create_embed(
-            title="🏠 Server Profile",
-            description="Server-specific profiles are coming soon! Use `/profile global` to see cross-server stats.",
+            title=self.get_text(interaction.user.id, "server_profile_title"),
+            description=self.get_text(interaction.user.id, "server_profile_desc"),
             color=discord.Color.blue()
         )
         await interaction.followup.send(embed=embed, ephemeral=True)
     
-    def _format_achievement(self, achievement_id: str) -> str:
+    def _format_achievement(self, achievement_id: str, user_id: int) -> str:
         """Format achievement for display."""
-        achievement_names = {
-            "global_novice": "🎓 Global Novice",
-            "global_apprentice": "📚 Global Apprentice", 
-            "global_expert": "🔥 Global Expert",
-            "global_master": "⭐ Global Master",
-            "global_grandmaster": "👑 Global Grandmaster",
-            "streak_champion": "🏆 Streak Champion",
-            "streak_legend": "🌟 Streak Legend",
-            "perfect_master": "💎 Perfect Master",
-            "perfect_legend": "✨ Perfect Legend",
-            "server_explorer": "🗺️ Server Explorer",
-            "server_nomad": "🚀 Server Nomad",
-            "dedicated_player": "❤️ Dedicated Player",
-            "addicted_player": "🎮 Addicted Player",
-            "trivia_god": "🔱 Trivia God"
-        }
-        return achievement_names.get(achievement_id, achievement_id.replace("_", " ").title())
+        return self.get_text(user_id, achievement_id)
     
     @app_commands.command(name="pendingapprovals", description="[Owner] View pending profile image approvals")
     async def pending_approvals(self, interaction: discord.Interaction):
         """View pending profile image approvals (owner only)."""
         if interaction.user.id != self.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -502,24 +503,24 @@ class ProfileImages(commands.Cog):
         
         if not self.pending_approvals:
             embed = EmbedGenerator.create_embed(
-                title="📋 Pending Approvals",
-                description="No pending profile image approvals.",
+                title=self.get_text(interaction.user.id, "pending_approvals_title"),
+                description=self.get_text(interaction.user.id, "no_pending_approvals"),
                 color=discord.Color.green()
             )
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
         embed = EmbedGenerator.create_embed(
-            title="📋 Pending Profile Image Approvals",
-            description=f"**Total Pending:** {len(self.pending_approvals)}",
+            title=self.get_text(interaction.user.id, "pending_approvals_title"),
+            description=self.get_text(interaction.user.id, "pending_approvals_desc", count=len(self.pending_approvals)),
             color=discord.Color.orange()
         )
         
         for user_id, approval_data in self.pending_approvals.items():
             # Check if temp file still exists
             temp_path = Path(approval_data['image_path'])
-            file_status = "✅ Exists" if temp_path.exists() else "❌ Missing"
-            file_size = f"{temp_path.stat().st_size / (1024*1024):.2f} MB" if temp_path.exists() else "N/A"
+            file_status = self.get_text(interaction.user.id, "file_exists") if temp_path.exists() else self.get_text(interaction.user.id, "file_missing_status")
+            file_size = self.get_text(interaction.user.id, "file_size_mb", size=temp_path.stat().st_size / (1024*1024)) if temp_path.exists() else "N/A"
             
             embed.add_field(
                 name=f"User: {approval_data['user_name']}",
@@ -537,7 +538,9 @@ class ProfileImages(commands.Cog):
     async def profile_image_info(self, interaction: discord.Interaction, user: discord.Member):
         """Get detailed information about a user's profile image (owner only)."""
         if interaction.user.id != self.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -550,7 +553,7 @@ class ProfileImages(commands.Cog):
             profile_image_path = preferences.get("profile_image_path")
             
             embed = EmbedGenerator.create_embed(
-                title=f"📸 Profile Image Info - {user.display_name}",
+                title=self.get_text(interaction.user.id, "profile_image_info_title", display_name=user.display_name),
                 description=f"User ID: {user.id}",
                 color=discord.Color.blue()
             )
@@ -563,24 +566,24 @@ class ProfileImages(commands.Cog):
                     approved_at = preferences.get("profile_image_approved_at", "Unknown")
                     
                     embed.add_field(
-                        name="✅ Profile Image Found",
+                        name=self.get_text(interaction.user.id, "profile_image_found"),
                         value=f"**Path:** `{image_path}`\n"
-                              f"**Size:** {file_size_mb:.2f} MB ({file_size:,} bytes)\n"
+                              f"**Size:** {self.get_text(interaction.user.id, 'file_size_mb', size=file_size_mb)} ({self.get_text(interaction.user.id, 'file_size_bytes', size=file_size)})\n"
                               f"**Approved:** {approved_at}\n"
-                              f"**Status:** Active",
+                              f"**Status:** {self.get_text(interaction.user.id, 'status_active')}",
                         inline=False
                     )
                 else:
                     embed.add_field(
-                        name="❌ File Missing",
+                        name=self.get_text(interaction.user.id, "file_missing"),
                         value=f"**Path:** `{image_path}`\n"
-                              f"**Status:** File not found on disk",
+                              f"**Status:** {self.get_text(interaction.user.id, 'status_file_not_found')}",
                         inline=False
                     )
             else:
                 embed.add_field(
-                    name="❌ No Profile Image",
-                    value="User has no profile image set",
+                    name=self.get_text(interaction.user.id, "no_profile_image"),
+                    value=self.get_text(interaction.user.id, "status_no_image"),
                     inline=False
                 )
             
@@ -588,10 +591,10 @@ class ProfileImages(commands.Cog):
             if user.id in self.pending_approvals:
                 approval_data = self.pending_approvals[user.id]
                 temp_path = Path(approval_data['image_path'])
-                temp_status = "✅ Exists" if temp_path.exists() else "❌ Missing"
+                temp_status = self.get_text(interaction.user.id, "file_exists") if temp_path.exists() else self.get_text(interaction.user.id, "file_missing_status")
                 
                 embed.add_field(
-                    name="⏳ Pending Approval",
+                    name=self.get_text(interaction.user.id, "pending_approval_status"),
                     value=f"**Temp File:** {temp_status}\n"
                           f"**Submitted:** <t:{int(datetime.fromisoformat(approval_data['submitted_at']).timestamp())}:R>",
                     inline=False
@@ -601,7 +604,9 @@ class ProfileImages(commands.Cog):
             
         except Exception as e:
             self.logger.error(f"Error getting profile image info for user {user.id}: {e}")
-            embed = EmbedGenerator.create_error_embed(f"Error getting profile image info: {str(e)}")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "error_getting_info", error=str(e))
+            )
             await interaction.followup.send(embed=embed, ephemeral=True)
     
     @app_commands.command(name="fixprofileimage", description="[Owner] Fix a user's profile image if it's broken")
@@ -609,7 +614,9 @@ class ProfileImages(commands.Cog):
     async def fix_profile_image(self, interaction: discord.Interaction, user: discord.Member):
         """Fix a user's profile image if it's broken (owner only)."""
         if interaction.user.id != self.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -622,7 +629,9 @@ class ProfileImages(commands.Cog):
             profile_image_path = preferences.get("profile_image_path")
             
             if not profile_image_path:
-                embed = EmbedGenerator.create_error_embed("User has no profile image set to fix.")
+                embed = EmbedGenerator.create_error_embed(
+                    self.get_text(interaction.user.id, "status_no_image")
+                )
                 await interaction.followup.send(embed=embed, ephemeral=True)
                 return
             
@@ -630,8 +639,8 @@ class ProfileImages(commands.Cog):
             
             if image_path.exists():
                 embed = EmbedGenerator.create_embed(
-                    title="✅ Profile Image OK",
-                    description=f"Profile image for {user.display_name} is working correctly.",
+                    title=self.get_text(interaction.user.id, "profile_image_ok"),
+                    description=self.get_text(interaction.user.id, "status_working", user=user.display_name),
                     color=discord.Color.green()
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
@@ -647,15 +656,13 @@ class ProfileImages(commands.Cog):
             global_profile_manager.save_global_profile(user.id, profile)
             
             embed = EmbedGenerator.create_embed(
-                title="🔧 Profile Image Fixed",
-                description=f"Removed broken profile image reference for {user.display_name}.",
+                title=self.get_text(interaction.user.id, "profile_image_fixed"),
+                description=self.get_text(interaction.user.id, "status_broken", user=user.display_name),
                 color=discord.Color.orange()
             )
             embed.add_field(
-                name="What was fixed",
-                value="• Removed reference to missing image file\n"
-                      "• User can now submit a new profile image\n"
-                      "• Profile will use Discord avatar as fallback",
+                name=self.get_text(interaction.user.id, "what_was_fixed"),
+                value=self.get_text(interaction.user.id, "status_fixed_desc"),
                 inline=False
             )
             
@@ -663,14 +670,18 @@ class ProfileImages(commands.Cog):
             
         except Exception as e:
             self.logger.error(f"Error fixing profile image for user {user.id}: {e}")
-            embed = EmbedGenerator.create_error_embed(f"Error fixing profile image: {str(e)}")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "error_fixing", error=str(e))
+            )
             await interaction.followup.send(embed=embed, ephemeral=True)
     
     @app_commands.command(name="clearpendingapprovals", description="[Owner] Clear all pending profile image approvals")
     async def clear_pending_approvals(self, interaction: discord.Interaction):
         """Clear all pending profile image approvals (owner only)."""
         if interaction.user.id != self.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to use this command.")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -679,8 +690,8 @@ class ProfileImages(commands.Cog):
         try:
             if not self.pending_approvals:
                 embed = EmbedGenerator.create_embed(
-                    title="✅ No Pending Approvals",
-                    description="There are no pending approvals to clear.",
+                    title=self.get_text(interaction.user.id, "no_pending_to_clear"),
+                    description=self.get_text(interaction.user.id, "no_pending_desc"),
                     color=discord.Color.green()
                 )
                 await interaction.followup.send(embed=embed, ephemeral=True)
@@ -702,8 +713,8 @@ class ProfileImages(commands.Cog):
             self.pending_approvals.clear()
             
             embed = EmbedGenerator.create_embed(
-                title="🧹 Pending Approvals Cleared",
-                description=f"Cleared {total_pending} pending approvals and {files_cleaned} temporary files.",
+                title=self.get_text(interaction.user.id, "pending_cleared"),
+                description=self.get_text(interaction.user.id, "pending_cleared_desc", total=total_pending, files=files_cleaned),
                 color=discord.Color.orange()
             )
             
@@ -711,7 +722,9 @@ class ProfileImages(commands.Cog):
             
         except Exception as e:
             self.logger.error(f"Error clearing pending approvals: {e}")
-            embed = EmbedGenerator.create_error_embed(f"Error clearing pending approvals: {str(e)}")
+            embed = EmbedGenerator.create_error_embed(
+                self.get_text(interaction.user.id, "error_clearing", error=str(e))
+            )
             await interaction.followup.send(embed=embed, ephemeral=True)
 
 class ProfileApprovalView(discord.ui.View):
@@ -737,15 +750,13 @@ class ProfileApprovalView(discord.ui.View):
             try:
                 user = await self.cog.bot.fetch_user(self.approval_data["user_id"])
                 embed = EmbedGenerator.create_embed(
-                    title="⏰ Profile Image Approval Expired",
-                    description="Your profile image approval request has expired (24 hours).",
+                    title=self.cog.get_text(self.approval_data["user_id"], "approval_expired_title"),
+                    description=self.cog.get_text(self.approval_data["user_id"], "approval_expired_desc"),
                     color=discord.Color.orange()
                 )
                 embed.add_field(
-                    name="What happened?",
-                    value="• Your approval request was not reviewed within 24 hours\n"
-                          "• The temporary file has been cleaned up\n"
-                          "• You can submit a new image using `/setprofile`",
+                    name=self.cog.get_text(self.approval_data["user_id"], "what_happened"),
+                    value=self.cog.get_text(self.approval_data["user_id"], "what_happened_desc"),
                     inline=False
                 )
                 await user.send(embed=embed)
@@ -760,13 +771,17 @@ class ProfileApprovalView(discord.ui.View):
     async def approve_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Approve the profile image."""
         if interaction.user.id != self.cog.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to approve profile images.")
+            embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
         # Check if this approval has already been processed
         if self.approval_data["user_id"] not in self.cog.pending_approvals:
-            embed = EmbedGenerator.create_error_embed("This approval request has already been processed or has expired.")
+            embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "already_processed")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -816,20 +831,26 @@ class ProfileApprovalView(discord.ui.View):
             
         except Exception as e:
             self.cog.logger.error(f"Error in approve button: {e}")
-            error_embed = EmbedGenerator.create_error_embed(f"Error approving profile image: {str(e)}")
+            error_embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "error_approving", error=str(e))
+            )
             await interaction.followup.send(embed=error_embed, ephemeral=True)
     
     @discord.ui.button(label="❌ Reject", style=discord.ButtonStyle.red, custom_id="reject_profile")
     async def reject_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Reject the profile image."""
         if interaction.user.id != self.cog.owner_id:
-            embed = EmbedGenerator.create_error_embed("You don't have permission to reject profile images.")
+            embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "no_permission")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
         # Check if this approval has already been processed
         if self.approval_data["user_id"] not in self.cog.pending_approvals:
-            embed = EmbedGenerator.create_error_embed("This approval request has already been processed or has expired.")
+            embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "already_processed")
+            )
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
         
@@ -859,7 +880,9 @@ class RejectionReasonModal(discord.ui.Modal, title="Profile Image Rejection"):
         
         # Check if this approval is still pending
         if self.approval_data["user_id"] not in self.cog.pending_approvals:
-            embed = EmbedGenerator.create_error_embed("This approval request has already been processed or has expired.")
+            embed = EmbedGenerator.create_error_embed(
+                self.cog.get_text(interaction.user.id, "already_processed")
+            )
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
         
@@ -870,8 +893,8 @@ class RejectionReasonModal(discord.ui.Modal, title="Profile Image Rejection"):
         )
         
         embed = EmbedGenerator.create_embed(
-            title="❌ Profile Image Rejected",
-            description=f"Profile image for {self.approval_data['user_name']} has been rejected.\n\n**Reason:** {self.reason.value}",
+            title=self.cog.get_text(interaction.user.id, "profile_rejected_title"),
+            description=self.cog.get_text(interaction.user.id, "profile_rejected_desc", reason=self.reason.value),
             color=discord.Color.red()
         )
         

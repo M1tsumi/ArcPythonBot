@@ -1,0 +1,32 @@
+{
+  "EN": {
+    "rank": "Rank",
+    "leaderboards_paused_title": "⏸️ Leaderboards Paused",
+    "leaderboards_paused_desc": "Leaderboards are currently paused and not updating.",
+    "leaderboard_rankings_title": "🏆 Leaderboard Rankings",
+    "leaderboard_rankings_desc": "Current top players and alliances",
+    "individual_rankings": "Individual Rankings",
+    "leaderboards": "Leaderboards",
+    "check_leaderboards": "Check leaderboards to see your ranking"
+  },
+  "DE": {
+    "rank": "Rang",
+    "leaderboards_paused_title": "⏸️ Ranglisten pausiert",
+    "leaderboards_paused_desc": "Ranglisten sind derzeit pausiert und werden nicht aktualisiert.",
+    "leaderboard_rankings_title": "🏆 Ranglisten-Rankings",
+    "leaderboard_rankings_desc": "Aktuelle Top-Spieler und Allianzen",
+    "individual_rankings": "Individuelle Rankings",
+    "leaderboards": "Bestenlisten",
+    "check_leaderboards": "Überprüfe die Bestenlisten, um dein Ranking zu sehen"
+  },
+  "ES": {
+    "rank": "Rango",
+    "leaderboards_paused_title": "⏸️ Tablas de Clasificación Pausadas",
+    "leaderboards_paused_desc": "Las tablas de clasificación están actualmente pausadas y no se actualizan.",
+    "leaderboard_rankings_title": "🏆 Rankings de Tabla de Clasificación",
+    "leaderboard_rankings_desc": "Jugadores y alianzas principales actuales",
+    "individual_rankings": "Rankings Individuales",
+    "leaderboards": "Tablas de Clasificación",
+    "check_leaderboards": "Revisa las tablas de clasificación para ver tu ranking"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "EN": {
+    "available_characters_title": "🎭 Available Characters",
+    "found_characters_count": "Found {count} characters in the database",
+    "hero_information_title": "🦸 Hero Information",
+    "hero_information_desc": "Comprehensive hero statistics and information",
+    "hero_counts": "Hero Counts by Rarity",
+    "hero_skill_priorities_title": "⚔️ Hero Skill Priorities",
+    "hero_skill_priorities_desc": "Optimal skill upgrade order for heroes",
+    "community_hero_tier_list_title": "🏆 Community Hero Tier List",
+    "community_hero_tier_list_desc": "Community-voted hero rankings and tier placements",
+    "hero_rankup_guide": "Hero Rankup Guide",
+    "upgrade_hero": "Upgrade your hero before dueling for better stats"
+  },
+  "DE": {
+    "available_characters_title": "🎭 Verfügbare Charaktere",
+    "found_characters_count": "{count} Charaktere in der Datenbank gefunden",
+    "hero_information_title": "🦸 Helden-Informationen",
+    "hero_information_desc": "Umfassende Helden-Statistiken und Informationen",
+    "hero_counts": "Helden-Anzahl nach Seltenheit",
+    "hero_skill_priorities_title": "⚔️ Helden-Fähigkeits-Prioritäten",
+    "hero_skill_priorities_desc": "Optimale Reihenfolge für Fähigkeits-Upgrades von Helden",
+    "community_hero_tier_list_title": "🏆 Community-Helden-Tier-Liste",
+    "community_hero_tier_list_desc": "Community-gewählte Helden-Rankings und Tier-Platzierungen",
+    "hero_rankup_guide": "Held-Aufstiegs-Guide",
+    "upgrade_hero": "Verbessere deinen Helden vor dem Duell für bessere Statistiken"
+  },
+  "ES": {
+    "available_characters_title": "🎭 Personajes Disponibles",
+    "found_characters_count": "Se encontraron {count} personajes en la base de datos",
+    "hero_information_title": "🦸 Información de Héroes",
+    "hero_information_desc": "Estadísticas e información completa de héroes",
+    "hero_counts": "Conteo de Héroes por Rareza",
+    "hero_skill_priorities_title": "⚔️ Prioridades de Habilidades de Héroes",
+    "hero_skill_priorities_desc": "Orden óptimo de mejora de habilidades para héroes",
+    "community_hero_tier_list_title": "🏆 Lista de Niveles de Héroes de la Comunidad",
+    "community_hero_tier_list_desc": "Rankings de héroes votados por la comunidad y colocaciones de nivel",
+    "hero_rankup_guide": "Guía de Ascenso de Héroes",
+    "upgrade_hero": "Mejora tu héroe antes de duelo para mejores estadísticas"
+  }
+}

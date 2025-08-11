@@ -35,10 +35,10 @@ GAME_MODES = {
 }
 
 DIFFICULTY_MODIFIERS = {
-    "easy": {"xp_multiplier": 0.8, "description": "Easier questions, reduced XP"},
-    "normal": {"xp_multiplier": 1.0, "description": "Standard difficulty"},
-    "hard": {"xp_multiplier": 1.5, "description": "Harder questions, bonus XP"},
-    "expert": {"xp_multiplier": 2.0, "description": "Expert-level challenge"}
+    "easy": {"xp_multiplier": 0.8, "description_key": "difficulty_easy_desc"},
+    "normal": {"xp_multiplier": 1.0, "description_key": "difficulty_normal_desc"},
+    "hard": {"xp_multiplier": 1.5, "description_key": "difficulty_hard_desc"},
+    "expert": {"xp_multiplier": 2.0, "description_key": "difficulty_expert_desc"}
 }
 
 # Rewards and Progression
@@ -545,7 +545,7 @@ class EnhancedPlayMainView(discord.ui.View):
         
         embed = discord.Embed(
             title="🎁 Daily Bonus Active!",
-            description="Your next game will give **2x XP**!\n\nDaily bonuses reset every 24 hours and help you climb the leaderboard faster!",
+                            description=self.get_text(interaction.user.id, "daily_bonus_active_desc"),
             color=discord.Color.gold()
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -767,6 +767,21 @@ class AvatarPlaySystem(commands.Cog):
                     except Exception as e:
                         self.logger.error(f"Error reading trivia file: {e}")
     
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+    
     def refresh_trivia_questions(self):
         """Refresh cached trivia questions."""
         self.trivia_questions = parse_avatar_trivia_questions()
@@ -794,17 +809,17 @@ class AvatarPlaySystem(commands.Cog):
             map_path = Path("assets/images/map/map.webp")
             
             if not map_path.exists():
-                await interaction.response.send_message("❌ Map file not found!", ephemeral=True)
+                await interaction.response.send_message(self.get_text(interaction.user.id, "map_file_not_found"), ephemeral=True)
                 return
             
             # Create simple map embed
             embed = EmbedGenerator.create_embed(
-                title="🗺️ Avatar World Map",
-                description="The complete Avatar universe map.",
+                title=self.get_text(interaction.user.id, "avatar_world_map_title"),
+                description=self.get_text(interaction.user.id, "avatar_world_map_desc"),
                 color=discord.Color.from_rgb(70, 130, 180)  # Steel blue for map
             )
             
-            embed.set_footer(text="Made by marshmallow (@sophremacy)")
+            embed.set_footer(text=self.get_text(interaction.user.id, "map_credits"))
             embed = EmbedGenerator.finalize_embed(embed)
             
             # Send map with embed
@@ -816,7 +831,7 @@ class AvatarPlaySystem(commands.Cog):
         except Exception as e:
             if self.logger:
                 self.logger.error(f"Error in map command: {e}")
-            await interaction.response.send_message("❌ Error loading the map. Please try again later.", ephemeral=True)
+            await interaction.response.send_message(self.get_text(interaction.user.id, "map_load_error"), ephemeral=True)
     
     @app_commands.command(name="play", description="🎮 Enter the Avatar Trivia Arena!")
     async def play_command(self, interaction: discord.Interaction):
@@ -845,7 +860,7 @@ class AvatarPlaySystem(commands.Cog):
         
         if interaction.guild is None:
             try:
-                await interaction.followup.send("❌ Avatar Play can only be used in servers!", ephemeral=True)
+                await interaction.followup.send(self.get_text(interaction.user.id, "guild_only_error"), ephemeral=True)
             except:
                 pass
             return
@@ -962,7 +977,7 @@ class AvatarPlaySystem(commands.Cog):
         if daily_bonus:
             embed.add_field(
                 name="🎁 Daily Bonus Active!",
-                value="Your next game will give **2x XP**! Click the Daily Bonus button for more info.",
+                value=self.get_text(interaction.user.id, "daily_bonus_info"),
                 inline=False
             )
         

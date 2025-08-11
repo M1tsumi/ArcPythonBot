@@ -163,6 +163,21 @@ class HeroInfoSystem(commands.Cog):
                 }
             }
         }
+
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
     
     @app_commands.command(name="hero_info", description="Hero information and unlock methods")
     @app_commands.checks.cooldown(1, 5.0)
@@ -195,8 +210,8 @@ class HeroInfoSystem(commands.Cog):
     async def show_hero_overview(self, interaction: discord.Interaction):
         """Show hero information overview."""
         embed = EmbedGenerator.create_embed(
-            title="Hero Information",
-            description="Overview of heroes and unlock methods. All heroes require 10 shards to unlock.",
+            title=self.get_text(interaction.user.id, "hero_information_title"),
+            description=self.get_text(interaction.user.id, "hero_information_desc"),
             color=discord.Color.gold()
         )
         
@@ -207,12 +222,12 @@ class HeroInfoSystem(commands.Cog):
         future_count = len(self.hero_data["future"])
         
         embed.add_field(
-            name="Hero Counts",
+            name=self.get_text(interaction.user.id, "hero_counts"),
             value=(
-                f"Legendary: {legendary_count}\n"
-                f"Epic: {epic_count}\n"
-                f"Rare: {rare_count}\n"
-                f"Future: {future_count}"
+                f"{self.get_text(interaction.user.id, 'legendary')}: {legendary_count}\n"
+                f"{self.get_text(interaction.user.id, 'epic')}: {epic_count}\n"
+                f"{self.get_text(interaction.user.id, 'rare')}: {rare_count}\n"
+                f"{self.get_text(interaction.user.id, 'future')}: {future_count}"
             ),
             inline=False
         )

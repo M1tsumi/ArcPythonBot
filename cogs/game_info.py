@@ -18,6 +18,21 @@ class GameInfo(commands.Cog):
         self.logger = bot.logger
         self.data_parser = DataParser()
     
+    def get_text(self, user_id: int, key: str, **kwargs) -> str:
+        """Get translated text for a user using the language system."""
+        try:
+            # Get the language system cog
+            language_cog = self.bot.get_cog('LanguageSystem')
+            if language_cog:
+                return language_cog.get_text(user_id, key, **kwargs)
+            else:
+                # Fallback to English if language system not available
+                return f"[{key}]"
+        except Exception as e:
+            if self.logger:
+                self.logger.error(f"Error getting translated text for user {user_id}, key {key}: {e}")
+            return f"[Translation error: {key}]"
+    
     @commands.command(name="characters")
     async def list_characters(self, ctx):
         """List all available characters."""
@@ -30,8 +45,8 @@ class GameInfo(commands.Cog):
         
         # Create embed with character list
         embed = EmbedGenerator.create_embed(
-            title="Available Characters",
-            description=f"Found {len(characters)} characters in the database.",
+            title=self.get_text(ctx.author.id, "available_characters_title"),
+            description=self.get_text(ctx.author.id, "found_characters_count", count=len(characters)),
             color=discord.Color.blue()
         )
         

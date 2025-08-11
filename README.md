@@ -13,13 +13,13 @@
 
 # 🌟 Avatar Realms Collide Discord Bot
 
-[![Version](https://img.shields.io/badge/version-1.8.0-blue.svg)](https://github.com/M1tsumi/ArcPythonBot)
+[![Version](https://img.shields.io/badge/version-1.8.1-blue.svg)](https://github.com/M1tsumi/ArcPythonBot)
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-> **🎮 Version 1.8.0 - Avatar Realms Collide Discord Bot**  
-> An interactive Discord bot featuring hero progression, elemental skills, PvP duels, character talent trees, leaderboards, rally system, and comprehensive game management for the Avatar Realms Collide universe.
+> **🎮 Version 1.8.1 - Avatar Realms Collide Discord Bot**  
+> An interactive Discord bot featuring hero progression, elemental skills, PvP duels, character talent trees, leaderboards, rally system, comprehensive game management, and **multi-language support** for the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
 
@@ -34,6 +34,19 @@
 - [License](#-license)
 
 ## ✨ Features
+
+### 🌍 **Multi-Language Support** ⭐ NEW in v1.8.1
+- **Complete Translation System**: Full support for English, German, and Spanish
+  - **169 Translation Keys**: Comprehensive coverage across all bot features
+  - **User Language Preferences**: Individual language settings per user
+  - **Dynamic Translation**: Real-time language switching with `/language` command
+  - **Fallback System**: Automatic fallback to English for missing translations
+  - **Variable Interpolation**: Support for dynamic content (e.g., `{username}`, `{count}`)
+- **Language Commands**: Easy language management
+  - `/language <code>` - Set your preferred language (EN/DE/ES)
+  - `/currentlanguage` - Check your current language setting
+  - `!language <code>` - Traditional command support
+  - `!currentlanguage` - Check language with traditional command
 
 ### 🦸 **Hero Progression System** ⭐ NEW in v1.8.0
 - **Rarity Advancement**: Progress heroes from Rare → Epic → Legendary

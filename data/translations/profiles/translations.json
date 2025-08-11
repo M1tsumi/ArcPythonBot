@@ -1,0 +1,44 @@
+{
+  "EN": {
+    "global_profile_title": "🌟 Global Profile - {display_name}",
+    "global_profile_desc": "Cross-server Avatar Trivia statistics",
+    "global_statistics": "📊 Global Statistics",
+    "performance": "Performance",
+    "global_ranking": "🏆 Global Ranking",
+    "global_achievements": "🏅 Global Achievements",
+    "account_info": "📅 Account Info",
+    "server_profile_title": "🏠 Server Profile",
+    "server_profile_desc": "Server-specific profiles are coming soon! Use `/profile global` to see cross-server stats.",
+    "profile_private": "This user has chosen to keep their global profile private.",
+    "profile_error": "❌ An error occurred while loading the profile. Please try again.",
+    "profile_display_error": "❌ Failed to display profile. Please try again."
+  },
+  "DE": {
+    "global_profile_title": "🌟 Globales Profil - {display_name}",
+    "global_profile_desc": "Avatar-Trivia-Statistiken über Server hinweg",
+    "global_statistics": "📊 Globale Statistiken",
+    "performance": "Leistung",
+    "global_ranking": "🏆 Globales Ranking",
+    "global_achievements": "🏅 Globale Erfolge",
+    "account_info": "📅 Account-Informationen",
+    "server_profile_title": "🏠 Server-Profil",
+    "server_profile_desc": "Server-spezifische Profile kommen bald! Verwende `/profile global`, um serverübergreifende Statistiken zu sehen.",
+    "profile_private": "Dieser Benutzer hat beschlossen, sein globales Profil privat zu halten.",
+    "profile_error": "❌ Beim Laden des Profils ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+    "profile_display_error": "❌ Anzeige des Profils fehlgeschlagen. Bitte versuche es erneut."
+  },
+  "ES": {
+    "global_profile_title": "🌟 Perfil Global - {display_name}",
+    "global_profile_desc": "Estadísticas de Trivia de Avatar entre servidores",
+    "global_statistics": "📊 Estadísticas Globales",
+    "performance": "Rendimiento",
+    "global_ranking": "🏆 Ranking Global",
+    "global_achievements": "🏅 Logros Globales",
+    "account_info": "📅 Información de Cuenta",
+    "server_profile_title": "🏠 Perfil del Servidor",
+    "server_profile_desc": "¡Los perfiles específicos del servidor llegarán pronto! Usa `/profile global` para ver estadísticas entre servidores.",
+    "profile_private": "Este usuario ha elegido mantener su perfil global privado.",
+    "profile_error": "❌ Ocurrió un error al cargar el perfil. Por favor inténtalo de nuevo.",
+    "profile_display_error": "❌ Error al mostrar el perfil. Por favor inténtalo de nuevo."
+  }
+}

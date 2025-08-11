@@ -1,0 +1,17 @@
+{
+  "EN": {
+    "no_events_found_title": "📅 No Events Found",
+    "no_events_found_desc": "No {event_type} events are currently available.",
+    "event_commands": "Event Commands"
+  },
+  "DE": {
+    "no_events_found_title": "📅 Keine Events gefunden",
+    "no_events_found_desc": "Keine {event_type}-Events sind derzeit verfügbar.",
+    "event_commands": "Event-Befehle"
+  },
+  "ES": {
+    "no_events_found_title": "📅 No Se Encontraron Eventos",
+    "no_events_found_desc": "No hay eventos de {event_type} disponibles actualmente.",
+    "event_commands": "Comandos de Eventos"
+  }
+}
