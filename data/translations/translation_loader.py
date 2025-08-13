@@ -56,8 +56,23 @@ class TranslationLoader:
             print(f"Warning: Module {module_name} not found")
             return {}
     
-    def get_translation(self, key: str, language: str = "EN", module_name: Optional[str] = None) -> str:
-        """Get a specific translation by key and language."""
+    def get_translation(
+        self,
+        key: str,
+        language: str = "EN",
+        module_name: Optional[str] = None,
+    ) -> str:
+        """Get a specific translation by key and language.
+
+        The original implementation returned ``"Missing translation"`` whenever a
+        requested language wasn't available in a module.  This meant that asking
+        for a valid key in an unsupported language produced an error instead of
+        falling back to a sensible default.  The language system in the bot
+        always has English strings available, so we gracefully fall back to that
+        (or the first available language) before declaring the translation
+        missing.
+        """
+
         if module_name:
             module_translations = self.load_module(module_name)
         else:
@@ -67,8 +82,24 @@ class TranslationLoader:
             if not module_name:
                 return f"Missing translation: {key}"
             module_translations = self.load_module(module_name)
-        
-        return module_translations.get(language, {}).get(key, f"Missing translation: {key}")
+
+        language = language.upper()
+        # Try the requested language first
+        translation = module_translations.get(language, {}).get(key)
+        if translation is not None:
+            return translation
+
+        # Fallback to English if available
+        translation = module_translations.get("EN", {}).get(key)
+        if translation is not None:
+            return translation
+
+        # Fallback to the first language that contains the key
+        for lang_translations in module_translations.values():
+            if key in lang_translations:
+                return lang_translations[key]
+
+        return f"Missing translation: {key}"
     
     def get_all_translations(self, language: str = "EN") -> Dict[str, str]:
         """Get all translations for a specific language (loads all modules)."""
