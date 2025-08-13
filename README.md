@@ -338,6 +338,7 @@ The Greatest Leader event tools:
 - **Iroh** (Legendary) - Wise Firebending master and Dragon of the West
 - **Roku** (Legendary) - Fire Nation Avatar of balance and wisdom
 - **Asami** (Epic) - Genius inventor and Fire Nation engineer
+- **Piandao** (Rare) - Master swordsman and Fire Nation instructor
 
 ### Water Element 💧
 - **Katara** (Epic) - Master Waterbender and skilled healer
@@ -364,14 +365,6 @@ The Greatest Leader event tools:
 - **Yangchen** (Legendary) - Ancient Air Nomad Avatar of wisdom
 - **Bumi** (Legendary) - Eccentric Airbending master and king
 - **Borte** (Epic) - Water Tribe warrior and fierce protector
-
-### Fire Element 🔥
-- **Zuko** (Epic) - Fire Nation prince and Firebending master
-- **Azula** (Legendary) - Firebending prodigy and Fire Nation princess
-- **Iroh** (Legendary) - Wise Firebending master and Dragon of the West
-- **Roku** (Legendary) - Fire Nation Avatar of balance and wisdom
-- **Asami** (Epic) - Genius inventor and Fire Nation engineer
-- **Piandao** (Rare) - Master swordsman and Fire Nation instructor
 
 ## 🔧 Technical Details
 
