@@ -34,7 +34,7 @@ class BorteSchemeView(discord.ui.View):
         
         embed.add_field(
             name="💡 Strategy Tips",
-            value="• Coordinate with your alliance for rally battles\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
+            value="• Coordinate with your alliance for rally battles\n• Only put 1 hero in your rallies so that as many people as possible can join\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
             inline=False
         )
         
@@ -65,7 +65,7 @@ class BorteSchemeView(discord.ui.View):
         
         embed.add_field(
             name="🎯 Performance Tips",
-            value="• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
+            value="• Only put 1 hero in your rallies so that as many people as possible can join\n• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
             inline=False
         )
         
@@ -92,6 +92,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
@@ -99,6 +100,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
 • **Resource Efficiency**: Use drums and beads at optimal times"""
@@ -237,7 +239,7 @@ class BorteScheme(commands.Cog):
         
         embed.add_field(
             name="💡 Strategy Tips",
-            value="• Coordinate with your alliance for rally battles\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
+            value="• Coordinate with your alliance for rally battles\n• Only put 1 hero in your rallies so that as many people as possible can join\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
             inline=False
         )
         
@@ -274,7 +276,7 @@ class BorteScheme(commands.Cog):
         
         embed.add_field(
             name="🎯 Performance Tips",
-            value="• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
+            value="• Only put 1 hero in your rallies so that as many people as possible can join\n• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
             inline=False
         )
         
@@ -307,6 +309,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
@@ -314,15 +317,17 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
 • **Resource Efficiency**: Use drums and beads at optimal times"""
         
         priority_text = """**📊 Performance Priority**
-1. **Rally Participation**: Join all available rally battles
-2. **Damage Output**: Maximize your contribution in battles
-3. **Alliance Coordination**: Work with alliance for optimal timing
-4. **Resource Usage**: Use drums and beads efficiently"""
+1. **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
+2. **Rally Participation**: Join all available rally battles
+3. **Damage Output**: Maximize your contribution in battles
+4. **Alliance Coordination**: Work with alliance for optimal timing
+5. **Resource Usage**: Use drums and beads efficiently"""
         
         embed.add_field(name="Event Lore", value=lore_text, inline=False)
         embed.add_field(name="How to Participate", value=participation_text, inline=False)
@@ -400,7 +405,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         embed.add_field(
             name="💡 Strategy Tips",
-            value="• Coordinate with your alliance for rally battles\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
+            value="• Coordinate with your alliance for rally battles\n• Only put 1 hero in your rallies so that as many people as possible can join\n• Use drums and beads strategically\n• Focus on high-performance rally participation\n• Plan your resource usage for battles",
             inline=False
         )
         
@@ -437,7 +442,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         embed.add_field(
             name="🎯 Performance Tips",
-            value="• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
+            value="• Only put 1 hero in your rallies so that as many people as possible can join\n• Participate actively in rally battles\n• Coordinate with alliance members\n• Use strategic timing for battles\n• Focus on high-damage output",
             inline=False
         )
         
@@ -470,6 +475,7 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         tips_text = """**💡 Tips & Strategy**
 • **Alliance Coordination**: Work closely with your alliance for rally battles
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **Resource Management**: Use drums and beads strategically
 • **Timing**: Choose the right moments to summon berserkers
 • **Performance**: Focus on high-damage output in rally battles
@@ -477,15 +483,17 @@ Borte was once a slave girl offered as a sacrifice to Father Glowworm, but throu
         
         strategy_text = """**🏆 Best Strategy**
 • **Active Participation**: Join as many rally battles as possible
+• **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
 • **High Performance**: Maximize your damage output in battles
 • **Alliance Support**: Help coordinate rally timing and strategy
 • **Resource Efficiency**: Use drums and beads at optimal times"""
         
         priority_text = """**📊 Performance Priority**
-1. **Rally Participation**: Join all available rally battles
-2. **Damage Output**: Maximize your contribution in battles
-3. **Alliance Coordination**: Work with alliance for optimal timing
-4. **Resource Usage**: Use drums and beads efficiently"""
+1. **Rally Strategy**: Only put 1 hero in your rallies so that as many people as possible can join
+2. **Rally Participation**: Join all available rally battles
+3. **Damage Output**: Maximize your contribution in battles
+4. **Alliance Coordination**: Work with alliance for optimal timing
+5. **Resource Usage**: Use drums and beads efficiently"""
         
         embed.add_field(name="Event Lore", value=lore_text, inline=False)
         embed.add_field(name="How to Participate", value=participation_text, inline=False)
