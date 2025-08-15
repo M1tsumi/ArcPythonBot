@@ -30,25 +30,33 @@ class TimerSystem(commands.Cog):
         """Clean up when cog is unloaded."""
         self.check_timers.cancel()
     
-    @tasks.loop(seconds=30)  # Check every 30 seconds
+    @tasks.loop(seconds=60)  # Check every 60 seconds instead of 30 to reduce load
     async def check_timers(self):
         """Check for completed timers and notify users."""
         current_time = time.time()
         completed_timers = []
         
+        # Only process if there are active timers
+        if not self.active_timers:
+            return
+            
         for user_id, user_timers in self.active_timers.items():
             for timer_id, timer_data in user_timers.items():
                 if current_time >= timer_data['end_time']:
                     completed_timers.append((user_id, timer_id, timer_data))
         
-        # Process completed timers
-        for user_id, timer_id, timer_data in completed_timers:
-            await self._notify_timer_completion(user_id, timer_data)
-            # Remove completed timer
-            if user_id in self.active_timers:
-                self.active_timers[user_id].pop(timer_id, None)
-                if not self.active_timers[user_id]:
-                    self.active_timers.pop(user_id, None)
+        # Process completed timers in batches to avoid blocking
+        if completed_timers:
+            for user_id, timer_id, timer_data in completed_timers:
+                try:
+                    await self._notify_timer_completion(user_id, timer_data)
+                    # Remove completed timer
+                    if user_id in self.active_timers:
+                        self.active_timers[user_id].pop(timer_id, None)
+                        if not self.active_timers[user_id]:
+                            self.active_timers.pop(user_id, None)
+                except Exception as e:
+                    self.logger.error(f"Error processing timer completion for user {user_id}: {e}")
     
     async def _notify_timer_completion(self, user_id: int, timer_data: Dict):
         """Notify user that their timer has completed."""
