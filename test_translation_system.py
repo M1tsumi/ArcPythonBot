@@ -8,6 +8,15 @@ import json
 import os
 import sys
 from pathlib import Path
+import pytest
+
+
+@pytest.fixture
+def translations():
+    """Provide translations loaded from the main JSON file."""
+    translations_file = Path("data/translations.json")
+    with open(translations_file, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 def test_translation_file():
     """Test if the translations.json file exists and is valid JSON."""
