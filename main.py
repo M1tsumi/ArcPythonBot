@@ -37,6 +37,7 @@ DISCORD_TOKEN=your_discord_bot_token_here
             print("✅ Created .env file template!")
             print("📝 Please edit the .env file and add your Discord bot token.")
             print("🔗 Get your bot token from: https://discord.com/developers/applications")
+            print("🔒 Bot owner ID is hardcoded for security")
             return True
         except Exception as e:
             print(f"❌ Error creating .env file: {e}")
@@ -78,6 +79,10 @@ class AvatarRealmsBot(commands.Bot):
         self.start_time = time.time()
         self._cog_load_times = {}
         
+        # Initialize invite manager
+        from utils.invite_manager import InviteManager
+        self.invite_manager = InviteManager()
+        
     async def setup_hook(self):
         """Optimized setup hook called when the bot is starting up."""
         self.logger.info("🚀 Setting up bot with optimizations...")
@@ -113,7 +118,9 @@ class AvatarRealmsBot(commands.Bot):
             'cogs.troop_calculator',
             'cogs.tier_list',
             'cogs.vote_system',          # Vote system with XP bonuses
-            'cogs.profile_images'        # Profile image management system
+            'cogs.profile_images',       # Profile image management system
+            'cogs.admin_panel',          # Admin panel for owner
+            'cogs.admin_commands'        # Additional admin commands
         ]
         
         for cog in cog_files:
@@ -168,6 +175,9 @@ class AvatarRealmsBot(commands.Bot):
             name="Master all four elements!"
         )
         await self.change_presence(activity=activity)
+        
+        # Clean up any invalid invites
+        await self.invite_manager.cleanup_invalid_invites()
 
     async def on_app_command_error(self, interaction: discord.Interaction, error: Exception):
         """Global error handler for slash commands with professional embeds and reduced spam."""

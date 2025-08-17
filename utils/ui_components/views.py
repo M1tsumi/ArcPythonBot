@@ -90,29 +90,39 @@ class CharacterSelectView(discord.ui.View):
                 inline=True
             )
         
-        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends) • Your talent trees are ready below")
+        embed.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
         
-        # Send the embed first
-        await interaction.response.edit_message(embed=embed, view=None)
+        # Create a comprehensive embed with both talent tree images
+        files = []
         
-        # Send talent tree images in separate embeds
+        # Add first talent tree as main image
         if talent_images.get('talent_tree_1'):
-            embed1 = discord.Embed(
-                title=f"🌳 {character_name}'s First Talent Tree",
-                color=self.get_element_color(character.get('element', 'Unknown'))
-            )
             file1 = discord.File(talent_images['talent_tree_1'], filename=Path(talent_images['talent_tree_1']).name)
-            embed1.set_image(url=f"attachment://{Path(talent_images['talent_tree_1']).name}")
-            await interaction.followup.send(embed=embed1, file=file1)
+            embed.set_image(url=f"attachment://{Path(talent_images['talent_tree_1']).name}")
+            files.append(file1)
+            
+            # Add second talent tree as a second embed
+            if talent_images.get('talent_tree_2'):
+                file2 = discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name)
+                files.append(file2)
+                
+                # Create a second embed for the second talent tree
+                embed2 = discord.Embed(
+                    title=f"🌳 {character_name}'s Second Talent Tree",
+                    color=self.get_element_color(character.get('element', 'Unknown'))
+                )
+                embed2.set_image(url=f"attachment://{Path(talent_images['talent_tree_2']).name}")
+                embed2.set_footer(text="Information Provided and Processed by Kuvira (@archfiends)")
+                
+                # Send both embeds in one message
+                await interaction.response.send_message(embeds=[embed, embed2], files=files)
+                return
         
-        if talent_images.get('talent_tree_2'):
-            embed2 = discord.Embed(
-                title=f"🌿 {character_name}'s Second Talent Tree",
-                color=self.get_element_color(character.get('element', 'Unknown'))
-            )
-            file2 = discord.File(talent_images['talent_tree_2'], filename=Path(talent_images['talent_tree_2']).name)
-            embed2.set_image(url=f"attachment://{Path(talent_images['talent_tree_2']).name}")
-            await interaction.followup.send(embed=embed2, file=file2)
+        # Send single message with embed containing the images
+        if files:
+            await interaction.response.send_message(embed=embed, files=files)
+        else:
+            await interaction.response.edit_message(embed=embed, view=None)
     
     def get_element_color(self, element: str) -> discord.Color:
         """Get the appropriate color for each element."""
@@ -530,13 +540,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost",
-            value="**0 shards** - Unlock hero",
+            value="**10 shards** - Unlock hero",
             inline=False
         )
         
         embed.add_field(
             name="Total Shards Used",
-            value="**0 shards**",
+            value="**10 shards**",
             inline=False
         )
         
@@ -561,7 +571,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**8 shards** (0 unlock + 8 for 1 star)",
+            value="**18 shards** (10 unlock + 8 for 1 star)",
             inline=False
         )
         
@@ -573,7 +583,7 @@ class HeroRankupView(discord.ui.View):
     async def two_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 2 star information."""
         embed = discord.Embed(
-            title="⭐⭐ 2 Stars (Level 20)",
+            title="⭐ 2 Stars (Level 20)",
             description="Information for 2 star rankup",
             color=discord.Color.purple()
         )
@@ -586,7 +596,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**30 shards** (0 unlock + 8 for 1 star + 22 for 2 stars)",
+            value="**40 shards** (10 unlock + 8 for 1 star + 22 for 2 stars)",
             inline=False
         )
         
@@ -598,7 +608,7 @@ class HeroRankupView(discord.ui.View):
     async def three_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 3 star information."""
         embed = discord.Embed(
-            title="⭐⭐⭐ 3 Stars (Level 30)",
+            title="⭐ 3 Stars (Level 30)",
             description="Information for 3 star rankup",
             color=discord.Color.orange()
         )
@@ -611,7 +621,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**86 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars)",
+            value="**96 shards** (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars)",
             inline=False
         )
         
@@ -623,7 +633,7 @@ class HeroRankupView(discord.ui.View):
     async def four_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 4 star information."""
         embed = discord.Embed(
-            title="⭐⭐⭐⭐ 4 Stars (Level 40)",
+            title="⭐ 4 Stars (Level 40)",
             description="Information for 4 star rankup",
             color=discord.Color.red()
         )
@@ -636,7 +646,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**226 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars)",
+            value="**236 shards** (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars)",
             inline=False
         )
         
@@ -648,7 +658,7 @@ class HeroRankupView(discord.ui.View):
     async def five_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 5 star information."""
         embed = discord.Embed(
-            title="⭐⭐⭐⭐⭐ 5 Stars (Level 50)",
+            title="⭐ 5 Stars (Level 50)",
             description="Information for 5 star rankup",
             color=discord.Color.gold()
         )
@@ -661,7 +671,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**516 shards** (0 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars)",
+            value="**526 shards** (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars)",
             inline=False
         )
         
@@ -673,7 +683,7 @@ class HeroRankupView(discord.ui.View):
     async def six_star_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Show 6 star information."""
         embed = discord.Embed(
-            title="⭐⭐⭐⭐⭐⭐ 6 Stars (Level 60)",
+            title="⭐ 6 Stars (Level 60)",
             description="Information for 6 star rankup",
             color=discord.Color.dark_purple()
         )
@@ -686,7 +696,7 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Total Shards Used",
-            value="**956 shards** (0 unlock + 1 for 1/5 star + 1 for 2/5 star + 1 for 3/5 star + 2 for 4/5 star + 3 for 1 star + 3 for 1+1/5 star + 3 for 1+2/5 star + 3 for 1+3/5 star + 5 for 1+4/5 star + 8 for 2 stars + 8 for 2+1/5 star + 8 for 2+2/5 star + 8 for 2+3/5 star + 12 for 2+4/5 star + 20 for 3 stars + 20 for 3+1/5 star + 20 for 3+2/5 star + 20 for 3+3/5 star + 30 for 3+4/5 star + 50 for 4 stars + 50 for 4+1/5 star + 50 for 4+2/5 star + 50 for 4+3/5 star + 60 for 4+4/5 star + 80 for 5 stars + 80 for 5+1/5 star + 80 for 5+2/5 star + 80 for 5+3/5 star + 80 for 5+4/5 star + 120 for 6 stars)",
+            value="**966 shards** (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars + 140 for 6 stars)",
             inline=False
         )
         
@@ -705,13 +715,13 @@ class HeroRankupView(discord.ui.View):
         
         embed.add_field(
             name="Cost Breakdown",
-            value="🔓 **Unlock**: 0 shards\n⭐ **1 Star**: 8 shards\n⭐⭐ **2 Stars**: 30 shards\n⭐⭐⭐ **3 Stars**: 86 shards\n⭐⭐⭐⭐ **4 Stars**: 226 shards\n⭐⭐⭐⭐⭐ **5 Stars**: 516 shards\n⭐⭐⭐⭐⭐⭐ **6 Stars**: 956 shards",
+            value="🔓 **Unlock**: 10 shards\n⭐ **1 Star**: 18 shards\n⭐⭐ **2 Stars**: 40 shards\n⭐⭐⭐ **3 Stars**: 96 shards\n⭐⭐⭐⭐ **4 Stars**: 236 shards\n⭐⭐⭐⭐⭐ **5 Stars**: 526 shards\n⭐⭐⭐⭐⭐⭐ **6 Stars**: 966 shards",
             inline=False
         )
         
         embed.add_field(
             name="💰 Total Cost",
-            value="**956 Spirit Shards** - Total cost from unlock to 6 stars",
+            value="**966 Spirit Shards** - Total cost from unlock to 6 stars",
             inline=False
         )
         

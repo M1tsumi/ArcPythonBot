@@ -1,4 +1,70 @@
 # Changelog
+## [2.0.0] - 2025-01-13
+
+### Fixed - 🎯 Hero Rankup System Improvements
+- **Hero Recruitment Cost**: Fixed incorrect unlock cost display
+  - **Before**: Unlock cost showed "0 shards" for all heroes
+  - **After**: Unlock cost correctly shows "10 shards" for any hero
+  - **Total Cost Update**: Updated all total cost calculations to include 10 shard unlock cost
+  - **Final Total**: 966 Spirit Shards (was 956) for complete hero progression
+- **Star Display Simplification**: Improved visual presentation of star levels
+  - **Before**: Cluttered display with multiple repeated stars (⭐⭐⭐⭐⭐⭐)
+  - **After**: Clean, professional display with single star (⭐) for all levels
+  - **Consistent Format**: All embed titles now use uniform single star format
+  - **Better UX**: Simplified star display reduces visual clutter and improves readability
+- **Cost Breakdown Accuracy**: Corrected all progression cost calculations
+  - **1 Star**: 18 shards (10 unlock + 8 for 1 star)
+  - **2 Stars**: 40 shards (10 unlock + 8 for 1 star + 22 for 2 stars)
+  - **3 Stars**: 96 shards (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars)
+  - **4 Stars**: 236 shards (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars)
+  - **5 Stars**: 526 shards (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars)
+  - **6 Stars**: 966 shards (10 unlock + 8 for 1 star + 22 for 2 stars + 56 for 3 stars + 140 for 4 stars + 290 for 5 stars + 140 for 6 stars)
+
+### Enhanced
+- **Hero Rankup Command**: Improved user interface and information clarity
+  - **Simplified Star Display**: Removed redundant star emojis for cleaner appearance
+  - **Accurate Cost Information**: All costs now reflect correct game mechanics
+  - **Better Visual Hierarchy**: Consistent formatting across all star level displays
+  - **Professional Presentation**: Enhanced embed styling and information organization
+
+### Technical
+- **UI Component Updates**: Modified `utils/ui_components/views.py` for improved hero rankup display
+  - Updated `HeroRankupView` class with corrected cost calculations
+  - Simplified star display logic across all button callbacks
+  - Enhanced embed generation with consistent formatting
+- **Command Structure**: Updated `cogs/hero_rankup.py` for better user experience
+  - Improved command description with simplified star display
+  - Enhanced embed field formatting for better readability
+  - Consistent visual presentation across all star levels
+
+### Changed
+- **Version**: Updated from 1.10.0 to 2.0.0
+- **Hero Recruitment Cost**: Fixed from 0 shards to 10 shards for all heroes
+- **Star Display Format**: Simplified from multiple stars to single star format
+- **Total Cost Calculations**: Updated all progression costs to include unlock cost
+- **Visual Presentation**: Improved embed styling and information organization
+
+### Quality Assurance
+- **Cost Accuracy**: Verified all hero rankup costs against game mechanics
+- **Visual Consistency**: Ensured uniform star display across all levels
+- **User Experience**: Improved readability and information clarity
+- **Data Integrity**: Corrected all progression calculations and totals
+
+### Improved - 🔗 Permanent Invite Management System
+- **Smart Invite Creation**: Implemented intelligent invite management to prevent duplicate permanent invites
+  - **Before**: Bot created new permanent invite every time `/statistics` command was used
+  - **After**: Bot reuses existing permanent invites and only creates new ones when necessary
+  - **Storage System**: Permanent invites are stored in `data/permanent_invites.json` for persistence
+  - **Automatic Cleanup**: Invalid/deleted invites are automatically detected and cleaned up
+- **Performance Optimization**: Reduced unnecessary API calls and invite creation overhead
+- **Admin Management**: Added `/manage_invites` command for server administrators to view current invite status
+- **Error Handling**: Robust error handling for invite verification and creation processes
+- **Technical Implementation**: 
+  - Created `utils/invite_manager.py` for centralized invite management
+  - Integrated invite manager into bot's main class for global access
+  - Updated `cogs/utility.py` to use smart invite system
+  - Added automatic cleanup on bot startup
+
 ## [1.9.0] - 2025-08-11
 
 ### Added - 🌍 MAJOR RELEASE: Translation Folder System & Memory Optimization
@@ -529,7 +595,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **1.8.0** (Current): Hero Progression & PvP Duel System - Major Release
+- **2.0.0** (Current): Hero Rankup System Improvements & Permanent Invite Management - Major Release
 - **1.7.2**: TGL System Fixes, Emoji Encoding Improvements
 - **1.7.1**: Tierlist Command Reliability, Leaderboard System Enhancements
 - **1.7.0**: Tier List System, Professional Embeds, Anti-spam Features

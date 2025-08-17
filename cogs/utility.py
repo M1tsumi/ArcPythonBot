@@ -9,6 +9,7 @@ from discord import app_commands
 from discord.ext import commands
 from config.settings import DISCORD_SERVER_LINK, BOT_INVITE_LINK, DEVELOPMENT_SERVER_LINK
 from utils.embed_generator import EmbedGenerator
+from utils.invite_manager import InviteManager
 
 class Utility(commands.Cog):
     """Utility command cog."""
@@ -417,19 +418,7 @@ class Utility(commands.Cog):
                 owner_name = guild.owner.display_name if guild.owner else "Unknown"
                 joined_date = guild.me.joined_at.strftime('%m/%d') if guild.me.joined_at else "Unknown"
 
-                invite_link = "No permission"
-                try:
-                    invite_channel = None
-                    for channel in guild.channels:
-                        if (isinstance(channel, discord.TextChannel) and
-                            channel.permissions_for(guild.me).create_instant_invite):
-                            invite_channel = channel
-                            break
-                    if invite_channel:
-                        invite = await invite_channel.create_invite(max_age=0, max_uses=0)
-                        invite_link = invite.url
-                except Exception:
-                    invite_link = "Error creating invite"
+                invite_link = await self.bot.invite_manager.get_or_create_permanent_invite(guild)
 
                 top_servers_text += f"**{i}.** {guild.name}\n"
                 top_servers_text += f"👥 {guild.member_count:,} members | 👑 {owner_name} | 📅 {joined_date}\n"
@@ -486,6 +475,56 @@ class Utility(commands.Cog):
             return f"{memory_mb:.1f} MB"
         except ImportError:
             return "N/A"
+
+    @app_commands.command(name="manage_invites", description="Manage permanent invites (Admin only)")
+    @app_commands.default_permissions(administrator=True)
+    async def manage_invites(self, interaction: discord.Interaction):
+        """Command to manage permanent invites for the current server."""
+        try:
+            await interaction.response.defer(ephemeral=True)
+            
+            guild = interaction.guild
+            if not guild:
+                embed = discord.Embed(
+                    title="❌ Error",
+                    description="This command can only be used in a server.",
+                    color=discord.Color.red()
+                )
+                await interaction.followup.send(embed=embed, ephemeral=True)
+                return
+            
+            # Get current invite
+            current_invite = await self.bot.invite_manager.get_or_create_permanent_invite(guild)
+            
+            embed = discord.Embed(
+                title="🔗 Permanent Invite Management",
+                description=f"Server: **{guild.name}**",
+                color=discord.Color.blue()
+            )
+            
+            embed.add_field(
+                name="Current Permanent Invite",
+                value=current_invite if current_invite != "No permission to create invite" else "❌ No permission",
+                inline=False
+            )
+            
+            embed.add_field(
+                name="Actions",
+                value="• The bot will automatically reuse existing permanent invites\n• New invites are only created when needed\n• Invalid invites are automatically cleaned up",
+                inline=False
+            )
+            
+            embed.set_footer(text="Invite management is automatic and optimized")
+            
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            
+        except Exception as e:
+            error_embed = discord.Embed(
+                title="❌ Error",
+                description=f"Error managing invites: {str(e)}",
+                color=discord.Color.red()
+            )
+            await interaction.followup.send(embed=error_embed, ephemeral=True)
 
     @app_commands.command(name="refresh", description="Refresh slash commands (Admin only)")
     @app_commands.default_permissions(administrator=True)

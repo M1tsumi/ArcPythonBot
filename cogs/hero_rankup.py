@@ -26,7 +26,7 @@ class HeroRankup(commands.Cog):
         
         embed.add_field(
             name="📋 Available Options",
-            value="Click the buttons below to view information for each star level:\n\n🔓 **Unlock** - Hero unlock cost\n⭐ **1 Star** - Level 1-10 requirements\n⭐⭐ **2 Stars** - Level 20 requirements\n⭐⭐⭐ **3 Stars** - Level 30 requirements\n⭐⭐⭐⭐ **4 Stars** - Level 40 requirements\n⭐⭐⭐⭐⭐ **5 Stars** - Level 50 requirements\n⭐⭐⭐⭐⭐⭐ **6 Stars** - Level 60 requirements\n💰 **Total Cost** - Complete cost breakdown",
+            value="Click the buttons below to view information for each star level:\n\n🔓 **Unlock** - Hero unlock cost\n⭐ **1 Star** - Level 1-10 requirements\n⭐ **2 Stars** - Level 20 requirements\n⭐ **3 Stars** - Level 30 requirements\n⭐ **4 Stars** - Level 40 requirements\n⭐ **5 Stars** - Level 50 requirements\n⭐ **6 Stars** - Level 60 requirements\n💰 **Total Cost** - Complete cost breakdown",
             inline=False
         )
         

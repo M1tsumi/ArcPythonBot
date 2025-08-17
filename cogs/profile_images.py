@@ -23,7 +23,8 @@ class ProfileImages(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = bot.logger
-        self.owner_id = 1051142172130422884  # Bot owner ID for approvals
+        # Hardcoded owner ID
+        self.owner_id = 1051142172130422884
         self.pending_approvals = {}  # Store pending approvals: {user_id: approval_data}
         
         # Ensure all necessary directories exist
