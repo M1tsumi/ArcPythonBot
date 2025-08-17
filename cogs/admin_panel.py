@@ -182,6 +182,7 @@ class AdminPanelView(discord.ui.View):
     async def bot_status(self, interaction: discord.Interaction, button: discord.ui.Button):
         """View bot statistics and status."""
         import psutil
+        import sys
         import time
         
         # Get bot statistics
@@ -213,10 +214,10 @@ class AdminPanelView(discord.ui.View):
         
         embed.add_field(
             name="🔧 System Info",
-            value=f"**Python**: {psutil.sys.version.split()[0]}\n"
+            value=f"**Python**: {sys.version.split()[0]}\n"
                   f"**Discord.py**: {discord.__version__}\n"
-                  f"**Platform**: {psutil.sys.platform}\n"
-                  f"**Architecture**: {psutil.sys.maxsize > 2**32 and '64-bit' or '32-bit'}",
+                  f"**Platform**: {sys.platform}\n"
+                  f"**Architecture**: {sys.maxsize > 2**32 and '64-bit' or '32-bit'}",
             inline=True
         )
         
