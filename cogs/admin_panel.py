@@ -6,36 +6,20 @@ Owner-only commands for comprehensive bot management.
 import discord
 from discord import app_commands
 from discord.ext import commands
-from typing import Optional
-import json
-from pathlib import Path
+from utils.permissions import is_owner
 
 class AdminPanel(commands.Cog):
     """Admin panel with owner-only commands for bot management."""
     
     def __init__(self, bot):
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-        
-    async def cog_check(self, ctx):
-        """Check if user is the bot owner."""
-        return ctx.author.id == self.owner_id
     
     @app_commands.command(name="admin", description="🔧 Admin Panel - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def admin_panel(self, interaction: discord.Interaction):
         """Open the admin panel with various management options."""
-        # Check if user is owner
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
+
         embed = discord.Embed(
             title="🔧 Admin Panel",
             description="Welcome to the bot administration panel. Select an option below:",
@@ -87,16 +71,14 @@ class AdminPanel(commands.Cog):
 
 class AdminPanelView(discord.ui.View):
     """View for admin panel buttons."""
-    
+
     def __init__(self, bot):
         super().__init__(timeout=300)  # 5 minute timeout
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-    
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         """Check if user is owner."""
-        return interaction.user.id == self.owner_id
+        return is_owner(interaction)
     
     @discord.ui.button(label="🔗 Create Webhook", style=discord.ButtonStyle.primary, row=0)
     async def create_webhook(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -321,16 +303,14 @@ class AdminPanelView(discord.ui.View):
 
 class ConfirmLeaveView(discord.ui.View):
     """Confirmation view for leaving server."""
-    
+
     def __init__(self, bot, guild):
         super().__init__(timeout=60)
         self.bot = bot
         self.guild = guild
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-    
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == self.owner_id
+        return is_owner(interaction)
     
     @discord.ui.button(label="✅ Confirm Leave", style=discord.ButtonStyle.danger)
     async def confirm_leave(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -360,15 +340,13 @@ class ConfirmLeaveView(discord.ui.View):
 
 class UserManagementView(discord.ui.View):
     """View for user management options."""
-    
+
     def __init__(self, bot):
         super().__init__(timeout=300)
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-    
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == self.owner_id
+        return is_owner(interaction)
     
     @discord.ui.button(label="🎭 Give Role", style=discord.ButtonStyle.primary)
     async def give_role(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -402,15 +380,13 @@ class UserManagementView(discord.ui.View):
 
 class ServerManagementView(discord.ui.View):
     """View for server management options."""
-    
+
     def __init__(self, bot):
         super().__init__(timeout=300)
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-    
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == self.owner_id
+        return is_owner(interaction)
     
     @discord.ui.button(label="📝 Create Channel", style=discord.ButtonStyle.primary)
     async def create_channel(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -444,15 +420,13 @@ class ServerManagementView(discord.ui.View):
 
 class MonitoringView(discord.ui.View):
     """View for monitoring options."""
-    
+
     def __init__(self, bot):
         super().__init__(timeout=300)
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-    
+
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.id == self.owner_id
+        return is_owner(interaction)
     
     @discord.ui.button(label="📊 Performance", style=discord.ButtonStyle.primary)
     async def performance(self, interaction: discord.Interaction, button: discord.ui.Button):
