@@ -40,6 +40,7 @@ class AdminPanel(commands.Cog):
             value="• **Give Role** - Give yourself or others roles\n"
                   "• **Remove Role** - Remove roles from users\n"
                   "• **User Info** - Get detailed user information\n"
+                  "• **Change Nickname** - Change or reset user nicknames\n"
                   "• **Ban User** - Ban users from server\n"
                   "• **Unban User** - Unban users from server",
             inline=False
@@ -246,6 +247,7 @@ class AdminPanelView(discord.ui.View):
             value="• **Give Role** - Assign roles to users\n"
                   "• **Remove Role** - Remove roles from users\n"
                   "• **User Info** - Get detailed user information\n"
+                  "• **Change Nickname** - Change or reset user nicknames\n"
                   "• **Ban User** - Ban users from server\n"
                   "• **Unban User** - Unban users from server\n"
                   "• **Kick User** - Kick users from server",
@@ -374,6 +376,16 @@ class UserManagementView(discord.ui.View):
         embed = discord.Embed(
             title="ℹ️ User Info",
             description="Use `/admin_user_info @user` to get detailed user information.",
+            color=discord.Color.blue()
+        )
+        await interaction.response.edit_message(embed=embed, view=None)
+
+    @discord.ui.button(label="✏️ Change Nickname", style=discord.ButtonStyle.secondary)
+    async def change_nickname(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Show command to change a user's nickname."""
+        embed = discord.Embed(
+            title="✏️ Change Nickname",
+            description="Use `/admin_change_nickname @user new_nick` to change or clear a user's nickname.",
             color=discord.Color.blue()
         )
         await interaction.response.edit_message(embed=embed, view=None)

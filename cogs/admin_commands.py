@@ -70,6 +70,52 @@ class AdminCommands(commands.Cog):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
+    @app_commands.command(name="admin_change_nickname", description="✏️ Change a user's nickname - Owner Only")
+    @app_commands.default_permissions(administrator=True)
+    async def change_nickname(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        nickname: Optional[str] = None,
+    ):
+        """Change or clear a member's nickname."""
+        if interaction.user.id != self.owner_id:
+            embed = discord.Embed(
+                title="❌ Access Denied",
+                description="This command is restricted to the bot owner only.",
+                color=discord.Color.red(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        try:
+            await member.edit(nick=nickname)
+            description = (
+                f"Successfully changed {member.mention}'s nickname to **{nickname}**"
+                if nickname
+                else f"Cleared {member.mention}'s nickname"
+            )
+            embed = discord.Embed(
+                title="✅ Nickname Updated",
+                description=description,
+                color=discord.Color.green(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except discord.Forbidden:
+            embed = discord.Embed(
+                title="❌ Permission Error",
+                description="I don't have permission to change this nickname.",
+                color=discord.Color.red(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            embed = discord.Embed(
+                title="❌ Error",
+                description=f"Failed to change nickname: {str(e)}",
+                color=discord.Color.red(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
     @app_commands.command(name="admin_user_info", description="ℹ️ Get detailed user information - Owner Only")
     @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
