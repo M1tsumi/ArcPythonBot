@@ -13,7 +13,7 @@ import re
 from datetime import datetime, timedelta
 
 class TimerCalcModal(discord.ui.Modal, title="Timer Hour Calculator"):
-    """Modal to calculate total hours from different timer counts."""
+    """Modal to calculate total time from different timer counts."""
 
     one_min_timers = discord.ui.TextInput(
         label="Number of 1m timers",
@@ -55,15 +55,23 @@ class TimerCalcModal(discord.ui.Modal, title="Timer Hour Calculator"):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             return
 
-        total_hours = (one_min / 60) + (five_min * 5 / 60) + one_hour + (day * 24)
+        total_minutes = one_min + (five_min * 5) + (one_hour * 60) + (day * 24 * 60)
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+
+        time_parts = []
+        if hours:
+            time_parts.append(f"{hours}hr")
+        if minutes or not time_parts:
+            time_parts.append(f"{minutes}m")
 
         embed = discord.Embed(
-            title="⏰ Timer Hour Calculation",
+            title="⏰ Timer Time Calculation",
             color=discord.Color.blue()
         )
         embed.add_field(
-            name="Total Hours",
-            value=f"{total_hours:.2f}",
+            name="Total Time",
+            value=" ".join(time_parts),
             inline=False
         )
 
@@ -102,18 +110,26 @@ class TimerSystem(commands.Cog):
                 if current_time >= timer_data['end_time']:
                     completed_timers.append((user_id, timer_id, timer_data))
         
-        # Process completed timers in batches to avoid blocking
+        # Process completed timers concurrently to avoid blocking the event loop
         if completed_timers:
-            for user_id, timer_id, timer_data in completed_timers:
-                try:
-                    await self._notify_timer_completion(user_id, timer_data)
-                    # Remove completed timer
-                    if user_id in self.active_timers:
-                        self.active_timers[user_id].pop(timer_id, None)
-                        if not self.active_timers[user_id]:
-                            self.active_timers.pop(user_id, None)
-                except Exception as e:
-                    self.logger.error(f"Error processing timer completion for user {user_id}: {e}")
+            tasks = []
+            for user_id, _timer_id, timer_data in completed_timers:
+                tasks.append(self._notify_timer_completion(user_id, timer_data))
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for (user_id, timer_id, _), result in zip(completed_timers, results):
+                if isinstance(result, Exception):
+                    self.logger.error(
+                        f"Error processing timer completion for user {user_id}: {result}"
+                    )
+                    continue
+
+                # Remove completed timer
+                if user_id in self.active_timers:
+                    self.active_timers[user_id].pop(timer_id, None)
+                    if not self.active_timers[user_id]:
+                        self.active_timers.pop(user_id, None)
     
     async def _notify_timer_completion(self, user_id: int, timer_data: Dict):
         """Notify user that their timer has completed."""
