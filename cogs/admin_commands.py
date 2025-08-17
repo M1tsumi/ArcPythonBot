@@ -6,6 +6,7 @@ Owner-only commands for user and server management.
 import discord
 from discord import app_commands
 from discord.ext import commands
+from typing import Optional
 from utils.permissions import is_owner
 
 class AdminCommands(commands.Cog):
@@ -71,6 +72,7 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_change_nickname", description="✏️ Change a user's nickname - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def change_nickname(
         self,
@@ -79,15 +81,6 @@ class AdminCommands(commands.Cog):
         nickname: Optional[str] = None,
     ):
         """Change or clear a member's nickname."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red(),
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-
         try:
             await member.edit(nick=nickname)
             description = (
