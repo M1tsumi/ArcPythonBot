@@ -42,7 +42,8 @@ class AdminPanel(commands.Cog):
                   "• **User Info** - Get detailed user information\n"
                   "• **Change Nickname** - Change or reset user nicknames\n"
                   "• **Ban User** - Ban users from server\n"
-                  "• **Unban User** - Unban users from server",
+                  "• **Unban User** - Unban users from server\n"
+                  "• **Change Nickname** – Update member display names",
             inline=False
         )
         
