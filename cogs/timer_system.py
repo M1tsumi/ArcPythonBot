@@ -12,6 +12,63 @@ import time
 import re
 from datetime import datetime, timedelta
 
+class TimerCalcModal(discord.ui.Modal, title="Timer Hour Calculator"):
+    """Modal to calculate total hours from different timer counts."""
+
+    one_min_timers = discord.ui.TextInput(
+        label="Number of 1m timers",
+        default="0",
+        required=False
+    )
+
+    five_min_timers = discord.ui.TextInput(
+        label="Number of 5m timers",
+        default="0",
+        required=False
+    )
+
+    one_hour_timers = discord.ui.TextInput(
+        label="Number of 1h timers",
+        default="0",
+        required=False
+    )
+
+    day_timers = discord.ui.TextInput(
+        label="Number of 24h timers",
+        default="0",
+        required=False
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        """Handle calculation when the modal is submitted."""
+        try:
+            one_min = int(self.one_min_timers.value or 0)
+            five_min = int(self.five_min_timers.value or 0)
+            one_hour = int(self.one_hour_timers.value or 0)
+            day = int(self.day_timers.value or 0)
+        except ValueError:
+            embed = discord.Embed(
+                title="❌ Invalid Input",
+                description="Please enter valid numbers for all timers.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        total_hours = (one_min / 60) + (five_min * 5 / 60) + one_hour + (day * 24)
+
+        embed = discord.Embed(
+            title="⏰ Timer Hour Calculation",
+            color=discord.Color.blue()
+        )
+        embed.add_field(
+            name="Total Hours",
+            value=f"{total_hours:.2f}",
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 class TimerSystem(commands.Cog):
     """Timer command cog for game activity tracking."""
     
@@ -394,7 +451,12 @@ class TimerSystem(commands.Cog):
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
         self.logger.info(f"All timers cancelled for user {user_id}: {timer_count} timers")
-    
+
+    @app_commands.command(name="timer_calc", description="Calculate total hours for multiple timers")
+    async def timer_calc(self, interaction: discord.Interaction):
+        """Prompt for timer counts and calculate total hours."""
+        await interaction.response.send_modal(TimerCalcModal())
+
     @app_commands.command(name="timer_help", description="Get help with timer commands")
     async def timer_help(self, interaction: discord.Interaction):
         """Show help information for timer commands."""
