@@ -57,7 +57,8 @@ class AdminPanel(commands.Cog):
                   "• **Remove Role** - Remove roles from users\n"
                   "• **User Info** - Get detailed user information\n"
                   "• **Ban User** - Ban users from server\n"
-                  "• **Unban User** - Unban users from server",
+                  "• **Unban User** - Unban users from server\n"
+                  "• **Change Nickname** – Update member display names",
             inline=False
         )
         
