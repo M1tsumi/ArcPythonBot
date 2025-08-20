@@ -7,34 +7,19 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from typing import Optional
-import psutil
-import time
+from utils.permissions import is_owner
 
 class AdminCommands(commands.Cog):
     """Additional admin commands for comprehensive bot management."""
     
     def __init__(self, bot):
         self.bot = bot
-        # Hardcoded owner ID
-        self.owner_id = 1051142172130422884
-        
-    async def cog_check(self, ctx):
-        """Check if user is the bot owner."""
-        return ctx.author.id == self.owner_id
     
     @app_commands.command(name="admin_give_role", description="🎭 Give role to user - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def give_role(self, interaction: discord.Interaction, user: discord.Member, role: discord.Role):
         """Give a role to a user."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             await user.add_roles(role)
             embed = discord.Embed(
@@ -59,18 +44,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_remove_role", description="❌ Remove role from user - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def remove_role(self, interaction: discord.Interaction, user: discord.Member, role: discord.Role):
         """Remove a role from a user."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             await user.remove_roles(role)
             embed = discord.Embed(
@@ -94,19 +71,50 @@ class AdminCommands(commands.Cog):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
+    @app_commands.command(name="admin_change_nickname", description="✏️ Change a user's nickname - Owner Only")
+    @app_commands.check(is_owner)
+    @app_commands.default_permissions(administrator=True)
+    async def change_nickname(
+        self,
+        interaction: discord.Interaction,
+        member: discord.Member,
+        nickname: Optional[str] = None,
+    ):
+        """Change or clear a member's nickname."""
+        try:
+            await member.edit(nick=nickname)
+            description = (
+                f"Successfully changed {member.mention}'s nickname to **{nickname}**"
+                if nickname
+                else f"Cleared {member.mention}'s nickname"
+            )
+            embed = discord.Embed(
+                title="✅ Nickname Updated",
+                description=description,
+                color=discord.Color.green(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except discord.Forbidden:
+            embed = discord.Embed(
+                title="❌ Permission Error",
+                description="I don't have permission to change this nickname.",
+                color=discord.Color.red(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        except Exception as e:
+            embed = discord.Embed(
+                title="❌ Error",
+                description=f"Failed to change nickname: {str(e)}",
+                color=discord.Color.red(),
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
     @app_commands.command(name="admin_user_info", description="ℹ️ Get detailed user information - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def user_info(self, interaction: discord.Interaction, user: discord.Member):
         """Get detailed user information."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
+
         # Get user roles
         roles = [role.mention for role in user.roles if role.name != "@everyone"]
         roles_text = ", ".join(roles) if roles else "No roles"
@@ -165,18 +173,10 @@ class AdminCommands(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_create_channel", description="📝 Create a new channel - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def create_channel(self, interaction: discord.Interaction, name: str, channel_type: str = "text"):
         """Create a new channel."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             if channel_type.lower() in ["text", "txt"]:
                 channel = await interaction.guild.create_text_channel(name=name)
@@ -218,18 +218,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_delete_channel", description="🗑️ Delete a channel - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def delete_channel(self, interaction: discord.Interaction, channel: discord.abc.GuildChannel):
         """Delete a channel."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             channel_name = channel.name
             await channel.delete()
@@ -255,18 +247,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_role_create", description="🔧 Create a new role - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def create_role(self, interaction: discord.Interaction, name: str, color: str = "default"):
         """Create a new role."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             # Parse color
             if color.lower() == "default":
@@ -301,18 +285,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_ban_user", description="🔨 Ban a user - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def ban_user(self, interaction: discord.Interaction, user: discord.Member, reason: str = "No reason provided"):
         """Ban a user from the server."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             await user.ban(reason=f"Admin ban by {interaction.user.name}: {reason}")
             embed = discord.Embed(
@@ -337,18 +313,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_unban_user", description="🔓 Unban a user - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def unban_user(self, interaction: discord.Interaction, user_id: str):
         """Unban a user from the server."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             user_id = int(user_id)
             user = await self.bot.fetch_user(user_id)
@@ -382,18 +350,10 @@ class AdminCommands(commands.Cog):
             await interaction.response.send_message(embed=embed, ephemeral=True)
     
     @app_commands.command(name="admin_kick_user", description="👢 Kick a user - Owner Only")
+    @app_commands.check(is_owner)
     @app_commands.default_permissions(administrator=True)
     async def kick_user(self, interaction: discord.Interaction, user: discord.Member, reason: str = "No reason provided"):
         """Kick a user from the server."""
-        if interaction.user.id != self.owner_id:
-            embed = discord.Embed(
-                title="❌ Access Denied",
-                description="This command is restricted to the bot owner only.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
-        
         try:
             await user.kick(reason=f"Admin kick by {interaction.user.name}: {reason}")
             embed = discord.Embed(

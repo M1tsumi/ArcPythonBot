@@ -5,31 +5,23 @@ Run this script to test the translation functionality locally before deploying.
 """
 
 import json
-import os
 import sys
 from pathlib import Path
+import pytest
 
-def test_translation_file():
+
+@pytest.fixture
+def translations():
+    """Load translations from JSON file for tests."""
+    translations_file = Path("data/translations.json")
+    with translations_file.open('r', encoding='utf-8') as f:
+        return json.load(f)
+
+def test_translation_file(translations):
     """Test if the translations.json file exists and is valid JSON."""
     print("🔍 Testing translation file...")
-    
-    translations_file = Path("data/translations.json")
-    
-    if not translations_file.exists():
-        print("❌ Error: data/translations.json not found!")
-        return False
-    
-    try:
-        with open(translations_file, 'r', encoding='utf-8') as f:
-            translations = json.load(f)
-        print("✅ Translation file loaded successfully")
-        return translations
-    except json.JSONDecodeError as e:
-        print(f"❌ Error: Invalid JSON in translations.json: {e}")
-        return False
-    except Exception as e:
-        print(f"❌ Error loading translation file: {e}")
-        return False
+    assert isinstance(translations, dict)
+    print("✅ Translation file loaded successfully")
 
 def test_language_support(translations):
     """Test if all required languages are supported."""

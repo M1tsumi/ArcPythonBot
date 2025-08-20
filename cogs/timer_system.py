@@ -12,6 +12,71 @@ import time
 import re
 from datetime import datetime, timedelta
 
+class TimerCalcModal(discord.ui.Modal, title="Timer Hour Calculator"):
+    """Modal to calculate total time from different timer counts."""
+
+    one_min_timers = discord.ui.TextInput(
+        label="Number of 1m timers",
+        default="0",
+        required=False
+    )
+
+    five_min_timers = discord.ui.TextInput(
+        label="Number of 5m timers",
+        default="0",
+        required=False
+    )
+
+    one_hour_timers = discord.ui.TextInput(
+        label="Number of 1h timers",
+        default="0",
+        required=False
+    )
+
+    day_timers = discord.ui.TextInput(
+        label="Number of 24h timers",
+        default="0",
+        required=False
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        """Handle calculation when the modal is submitted."""
+        try:
+            one_min = int(self.one_min_timers.value or 0)
+            five_min = int(self.five_min_timers.value or 0)
+            one_hour = int(self.one_hour_timers.value or 0)
+            day = int(self.day_timers.value or 0)
+        except ValueError:
+            embed = discord.Embed(
+                title="❌ Invalid Input",
+                description="Please enter valid numbers for all timers.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        total_minutes = one_min + (five_min * 5) + (one_hour * 60) + (day * 24 * 60)
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+
+        time_parts = []
+        if hours:
+            time_parts.append(f"{hours}hr")
+        if minutes or not time_parts:
+            time_parts.append(f"{minutes}m")
+
+        embed = discord.Embed(
+            title="⏰ Timer Time Calculation",
+            color=discord.Color.blue()
+        )
+        embed.add_field(
+            name="Total Time",
+            value=" ".join(time_parts),
+            inline=False
+        )
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 class TimerSystem(commands.Cog):
     """Timer command cog for game activity tracking."""
     
@@ -45,18 +110,26 @@ class TimerSystem(commands.Cog):
                 if current_time >= timer_data['end_time']:
                     completed_timers.append((user_id, timer_id, timer_data))
         
-        # Process completed timers in batches to avoid blocking
+        # Process completed timers concurrently to avoid blocking the event loop
         if completed_timers:
-            for user_id, timer_id, timer_data in completed_timers:
-                try:
-                    await self._notify_timer_completion(user_id, timer_data)
-                    # Remove completed timer
-                    if user_id in self.active_timers:
-                        self.active_timers[user_id].pop(timer_id, None)
-                        if not self.active_timers[user_id]:
-                            self.active_timers.pop(user_id, None)
-                except Exception as e:
-                    self.logger.error(f"Error processing timer completion for user {user_id}: {e}")
+            tasks = []
+            for user_id, _timer_id, timer_data in completed_timers:
+                tasks.append(self._notify_timer_completion(user_id, timer_data))
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for (user_id, timer_id, _), result in zip(completed_timers, results):
+                if isinstance(result, Exception):
+                    self.logger.error(
+                        f"Error processing timer completion for user {user_id}: {result}"
+                    )
+                    continue
+
+                # Remove completed timer
+                if user_id in self.active_timers:
+                    self.active_timers[user_id].pop(timer_id, None)
+                    if not self.active_timers[user_id]:
+                        self.active_timers.pop(user_id, None)
     
     async def _notify_timer_completion(self, user_id: int, timer_data: Dict):
         """Notify user that their timer has completed."""
@@ -394,7 +467,12 @@ class TimerSystem(commands.Cog):
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
         self.logger.info(f"All timers cancelled for user {user_id}: {timer_count} timers")
-    
+
+    @app_commands.command(name="timer_calc", description="Calculate total hours for multiple timers")
+    async def timer_calc(self, interaction: discord.Interaction):
+        """Prompt for timer counts and calculate total hours."""
+        await interaction.response.send_modal(TimerCalcModal())
+
     @app_commands.command(name="timer_help", description="Get help with timer commands")
     async def timer_help(self, interaction: discord.Interaction):
         """Show help information for timer commands."""
