@@ -1,3 +1,7 @@
+# ⚠️ PROJECT STATUS: NO LONGER MAINTAINED
+
+> **Important Notice**: This Discord bot is no longer actively maintained or updated. The code remains available for educational purposes and community use, but no new features, bug fixes, or support will be provided.
+
 <p align="center">
   <strong>🤝 Need a Custom Discord Bot? I'm Here to Help!</strong><br><br>
   <a href="https://www.fiverr.com/s/XLzopGe">
@@ -17,12 +21,14 @@
 [![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://python.org)
 [![Discord.py](https://img.shields.io/badge/discord.py-2.0+-purple.svg)](https://discordpy.readthedocs.io/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/status-archived-red.svg)](https://github.com/M1tsumi/ArcPythonBot)
 
 > **🎮 Version 1.8.1 - Avatar Realms Collide Discord Bot**  
 > An interactive Discord bot featuring hero progression, elemental skills, PvP duels, character talent trees, leaderboards, rally system, comprehensive game management, and **multi-language support** for the Avatar Realms Collide universe.
 
 ## 📋 Table of Contents
 
+- [Project Status](#-project-status-no-longer-maintained)
 - [Features](#-features)
 - [Installation](#-installation)
 - [Usage](#-usage)
@@ -30,7 +36,6 @@
 - [Character Database](#-character-database)
 - [Technical Details](#-technical-details)
 - [Contributing](#-contributing)
-- [Roadmap](#-roadmap)
 - [License](#-license)
 
 ## ✨ Features
@@ -412,18 +417,19 @@ ArcPythonBot/
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+> **Note**: While this project is no longer actively maintained, the code remains open source under the MIT License. Community members are welcome to fork the repository and continue development independently.
 
-### How to Contribute
+### Historical Contribution Guidelines
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 🗺️ Roadmap
+## 🗺️ Final Version Features
 
-### Version 1.8.0 (Current) 🚀 MAJOR RELEASE
+### Version 1.8.1 (Final Release) 🚀
+- ✅ **Multi-Language Support**: Complete translation system with English, German, and Spanish
 - ✅ **Hero Progression System**: Complete rarity and star upgrade system
 - ✅ **Elemental Skill Trees**: 44 skills across 4 elements with tier progression
 - ✅ **PvP Duel System**: Turn-based combat with ELO rating system
@@ -433,113 +439,12 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - ✅ **Duel Statistics**: Comprehensive battle performance tracking
 - ✅ **Interactive Battle UI**: Real-time combat interface
 - ✅ **Resource Economy**: Hero Shards, Scrolls, and Skill Points integration
-- ✅ **Minigame Enhancements**: Improved drop rates and duel bonuses
-- ✅ **New Commands**: `/hero`, `/skills`, `/duel` command groups (10 new commands)
-- ✅ Interactive talent tree browser
-- ✅ **Leaderboard System**: Complete with admin controls and event-aware pausing
+- ✅ **Comprehensive Event Systems**: TGL, Glorious Victory, and Purification events
 - ✅ **Rally System**: Complete Shattered Skulls Fortress management
-- ✅ **TGL System**: The Greatest Leader event tools and point calculator
-- ✅ **Glorious Victory System**: Complete event information and point calculator
-- ✅ **Purification Event System**: Complete 30-level progressive challenge event
-- ✅ **Hero Information System**: Comprehensive hero guide and unlock methods
 - ✅ **Timer System**: Game activity timers with DM notifications
+- ✅ **Troops System**: Complete troop information and management
 - ✅ **Performance Optimizations**: Embed caching and faster operations
 - ✅ Character database with 25+ characters and unlock information
-- ✅ Element-based categorization with rarity system
-- ✅ Professional Discord UI with interactive components
-
-### Upcoming Features
-- 🔄 **Advanced PvP**: Tournament system and seasonal rankings
-- 🔄 **Guild System**: Alliance-based progression and battles
-- 🔄 **Daily Quests**: Regular challenges for additional rewards
-- 🔄 **Equipment System**: Gear and artifacts for heroes
-- 🔄 **Prestige System**: Advanced progression beyond Legendary
-- 🔄 **Real-time Events**: Live game event integration
-- 🔄 **Mobile Optimization**: Better mobile Discord experience
-- 🔄 **Advanced Analytics**: Detailed battle and progression statistics
-
-### Future Updates
-- **Real-time Data**: Live game data integration
-- **Analytics**: Usage statistics and insights
-- **Customization**: User preference settings
-- **API Integration**: External game API support
-
-## 📝 Version Notes
-
-### Version 1.6.2
-This is a **major feature release** with comprehensive troops system:
-
-- **Troops System**: Complete troops information and management with `/troops` command
-- **Interactive Element Selection**: Choose from Water, Earth, Fire, and Air elements
-- **Tier-based Browsing**: Browse troops by tiers T1-T6 with detailed information
-- **Professional UI**: Color-coded element buttons with emojis and visual styling
-- **Comprehensive Data**: Detailed troop stats, costs, and element-specific descriptions
-- **Enhanced Navigation**: Interactive tier selection with professional embeds
-- **Element Overviews**: Strategic information for each element's troop characteristics
-- **New Cog**: Added `troops.py` with 315 lines of troop management functionality
-- **Improved Data Management**: Enhanced data parser and embed generation for troops
-
-### Version 1.6.1
-This is a **minor update** with acknowledgments and UI improvements:
-
-- **Added Kuvira**: Added Kuvira to the acknowledgments section
-- **Optimized `/info` Command**: Streamlined the info command to be more concise and user-friendly
-- **All Contributors Listed**: Now properly credits all contributors including Lycaris, PrincessBell, Samkee, and Kuvira
-- **Reduced Text Wall**: Condensed verbose descriptions into concise, readable format
-- **Better UX**: Much easier to read and digest information
-- **Maintained Functionality**: All essential information preserved while improving readability
-
-### Version 1.6.0
-This is a **major feature release** with comprehensive event systems and timer functionality:
-
-- **Purification Event System**: Complete 30-level progressive challenge event with detailed mechanics
-- **Event Management**: Comprehensive event system with `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
-- **Progressive Challenge**: 30 levels with 6 different enemy types and increasing rewards
-- **Alliance Cooperation**: Enhanced rewards through alliance coordination and strategy
-- **Timer System**: Complete game activity timer with DM notifications
-- **Activity Tracking**: Support for Recruiting, Gathering, Build 1, Build 2, Research, and Event
-- **Custom Duration**: Flexible time input up to 24 hours (hours, minutes, seconds)
-- **Timer Management**: View, cancel individual timers, or cancel all timers
-- **Notes Support**: Optional notes to remember what each timer is for
-- **Real-time Updates**: Automatic timer checking every 30 seconds
-- **New Commands**: `/timer`, `/timers`, `/cancel_timer`, `/cancel_all_timers`, `/timer_help`
-- **Event Commands**: `/events`, `/event_details`, `/upcoming`, `/event_search`, `/event_rewards`
-- **DM Notifications**: Private messages when timers complete
-- **Professional UI**: Clean embeds with timer information and management
-
-### Version 1.5.0
-This is a **major feature release** with comprehensive event systems and hero information:
-
-- **Glorious Victory System**: Complete event information, point calculator, and strategy guide
-- **Hero Information System**: Comprehensive hero guide with unlock methods and rarity classification
-- **Enhanced Character Database**: Added unlock sources and detailed hero information
-- **New Commands**: `/glorious_victory`, `/gv_calc`, `/hero_info`, `/hero_search`
-- **Event Integration**: Seamless integration of multiple event systems
-- **Improved Data Management**: Better organization of hero and event data
-- **Professional UI**: Enhanced embeds and interactive components
-- **Performance Optimizations**: Continued improvements in speed and efficiency
-
-### Version 1.4.0
-Previous stable release with leaderboard management, rally system, and performance optimizations:
-
-- **Leaderboard Management**: Complete admin controls for pausing, resuming, and clearing leaderboards
-- **Event-Aware System**: Automatic leaderboard pausing when events are not active
-- **Rally System**: Complete Shattered Skulls Fortress management with time limits and point tracking
-- **Performance Optimizations**: Embed caching, optimized operations, and enhanced logging
-- **New Commands**: `/ping`, `/info`, `/rally`, `/rally_stats`, `/rally_leaderboard`, `/leader`
-- **Creator Restrictions**: Rally creators cannot join their own rallies
-- **Auto-cleanup**: Automatic expiration and creator notifications
-- **Professional UI**: Enhanced embeds and interactive buttons
-- **Data Persistence**: JSON-based storage for rally statistics, leaderboard state, and configuration
-
-### Planned Future Updates
-- **Skill Priorities**: Character skill tree progression system
-- **Rarity Changes**: Dynamic character rarity updates based on game balance
-- **Level Requirements**: Character level progression and requirements
-- **Resource Requirements**: Game resource costs and management
-- **Advanced Analytics**: Detailed character and game statistics
-- **Event Integration**: Real-time game event tracking
-- **User Customization**: Personalized bot experience settings
 
 ## 📄 License
 
@@ -549,21 +454,23 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Avatar: The Last Airbender** universe for inspiration
 - **Discord.py** community for excellent documentation
-- **Contributors** who help improve this bot
-- **[Lycaris](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe)** for the comprehensive Avatar Realms Collide Event Overview
-- **PrincessBell** and **Samkee** for providing event details
-- **Deng (@2rk)** for leaderboard data contributions and improvements
-- **Kuvira** for contributing talent trees, skill priorities, and town hall statistics to the bot's development
-- **Drummer (@priskent)** and **Marshmellow (@sophremacy)** for providing troop information and costs data
+- **Contributors** who helped improve this bot:
+  - **[Lycaris](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe)** for the comprehensive Avatar Realms Collide Event Overview
+  - **PrincessBell** and **Samkee** for providing event details
+  - **Deng (@2rk)** for leaderboard data contributions and improvements
+  - **Kuvira** for contributing talent trees, skill priorities, and town hall statistics
+  - **Drummer (@priskent)** and **Marshmellow (@sophremacy)** for providing troop information and costs data
 
 ## 📞 Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/yourusername/ArcPythonBot/issues)
-- **Discord Server**: Join our community server for support
+> **Support Notice**: As this project is no longer maintained, support is limited to community-driven assistance.
+
+- **GitHub Issues**: Repository remains available for reference
 - **Documentation**: Check out [Lycaris' Notion Page](https://lycaris.notion.site/A-RC-Event-Overview-20388d602bb58085b119da5f6f612cbe) for detailed guides
+- **Community**: Fork the project to continue development
 
 ---
 
-**⭐ Star this repository if you find it helpful!**
+**⭐ This repository serves as an archive of the Avatar Realms Collide Discord Bot**
 
-*Made with ❤️ for the Avatar Realms Collide community* 
+*Made with ❤️ for the Avatar Realms Collide community*
